@@ -32,6 +32,8 @@ public class Configuration {
 
     CacheServerStrategy strategy = CacheServerStrategy.CLUSTER;
 
+    DataLoadStrategy dataLoadStrategy = DataLoadStrategy.FULL;
+
     KeyCombinedStrategy keyCombinedStrategy;
 
     CacheHandler handler;
@@ -61,4 +63,7 @@ public class Configuration {
         STANDALONE,CLUSTER;
     }
 
+    enum DataLoadStrategy {
+        FULL,INCREMENT;
+    }
 }
