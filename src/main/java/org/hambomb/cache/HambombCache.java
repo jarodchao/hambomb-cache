@@ -46,51 +46,26 @@ import static org.reflections.ReflectionUtils.*;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public class HambombCacheProcessor implements ApplicationContextAware, InitializingBean {
+public class HambombCache implements ApplicationContextAware, InitializingBean {
 
 
     ApplicationContext applicationContext;
 
     Configuration configuration;
 
-    private Map<String, EntityLoader> entityLoaderMap;
+    HambombCacheProcessor hambombCacheProcessor;
 
-    private CacheHandler cacheHandler;
+    private static final Logger LOG = LoggerFactory.getLogger(HambombCache.class);
 
-    private MapperScanner scanner;
 
-    private Set<Class<? extends CacheObjectMapper>> mappers;
-
-    private static final Logger LOG = LoggerFactory.getLogger(HambombCacheProcessor.class);
-
-    @Autowired
-    private ClusterProcessor clusterProcessor;
-
-    public HambombCacheProcessor(Configuration configuration) {
+    public HambombCache(Configuration configuration) {
         this.configuration = configuration;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        Boolean masterFlag = false;
-
-        if (Configuration.CacheServerStrategy.CLUSTER == configuration.strategy) {
-
-            clusterProcessor.initNodes();
-
-            masterFlag = clusterProcessor.selectMasterLoader();
-
-            clusterProcessor.initDataLoadNode();
-
-        }
-
-        if (!masterFlag) {
-            LOG.info("Application Server not was a Master Node,HambombCacheProcessor is stopping.");
-            return;
-        }
-
-        process();
+        hambombCacheProcessor.startup();
 
     }
 
@@ -99,93 +74,5 @@ public class HambombCacheProcessor implements ApplicationContextAware, Initializ
         this.applicationContext = applicationContext;
     }
 
-    private void process() {
 
-        if (configuration.scanPackageName != null && !"".equals(configuration.scanPackageName)) {
-
-            scanner = new MapperScanner(configuration.scanPackageName);
-
-            mappers = scanner.scanMapper();
-        }
-
-        if (configuration.handler != null) {
-            this.cacheHandler = configuration.handler;
-        }
-
-        List<EntityLoader> entityLoaders = buildLoaders(mappers);
-
-        startLoader(entityLoaders);
-
-        clusterProcessor.finishDataLoadNode();
-    }
-
-    private void startLoader(List<EntityLoader> entityLoaders) {
-
-        entityLoaderMap = new HashMap<>(entityLoaders.size());
-
-        for (EntityLoader entityLoader : entityLoaders) {
-            entityLoader.loadEntities().stream().forEach(o -> {
-                entityLoader.getPkey(o);
-                entityLoader.getFKeys(o);
-            });
-
-            entityLoaderMap.put(entityLoader.indexFactory.uniqueKey, entityLoader);
-        }
-    }
-
-    private List<EntityLoader> buildLoaders(Set<Class<? extends CacheObjectMapper>> mappers) {
-
-        return mappers.parallelStream().map((Class<? extends CacheObjectMapper> aClass) -> {
-
-            CacheObjectMapper mapper = null;
-
-            if (applicationContext != null) {
-                mapper = applicationContext.getBean(aClass);
-            } else {
-                try {
-                    mapper = aClass.newInstance();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            EntityLoader entityLoader = new EntityLoader(mapper);
-
-            Class entityClass = mapper.getSubEntityClass();
-
-            /** 取@的值 */
-            Cachekey cachekey = (Cachekey) entityClass.getAnnotation(Cachekey.class);
-
-            String[] pk = cachekey.primaryKeys();
-            String[] fk = cachekey.findKeys();
-
-            IndexFactory indexFactory = IndexFactory.create(mapper.getClass().getSimpleName(), pk, fk, new RedisKeyCcombinedStrategy());
-            entityLoader.addIndexFactory(indexFactory);
-
-            entityLoader.initializeLoader();
-
-            for (String p : pk) {
-
-                entityLoader.addPkGetter(getterMethod(p, entityClass));
-            }
-
-            for (String f : fk) {
-
-                entityLoader.addFkGetter(getterMethod(f, entityClass));
-            }
-
-            return entityLoader;
-
-        }).collect(Collectors.toList());
-
-    }
-
-    private Method getterMethod(String name, Class entityClazz) {
-        Set<Method> getters = ReflectionUtils.getAllMethods(entityClazz,
-                withModifier(Modifier.PUBLIC), withName(CacheUtils.getter(name)), withParametersCount(0));
-
-        return getters.stream().findFirst().get();
-    }
 }

@@ -18,7 +18,6 @@ package org.hambomb.cache;
 import org.hambomb.cache.storage.RedisKeyCcombinedStrategy;
 import org.junit.Before;
 import org.junit.Test;
-import org.raistlic.common.permutation.Combination;
 import org.raistlic.common.permutation.Permutation;
 
 import java.util.Arrays;
@@ -28,7 +27,7 @@ import java.util.List;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-27
  */
-public class TestHambombCacheProcessor {
+public class TestHambombCache {
 
     Configuration configuration;
 
@@ -43,7 +42,7 @@ public class TestHambombCacheProcessor {
     @Test
     public void test_Process() throws Exception {
 
-        HambombCacheProcessor processor = new HambombCacheProcessor(configuration);
+        HambombCache processor = new HambombCache(configuration);
         processor.afterPropertiesSet();
     }
 
