@@ -13,17 +13,16 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.cluster.listener;
-
-import org.springframework.context.event.SimpleApplicationEventMulticaster;
+package org.hambomb.cache.context;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-01
  */
-public class CacheLoadInterruptedListener  {
+public class CacheLoaderContext {
 
-    private SimpleApplicationEventMulticaster multicaster;
+
+    Boolean masterFlag = false;
 
 
 }

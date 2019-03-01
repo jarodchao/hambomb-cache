@@ -26,7 +26,6 @@ import org.hambomb.cache.storage.RedisKeyCcombinedStrategy;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Method;
@@ -37,9 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.reflections.ReflectionUtils.withModifier;
-import static org.reflections.ReflectionUtils.withName;
-import static org.reflections.ReflectionUtils.withParametersCount;
+import static org.reflections.ReflectionUtils.*;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -86,6 +83,20 @@ public class HambombCacheProcessor {
 
     }
 
+    public void restart() {
+
+        clusterProcessor.initNodes();
+
+        Boolean masterFlag = clusterProcessor.selectMasterLoader();
+
+        if (!masterFlag) {
+            LOG.info("Application Server not was a Master Node,HambombCache is stopping.");
+            return;
+        }
+
+        startLoader();
+
+    }
 
 
     private void startLoader() {
@@ -103,8 +114,6 @@ public class HambombCacheProcessor {
 
         List<EntityLoader> entityLoaders = buildLoaders(mappers);
 
-        clusterProcessor.finishDataLoadNode();
-
         entityLoaderMap = new HashMap<>(entityLoaders.size());
 
         for (EntityLoader entityLoader : entityLoaders) {
@@ -115,6 +124,8 @@ public class HambombCacheProcessor {
 
             entityLoaderMap.put(entityLoader.indexFactory.uniqueKey, entityLoader);
         }
+
+        clusterProcessor.finishDataLoadNode();
     }
 
     private List<EntityLoader> buildLoaders(Set<Class<? extends CacheObjectMapper>> mappers) {
