@@ -30,16 +30,14 @@ import java.io.IOException;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-27
  */
-@Component
 public class ClusterProcessor {
 
-    public static ZkClient zkClient;
+    public ZkClient zkClient;
 
-    @Autowired
     private IZkDataListener cacheMasterListener;
 
-    public ClusterProcessor(String zkUrl) throws IOException {
-        zkClient = new ZkClient(zkUrl, 5000, 5000, new SerializableSerializer());
+    public ClusterProcessor(ZkClient zkClient) throws IOException {
+        this.zkClient = zkClient;
     }
 
     public Boolean initNodes() {
@@ -84,7 +82,7 @@ public class ClusterProcessor {
 
             CacheMasterLoaderData cacheMasterLoaderData = new CacheMasterLoaderData();
 
-            zkClient.createPersistent(ClusterRoot.getMasterData(),new CacheMasterLoaderData());
+            zkClient.createPersistent(ClusterRoot.getMasterData(),cacheMasterLoaderData);
         }
     }
 }

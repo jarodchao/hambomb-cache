@@ -15,7 +15,12 @@
  */
 package org.hambomb.cache;
 
+import org.I0Itec.zkclient.ZkClient;
+import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.hambomb.cache.cluster.ClusterProcessor;
+import org.hambomb.cache.cluster.event.CacheLoadInterruptedEvent;
+import org.hambomb.cache.cluster.listener.CacheLoadInterruptedListener;
+import org.hambomb.cache.context.CacheLoaderContext;
 import org.hambomb.cache.db.entity.CacheObjectMapper;
 import org.hambomb.cache.db.entity.Cachekey;
 import org.hambomb.cache.db.entity.EntityLoader;
@@ -27,11 +32,17 @@ import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -46,7 +57,7 @@ import static org.reflections.ReflectionUtils.*;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public class HambombCache implements ApplicationContextAware, InitializingBean {
+public class HambombCache implements ApplicationContextAware, InitializingBean, BeanFactoryPostProcessor {
 
 
     ApplicationContext applicationContext;
@@ -54,6 +65,10 @@ public class HambombCache implements ApplicationContextAware, InitializingBean {
     Configuration configuration;
 
     HambombCacheProcessor hambombCacheProcessor;
+
+    BeanFactory beanFactory;
+
+    ZkClient zkClient;
 
     private static final Logger LOG = LoggerFactory.getLogger(HambombCache.class);
 
@@ -65,6 +80,19 @@ public class HambombCache implements ApplicationContextAware, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
 
+        if (Configuration.CacheServerStrategy.CLUSTER == configuration.strategy) {
+            afterClusterCacheLoad();
+
+            Boolean masterFlag = hambombCacheProcessor.fightMaster();
+
+            createCacheLoaderContext(masterFlag);
+
+            if (!masterFlag) {
+                LOG.info("Application Server not was a Master Node,HambombCache is stopping.");
+                return;
+            }
+        }
+
         hambombCacheProcessor.startup();
 
     }
@@ -74,5 +102,64 @@ public class HambombCache implements ApplicationContextAware, InitializingBean {
         this.applicationContext = applicationContext;
     }
 
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 
+    private void afterClusterCacheLoad() {
+
+        zkClient = new ZkClient(configuration.zkUrl, 5000, 5000, new SerializableSerializer());
+        ClusterProcessor clusterProcessor = null;
+        try {
+            clusterProcessor = new ClusterProcessor(zkClient);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        registerBeanObject(ClusterProcessor.class, clusterProcessor);
+
+
+        hambombCacheProcessor = new HambombCacheProcessor(applicationContext, configuration, clusterProcessor);
+
+        registerBeanObject(HambombCacheProcessor.class, hambombCacheProcessor);
+
+    }
+
+    private void createCacheLoaderContext(Boolean masterFlag) {
+
+        CacheLoaderContext cacheLoaderContext;
+
+        if (masterFlag) {
+            cacheLoaderContext = CacheLoaderContext.createMasterContext(zkClient);
+        } else {
+            cacheLoaderContext = CacheLoaderContext.createSlaveContext(zkClient);
+
+        }
+
+        CacheLoadInterruptedEvent event = new CacheLoadInterruptedEvent("");
+        CacheLoadInterruptedListener listener = new CacheLoadInterruptedListener(zkClient, hambombCacheProcessor);
+        cacheLoaderContext.multicaster.addListener(event, listener);
+        registerBeanObject(CacheLoaderContext.class, cacheLoaderContext);
+
+    }
+
+    private void registerBeanObject(Class<?> clazz, Object object) {
+
+        DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) beanFactory;
+
+        defaultListableBeanFactory.registerSingleton(toBeanName(clazz), object);
+
+    }
+
+    private String toBeanName(Class<?> clazz) {
+
+        String beanName = clazz.getSimpleName();
+
+        String f = beanName.substring(0, 1);
+        String s = beanName.substring(1, beanName.length());
+
+        return f.toLowerCase() + s;
+    }
 }

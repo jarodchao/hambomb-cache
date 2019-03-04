@@ -60,7 +60,19 @@ public class HambombCacheProcessor {
 
     private ClusterProcessor clusterProcessor;
 
+    public HambombCacheProcessor(ApplicationContext applicationContext, Configuration configuration, ClusterProcessor clusterProcessor) {
+        this.applicationContext = applicationContext;
+        this.configuration = configuration;
+        this.clusterProcessor = clusterProcessor;
+    }
+
     public void startup() {
+
+        startLoader();
+
+    }
+
+    public Boolean fightMaster() {
 
         Boolean masterFlag = false;
 
@@ -74,12 +86,7 @@ public class HambombCacheProcessor {
 
         }
 
-        if (!masterFlag) {
-            LOG.info("Application Server not was a Master Node,HambombCache is stopping.");
-            return;
-        }
-
-        startLoader();
+        return masterFlag;
 
     }
 

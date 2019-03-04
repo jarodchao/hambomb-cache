@@ -15,7 +15,11 @@
  */
 package org.hambomb.cache.cluster.listener;
 
+import org.I0Itec.zkclient.ZkClient;
+import org.hambomb.cache.HambombCacheProcessor;
 import org.hambomb.cache.cluster.event.CacheLoaderEvent;
+import org.hambomb.cache.cluster.node.CacheMasterLoaderData;
+import org.hambomb.cache.cluster.node.ClusterRoot;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -23,9 +27,24 @@ import org.hambomb.cache.cluster.event.CacheLoaderEvent;
  */
 public class CacheLoadInterruptedListener  implements CacheLoaderEventListener {
 
+    private ZkClient zkClient;
+
+    private HambombCacheProcessor processor;
+
+    public CacheLoadInterruptedListener(ZkClient zkClient, HambombCacheProcessor processor) {
+        this.zkClient = zkClient;
+        this.processor = processor;
+    }
 
     @Override
     public void onApplicationEvent(CacheLoaderEvent event) {
-        
+
+        if (zkClient.exists(ClusterRoot.getMasterData())) {
+            CacheMasterLoaderData data = zkClient.readData(ClusterRoot.getMasterData());
+
+            if (data.getFlag() == CacheMasterLoaderData.UNFINISH_FLAG) {
+                processor.restart();
+            }
+        }
     }
 }

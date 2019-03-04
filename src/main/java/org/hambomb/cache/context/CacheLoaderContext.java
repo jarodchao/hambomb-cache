@@ -16,6 +16,8 @@
 package org.hambomb.cache.context;
 
 import org.I0Itec.zkclient.IZkDataListener;
+import org.I0Itec.zkclient.ZkClient;
+import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.hambomb.cache.cluster.event.CacheLoaderEventMulticaster;
 import org.hambomb.cache.cluster.listener.CacheMasterListener;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
@@ -38,30 +40,28 @@ public class CacheLoaderContext {
 
     public CacheLoaderEventMulticaster multicaster;
 
+    public ZkClient zkClient;
 
-    public static CacheLoaderContext createMasterContext() {
+
+    public static CacheLoaderContext createMasterContext(ZkClient zkClient) {
         CacheLoaderContext context = new CacheLoaderContext();
 
         context.masterFlag = true;
         context.master = new CacheLoaderMaster();
-
+        context.zkClient = zkClient;
         return context;
     }
 
-    public static CacheLoaderContext createSlaveContext() {
+    public static CacheLoaderContext createSlaveContext(ZkClient zkClient) {
         CacheLoaderContext context = new CacheLoaderContext();
 
         context.slave = new CacheLoaderSlave();
         CacheLoaderEventMulticaster multicaster = new CacheLoaderEventMulticaster();
         context.cacheMasterListener = new CacheMasterListener(multicaster);
         context.multicaster = multicaster;
+        context.zkClient = zkClient;
         return context;
     }
-
-
-
-
-
 
 
 }
