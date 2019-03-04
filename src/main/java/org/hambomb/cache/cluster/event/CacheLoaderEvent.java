@@ -60,4 +60,9 @@ public class CacheLoaderEvent implements Serializable {
     public CacheLoaderEvent(String instanceId) {
         this.instanceId = instanceId;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.getName().equals(((CacheLoaderEvent)obj).getName());
+    }
 }

@@ -18,14 +18,11 @@ package org.hambomb.cache.cluster.listener;
 import org.hambomb.cache.cluster.event.CacheLoaderEvent;
 
 /**
- * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-01
+ * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-04
  */
-public class CacheLoadInterruptedListener  implements CacheLoaderEventListener {
+public interface CacheLoaderEventListener {
 
 
-    @Override
-    public void onApplicationEvent(CacheLoaderEvent event) {
-        
-    }
+    void onApplicationEvent(CacheLoaderEvent event);
 }

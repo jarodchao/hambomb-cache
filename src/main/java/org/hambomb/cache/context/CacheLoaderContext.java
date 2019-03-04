@@ -15,6 +15,12 @@
  */
 package org.hambomb.cache.context;
 
+import org.I0Itec.zkclient.IZkDataListener;
+import org.hambomb.cache.cluster.event.CacheLoaderEventMulticaster;
+import org.hambomb.cache.cluster.listener.CacheMasterListener;
+import org.hambomb.cache.cluster.node.CacheLoaderMaster;
+import org.hambomb.cache.cluster.node.CacheLoaderSlave;
+
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-01
@@ -22,7 +28,40 @@ package org.hambomb.cache.context;
 public class CacheLoaderContext {
 
 
-    Boolean masterFlag = false;
+    public Boolean masterFlag = false;
+
+    public CacheLoaderMaster master;
+
+    public CacheLoaderSlave slave;
+
+    public IZkDataListener cacheMasterListener;
+
+    public CacheLoaderEventMulticaster multicaster;
+
+
+    public static CacheLoaderContext createMasterContext() {
+        CacheLoaderContext context = new CacheLoaderContext();
+
+        context.masterFlag = true;
+        context.master = new CacheLoaderMaster();
+
+        return context;
+    }
+
+    public static CacheLoaderContext createSlaveContext() {
+        CacheLoaderContext context = new CacheLoaderContext();
+
+        context.slave = new CacheLoaderSlave();
+        CacheLoaderEventMulticaster multicaster = new CacheLoaderEventMulticaster();
+        context.cacheMasterListener = new CacheMasterListener(multicaster);
+        context.multicaster = multicaster;
+        return context;
+    }
+
+
+
+
+
 
 
 }

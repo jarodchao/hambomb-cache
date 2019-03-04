@@ -17,22 +17,24 @@ package org.hambomb.cache.cluster.listener;
 
 import org.I0Itec.zkclient.IZkDataListener;
 import org.hambomb.cache.cluster.event.CacheLoadInterruptedEvent;
+import org.hambomb.cache.cluster.event.CacheLoaderEventMulticaster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-01
  */
-@Component
 public class CacheMasterListener implements IZkDataListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(CacheMasterListener.class);
 
-    ApplicationContext applicationContext;
+    CacheLoaderEventMulticaster multicaster;
 
+
+    public CacheMasterListener(CacheLoaderEventMulticaster multicaster) {
+        this.multicaster = multicaster;
+    }
 
     @Override
     public void handleDataChange(String dataPath, Object data) throws Exception {
@@ -47,6 +49,7 @@ public class CacheMasterListener implements IZkDataListener {
         CacheLoadInterruptedEvent event = new CacheLoadInterruptedEvent("Master was shutdown.");
 
 
-        applicationContext.publishEvent(event);
+        multicaster.publishEvent(event);
+
     }
 }

@@ -26,10 +26,20 @@ public class CacheLoaderSlave extends CacheLoaderServer {
 
     public static final String path = "/slaves";
 
+    private String slavePath;
+
     private LocalDateTime loadUpdateTime;
 
     public LocalDateTime getLoadUpdateTime() {
         return loadUpdateTime;
+    }
+
+    public String getSlavePath() {
+        return slavePath;
+    }
+
+    public void setSlavePath(String slavePath) {
+        this.slavePath = slavePath;
     }
 
     public void setLoadUpdateTime(LocalDateTime loadUpdateTime) {
