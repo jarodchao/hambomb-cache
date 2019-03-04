@@ -15,11 +15,14 @@
  */
 package org.hambomb.cache;
 
+import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.hambomb.cache.cluster.ClusterProcessor;
 import org.hambomb.cache.cluster.event.CacheLoadInterruptedEvent;
+import org.hambomb.cache.cluster.event.CacheLoaderEventMulticaster;
 import org.hambomb.cache.cluster.listener.CacheLoadInterruptedListener;
+import org.hambomb.cache.cluster.listener.CacheMasterListener;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
 import org.hambomb.cache.cluster.node.CacheLoaderSlave;
 import org.hambomb.cache.context.CacheLoaderContext;
@@ -72,6 +75,12 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
     BeanFactory beanFactory;
 
     ZkClient zkClient;
+
+    ClusterProcessor clusterProcessor;
+
+    CacheLoaderEventMulticaster multicaster;
+
+    IZkDataListener zkDataListener;
 
     private static final Logger LOG = LoggerFactory.getLogger(HambombCache.class);
 
@@ -137,16 +146,15 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
     private void afterClusterCacheLoad() {
 
         zkClient = new ZkClient(configuration.zkUrl, 5000, 5000, new SerializableSerializer());
-        ClusterProcessor clusterProcessor = null;
-        try {
-            clusterProcessor = new ClusterProcessor(zkClient);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        multicaster = new CacheLoaderEventMulticaster();
+        zkDataListener = new CacheMasterListener(multicaster);
+
+        clusterProcessor = null;
+        clusterProcessor = new ClusterProcessor(zkClient, zkDataListener);
 
 
         registerBeanObject(ClusterProcessor.class, clusterProcessor);
-
 
         hambombCacheProcessor = new HambombCacheProcessor(applicationContext, configuration, clusterProcessor);
 
@@ -165,7 +173,10 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
 
             CacheLoadInterruptedEvent event = new CacheLoadInterruptedEvent("");
             CacheLoadInterruptedListener listener = new CacheLoadInterruptedListener(zkClient, hambombCacheProcessor);
+            cacheLoaderContext.multicaster = multicaster;
             cacheLoaderContext.multicaster.addListener(event, listener);
+
+            registerBeanObject(CacheLoaderEventMulticaster.class, cacheLoaderContext.multicaster);
         }
 
         registerBeanObject(CacheLoaderContext.class, cacheLoaderContext);

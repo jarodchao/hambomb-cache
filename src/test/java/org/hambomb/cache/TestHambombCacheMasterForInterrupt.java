@@ -15,13 +15,9 @@
  */
 package org.hambomb.cache;
 
-import org.I0Itec.zkclient.ZkClient;
-import org.I0Itec.zkclient.serialize.SerializableSerializer;
-import org.hambomb.cache.cluster.ClusterProcessor;
-import org.hambomb.cache.cluster.HambombCacheConfigForSlave;
-import org.hambomb.cache.cluster.node.ClusterRoot;
+import org.hambomb.cache.cluster.HambombCacheConfigForMaster;
+import org.hambomb.cache.cluster.event.CacheLoadInterruptedEvent;
 import org.hambomb.cache.context.CacheLoaderContext;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,32 +30,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @date: 2019-02-27
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HambombCacheConfigForSlave.class})
-public class TestHambombCacheSlave {
+@ContextConfiguration(classes = {HambombCacheConfigForMaster.class})
+public class TestHambombCacheMasterForInterrupt {
 
     @Autowired
     private CacheLoaderContext cacheLoaderContext;
 
-    @Autowired
-    private ClusterProcessor clusterProcessor;
-
     @Test
     public void test_HambombCache_afterPropertiesSet() {
 
-        Assert.assertTrue("masterFlag not false",!cacheLoaderContext.masterFlag);
-        Assert.assertTrue("slave not null",cacheLoaderContext.slave != null);
-        Assert.assertTrue("multicaster is null",cacheLoaderContext.multicaster != null);
-        Assert.assertTrue("CacheMasterListener is null",clusterProcessor.getCacheMasterListener() != null);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
-        ZkClient zkClient = new ZkClient("localhost:2181", 5000, 5000, new SerializableSerializer());
-
-        if (zkClient.exists(ClusterRoot.getMasterPath())) {
-            zkClient.deleteRecursive(ClusterRoot.getMasterPath());
-        }
+        cacheLoaderContext.multicaster.publishEvent(new CacheLoadInterruptedEvent("test"));
 
     }
 }

@@ -21,6 +21,7 @@ import org.hambomb.cache.cluster.node.CacheLoaderMaster;
 import org.hambomb.cache.cluster.node.CacheLoaderSlave;
 import org.hambomb.cache.cluster.node.CacheMasterLoaderData;
 import org.hambomb.cache.cluster.node.ClusterRoot;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
@@ -32,10 +33,20 @@ public class ClusterProcessor {
 
     public ZkClient zkClient;
 
-    private IZkDataListener cacheMasterListener;
+
+    public IZkDataListener cacheMasterListener;
 
     public ClusterProcessor(ZkClient zkClient) throws IOException {
         this.zkClient = zkClient;
+    }
+
+    public ClusterProcessor(ZkClient zkClient, IZkDataListener cacheMasterListener) {
+        this.zkClient = zkClient;
+        this.cacheMasterListener = cacheMasterListener;
+    }
+
+    public IZkDataListener getCacheMasterListener() {
+        return cacheMasterListener;
     }
 
     public Boolean initNodes() {

@@ -16,6 +16,7 @@
 package org.hambomb.cache;
 
 import org.hambomb.cache.cluster.HambombCacheConfigForMaster;
+import org.hambomb.cache.context.CacheLoaderContext;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,12 +33,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class TestHambombCacheMaster {
 
     @Autowired
-    private HambombCacheProcessor hambombCacheProcessor;
+    private CacheLoaderContext cacheLoaderContext;
 
     @Test
     public void test_HambombCache_afterPropertiesSet() {
 
-        Assert.assertNotNull("hambombCacheProcessor is null",hambombCacheProcessor);
+        Assert.assertTrue("masterFlag not true",cacheLoaderContext.masterFlag);
+        Assert.assertTrue("slave not null",cacheLoaderContext.master != null);
 
     }
 }
