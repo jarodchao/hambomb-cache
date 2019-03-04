@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ComponentScan(basePackages = {"org.hambomb.cache"})
-public class HambombCacheConfig {
+public class HambombCacheConfigForMaster {
 
 
     @Bean

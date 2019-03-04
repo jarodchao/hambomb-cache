@@ -17,12 +17,10 @@ package org.hambomb.cache.cluster;
 
 import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
-import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
+import org.hambomb.cache.cluster.node.CacheLoaderSlave;
 import org.hambomb.cache.cluster.node.CacheMasterLoaderData;
 import org.hambomb.cache.cluster.node.ClusterRoot;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -50,20 +48,28 @@ public class ClusterProcessor {
             zkClient.createPersistent(ClusterRoot.getDataPath());
         }
 
+        if (!zkClient.exists(ClusterRoot.getSlavesPath())) {
+            zkClient.createPersistent(ClusterRoot.getSlavesPath());
+        }
+
         return true;
     }
 
-    public Boolean selectMasterLoader() {
+    public CacheLoaderMaster selectMasterLoader() {
 
         zkClient.subscribeDataChanges(ClusterRoot.getMasterPath(),cacheMasterListener);
 
-        if (!zkClient.exists(ClusterRoot.getMasterPath())) {
-            zkClient.createEphemeral(ClusterRoot.getMasterPath(),new CacheLoaderMaster());
+        CacheLoaderMaster master = null;
 
-            return true;
+        if (!zkClient.exists(ClusterRoot.getMasterPath())) {
+
+            master = new CacheLoaderMaster();
+            zkClient.createEphemeral(ClusterRoot.getMasterPath(),master);
+
+            return master;
         }
 
-        return false;
+        return master;
     }
 
     public void finishDataLoadNode() {
@@ -84,5 +90,16 @@ public class ClusterProcessor {
 
             zkClient.createPersistent(ClusterRoot.getMasterData(),cacheMasterLoaderData);
         }
+    }
+
+    public CacheLoaderSlave createSlaveNode() {
+        CacheLoaderSlave slave = new CacheLoaderSlave();
+
+        String slavePath = zkClient.createEphemeralSequential(ClusterRoot.getSlavePath(), slave);
+
+        slave.setSlavePath(slavePath);
+
+        return slave;
+
     }
 }

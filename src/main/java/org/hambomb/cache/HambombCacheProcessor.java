@@ -16,6 +16,9 @@
 package org.hambomb.cache;
 
 import org.hambomb.cache.cluster.ClusterProcessor;
+import org.hambomb.cache.cluster.node.CacheLoaderMaster;
+import org.hambomb.cache.cluster.node.CacheLoaderServer;
+import org.hambomb.cache.cluster.node.CacheLoaderSlave;
 import org.hambomb.cache.db.entity.CacheObjectMapper;
 import org.hambomb.cache.db.entity.Cachekey;
 import org.hambomb.cache.db.entity.EntityLoader;
@@ -72,9 +75,9 @@ public class HambombCacheProcessor {
 
     }
 
-    public Boolean fightMaster() {
+    public CacheLoaderMaster fightMaster() {
 
-        Boolean masterFlag = false;
+        CacheLoaderMaster masterFlag = null;
 
         if (Configuration.CacheServerStrategy.CLUSTER == configuration.strategy) {
 
@@ -94,15 +97,19 @@ public class HambombCacheProcessor {
 
         clusterProcessor.initNodes();
 
-        Boolean masterFlag = clusterProcessor.selectMasterLoader();
+        CacheLoaderMaster masterFlag = clusterProcessor.selectMasterLoader();
 
-        if (!masterFlag) {
+        if (masterFlag != null) {
             LOG.info("Application Server not was a Master Node,HambombCache is stopping.");
             return;
         }
 
         startLoader();
 
+    }
+
+    public CacheLoaderSlave createSlave() {
+        return clusterProcessor.createSlaveNode();
     }
 
 

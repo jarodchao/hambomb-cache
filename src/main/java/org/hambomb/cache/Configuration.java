@@ -30,7 +30,7 @@ public class Configuration {
 
     public String zkUrl;
 
-    public CacheServerStrategy strategy = CacheServerStrategy.CLUSTER;
+    public CacheServerStrategy strategy = CacheServerStrategy.STANDALONE;
 
     public DataLoadStrategy dataLoadStrategy = DataLoadStrategy.FULL;
 

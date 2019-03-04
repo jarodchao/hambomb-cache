@@ -61,7 +61,6 @@ public class IndexFactory {
 
     public String buildUniqueKey(String[] primaryIndexValues){
         uniqueKey = keyCombinedStrategy.toPrimaryKey(Lists.asList(loaderName, primaryIndexValues));
-        System.out.println("uniqueKey:" + uniqueKey);
         return uniqueKey;
     }
 
@@ -84,7 +83,6 @@ public class IndexFactory {
 
                 String key = keyCombinedStrategy.toKey(keys);
 
-                System.out.println("FindKeys:" + key);
                 lookup.put(key, key);
 
             });

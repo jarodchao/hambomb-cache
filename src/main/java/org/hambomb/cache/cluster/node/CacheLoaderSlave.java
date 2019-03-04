@@ -25,6 +25,7 @@ public class CacheLoaderSlave extends CacheLoaderServer {
 
 
     public static final String path = "/slaves";
+    public static final String subPath = "/slave";
 
     private String slavePath;
 

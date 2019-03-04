@@ -18,10 +18,13 @@ package org.hambomb.cache.context;
 import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.serialize.SerializableSerializer;
+import org.hambomb.cache.HambombCache;
 import org.hambomb.cache.cluster.event.CacheLoaderEventMulticaster;
 import org.hambomb.cache.cluster.listener.CacheMasterListener;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
 import org.hambomb.cache.cluster.node.CacheLoaderSlave;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -42,8 +45,12 @@ public class CacheLoaderContext {
 
     public ZkClient zkClient;
 
+    private static final Logger LOG = LoggerFactory.getLogger(CacheLoaderContext.class);
+
 
     public static CacheLoaderContext createMasterContext(ZkClient zkClient) {
+
+        LOG.info("==============================Build master context is starting ");
         CacheLoaderContext context = new CacheLoaderContext();
 
         context.masterFlag = true;
@@ -53,6 +60,9 @@ public class CacheLoaderContext {
     }
 
     public static CacheLoaderContext createSlaveContext(ZkClient zkClient) {
+
+        LOG.info("==============================Build slave context is starting ");
+
         CacheLoaderContext context = new CacheLoaderContext();
 
         context.slave = new CacheLoaderSlave();

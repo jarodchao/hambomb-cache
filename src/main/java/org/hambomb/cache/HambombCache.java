@@ -20,6 +20,8 @@ import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.hambomb.cache.cluster.ClusterProcessor;
 import org.hambomb.cache.cluster.event.CacheLoadInterruptedEvent;
 import org.hambomb.cache.cluster.listener.CacheLoadInterruptedListener;
+import org.hambomb.cache.cluster.node.CacheLoaderMaster;
+import org.hambomb.cache.cluster.node.CacheLoaderSlave;
 import org.hambomb.cache.context.CacheLoaderContext;
 import org.hambomb.cache.db.entity.CacheObjectMapper;
 import org.hambomb.cache.db.entity.Cachekey;
@@ -41,6 +43,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -81,6 +84,20 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
     public void afterPropertiesSet() throws Exception {
 
         LOG.info("HambombCache afterPropertiesSet");
+        if (StringUtils.isEmpty(configuration.scanPackageName)) {
+            LOG.error("Configuration's  scanPackageName is null.");
+        }
+
+        if (Configuration.CacheServerStrategy.CLUSTER == configuration.strategy) {
+            if (StringUtils.isEmpty(configuration.zkUrl)) {
+                LOG.error("Configuration's  zkUrl is null.");
+            }
+        }
+
+        if (configuration.keyCombinedStrategy == null) {
+            LOG.error("Configuration's keyCombinedStrategy is null.");
+        }
+
     }
 
     @Override
@@ -97,14 +114,21 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
         if (Configuration.CacheServerStrategy.CLUSTER == configuration.strategy) {
             afterClusterCacheLoad();
 
-            Boolean masterFlag = hambombCacheProcessor.fightMaster();
+            CacheLoaderMaster masterFlag = hambombCacheProcessor.fightMaster();
 
-            createCacheLoaderContext(masterFlag);
+            CacheLoaderContext cacheLoaderContext = createCacheLoaderContext(masterFlag == null ? false : true);
 
-            if (!masterFlag) {
+            if (masterFlag == null) {
                 LOG.info("Application Server not was a Master Node,HambombCache is stopping.");
+
+                cacheLoaderContext.slave = hambombCacheProcessor.createSlave();
+
                 return;
+            } else {
+                cacheLoaderContext.master = masterFlag;
             }
+
+
         }
 
         hambombCacheProcessor.startup();
@@ -130,7 +154,7 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
 
     }
 
-    private void createCacheLoaderContext(Boolean masterFlag) {
+    private CacheLoaderContext createCacheLoaderContext(Boolean masterFlag) {
 
         CacheLoaderContext cacheLoaderContext;
 
@@ -145,6 +169,8 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
         }
 
         registerBeanObject(CacheLoaderContext.class, cacheLoaderContext);
+
+        return cacheLoaderContext;
 
     }
 

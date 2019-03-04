@@ -15,7 +15,7 @@
  */
 package org.hambomb.cache;
 
-import org.hambomb.cache.cluster.HambombCacheConfig;
+import org.hambomb.cache.cluster.HambombCacheConfigForMaster;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,8 +28,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @date: 2019-02-27
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HambombCacheConfig.class})
-public class TestHambombCache {
+@ContextConfiguration(classes = {HambombCacheConfigForMaster.class})
+public class TestHambombCacheMaster {
 
     @Autowired
     private HambombCacheProcessor hambombCacheProcessor;
