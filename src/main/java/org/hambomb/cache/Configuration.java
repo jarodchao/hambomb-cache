@@ -26,29 +26,34 @@ import sun.security.krb5.Config;
  */
 public class Configuration {
 
-    String scanPackageName;
+    public String scanPackageName;
 
-    String zkUrl;
+    public String zkUrl;
 
-    CacheServerStrategy strategy = CacheServerStrategy.CLUSTER;
+    public CacheServerStrategy strategy = CacheServerStrategy.CLUSTER;
 
-    DataLoadStrategy dataLoadStrategy = DataLoadStrategy.FULL;
+    public DataLoadStrategy dataLoadStrategy = DataLoadStrategy.FULL;
 
-    KeyCombinedStrategy keyCombinedStrategy;
+    public KeyCombinedStrategy keyCombinedStrategy;
 
-    CacheHandler handler;
+    public CacheHandler handler;
 
-    Configuration addZKUrl(String zkUrl) {
+    public Configuration addCacheServerStrategy(CacheServerStrategy cacheServerStrategy) {
+        this.strategy = cacheServerStrategy;
+        return this;
+    }
+
+    public Configuration addZKUrl(String zkUrl) {
         this.zkUrl = zkUrl;
         return this;
     }
 
-    Configuration addScanPackageName(String scanPackageName) {
+    public Configuration addScanPackageName(String scanPackageName) {
         this.scanPackageName = scanPackageName;
         return this;
     }
 
-    Configuration addKeyCombinedStrategy(KeyCombinedStrategy keyCombinedStrategy) {
+    public Configuration addKeyCombinedStrategy(KeyCombinedStrategy keyCombinedStrategy) {
         this.keyCombinedStrategy = keyCombinedStrategy;
         return this;
     }
@@ -58,7 +63,7 @@ public class Configuration {
         return this;
     }
 
-    enum CacheServerStrategy {
+    public enum CacheServerStrategy {
 
         STANDALONE,CLUSTER;
     }

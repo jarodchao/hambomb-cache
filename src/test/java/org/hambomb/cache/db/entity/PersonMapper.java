@@ -16,6 +16,8 @@
 package org.hambomb.cache.db.entity;
 
 
+import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +25,7 @@ import java.util.List;
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
+@Component
 public class PersonMapper implements CacheObjectMapper<Person> {
 
 

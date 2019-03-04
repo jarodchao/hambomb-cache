@@ -80,6 +80,20 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
     @Override
     public void afterPropertiesSet() throws Exception {
 
+        LOG.info("HambombCache afterPropertiesSet");
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        LOG.info("HambombCache setApplicationContext");
+        this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        LOG.info("HambombCache postProcessBeanFactory");
+        this.beanFactory = beanFactory;
+
         if (Configuration.CacheServerStrategy.CLUSTER == configuration.strategy) {
             afterClusterCacheLoad();
 
@@ -94,17 +108,6 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
         }
 
         hambombCacheProcessor.startup();
-
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
     }
 
     private void afterClusterCacheLoad() {
@@ -136,11 +139,11 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
         } else {
             cacheLoaderContext = CacheLoaderContext.createSlaveContext(zkClient);
 
+            CacheLoadInterruptedEvent event = new CacheLoadInterruptedEvent("");
+            CacheLoadInterruptedListener listener = new CacheLoadInterruptedListener(zkClient, hambombCacheProcessor);
+            cacheLoaderContext.multicaster.addListener(event, listener);
         }
 
-        CacheLoadInterruptedEvent event = new CacheLoadInterruptedEvent("");
-        CacheLoadInterruptedListener listener = new CacheLoadInterruptedListener(zkClient, hambombCacheProcessor);
-        cacheLoaderContext.multicaster.addListener(event, listener);
         registerBeanObject(CacheLoaderContext.class, cacheLoaderContext);
 
     }

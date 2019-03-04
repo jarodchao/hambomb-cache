@@ -15,48 +15,29 @@
  */
 package org.hambomb.cache;
 
-import org.hambomb.cache.storage.RedisKeyCcombinedStrategy;
-import org.junit.Before;
+import org.hambomb.cache.cluster.HambombCacheConfig;
+import org.junit.Assert;
 import org.junit.Test;
-import org.raistlic.common.permutation.Permutation;
-
-import java.util.Arrays;
-import java.util.List;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-27
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {HambombCacheConfig.class})
 public class TestHambombCache {
 
-    Configuration configuration;
-
-    @Before
-    public void setUp() throws Exception {
-        configuration = new Configuration();
-        configuration.strategy = Configuration.CacheServerStrategy.CLUSTER;
-        configuration.addScanPackageName("org.hambomb.cache.db.entity");
-        configuration.addKeyCombinedStrategy(new RedisKeyCcombinedStrategy());
-    }
+    @Autowired
+    private HambombCacheProcessor hambombCacheProcessor;
 
     @Test
-    public void test_Process() throws Exception {
+    public void test_HambombCache_afterPropertiesSet() {
 
-        HambombCache processor = new HambombCache(configuration);
-        processor.afterPropertiesSet();
-    }
+        Assert.assertNotNull("hambombCacheProcessor is null",hambombCacheProcessor);
 
-    @Test
-    public void test_Combination() throws Exception {
-
-        List<String> findIndexValues = Arrays.asList("1", "15", "Tom");
-
-        for (int i = 1; i <= findIndexValues.size(); i++) {
-            Permutation.of(findIndexValues, i).forEach(indexes -> {
-
-                System.out.println("FindKeys:" + indexes);
-
-            });
-        }
     }
 }
