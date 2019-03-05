@@ -15,8 +15,10 @@
  */
 package org.hambomb.cache.db.entity;
 
+import org.hambomb.cache.handler.CacheHandler;
 import org.hambomb.cache.index.IndexFactory;
 import com.google.common.reflect.Reflection;
+import org.hambomb.cache.storage.KeyPermutationStrategy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,6 +42,8 @@ public class EntityLoader<T> {
     String entityClassName;
 
     String entityPackageName;
+
+    public CacheHandler cacheHandler;
 
     public IndexFactory indexFactory;
 
@@ -65,10 +69,30 @@ public class EntityLoader<T> {
         pkGetter = new ArrayList<>(indexFactory.primaryIndex.length);
         fkGetter = new ArrayList<>(indexFactory.indexKeys.length);
 
+        indexFactory.entityName = entityClassName;
+
+    }
+
+    public void loadData() {
+
+        loadEntities().stream().forEach(o -> {
+            getPkey(o);
+            getFKeys(o);
+
+            if (indexFactory.keyPermutationStrategy.equals(KeyPermutationStrategy.PERMUTATION)) {
+
+                cacheHandler.put(indexFactory.uniqueKey, o);
+
+                indexFactory.lookup.forEach((key, value) -> cacheHandler.put(key, indexFactory.uniqueKey));
+            } else {
+                indexFactory.lookup.forEach((key, value) -> cacheHandler.put(key, o));
+            }
+
+        });
     }
 
 
-    public List<T> loadEntities() {
+    private List<T> loadEntities() {
 
         AllCacheObjectHandler<T> handler = new AllCacheObjectHandler<>(cacheObjectMapper);
 
@@ -87,7 +111,7 @@ public class EntityLoader<T> {
         this.fkGetter.add(getter);
     }
 
-    public void getPkey(T t) {
+    private void getPkey(T t) {
 
         String[] pkValues = new String[pkGetter.size()];
 
@@ -99,7 +123,7 @@ public class EntityLoader<T> {
 
     }
 
-    public void getFKeys(T t) {
+    private void getFKeys(T t) {
 
         String[] fkValues = new String[fkGetter.size()];
 

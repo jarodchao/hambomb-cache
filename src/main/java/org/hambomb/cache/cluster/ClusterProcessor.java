@@ -21,7 +21,6 @@ import org.hambomb.cache.cluster.node.CacheLoaderMaster;
 import org.hambomb.cache.cluster.node.CacheLoaderSlave;
 import org.hambomb.cache.cluster.node.CacheMasterLoaderData;
 import org.hambomb.cache.cluster.node.ClusterRoot;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.Random;

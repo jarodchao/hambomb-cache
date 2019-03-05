@@ -22,12 +22,17 @@ package org.hambomb.cache.handler;
 public class RedisCacheHandler implements CacheHandler {
 
     @Override
-    public void put(Object key, Object value) {
+    public void put(String key, Object value) {
 
     }
 
     @Override
-    public Object get(Object key) {
+    public Object get(String key) {
         return null;
+    }
+
+    @Override
+    public void update(String key, Object value) {
+
     }
 }

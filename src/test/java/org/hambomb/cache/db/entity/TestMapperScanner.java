@@ -15,15 +15,12 @@
  */
 package org.hambomb.cache.db.entity;
 
-import com.google.common.base.Predicate;
 import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.index.IndexFactory;
-import org.hambomb.cache.storage.RedisKeyCcombinedStrategy;
+import org.hambomb.cache.storage.RedisKeyGeneratorStrategy;
 import org.junit.Test;
 import org.reflections.ReflectionUtils;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -70,7 +67,7 @@ public class TestMapperScanner {
             String[] pk = cachekey.primaryKeys();
             String[] fk = cachekey.findKeys();
 
-            IndexFactory indexFactory = IndexFactory.create("", pk, fk, new RedisKeyCcombinedStrategy());
+            IndexFactory indexFactory = IndexFactory.create("", pk, fk, new RedisKeyGeneratorStrategy());
             entityLoader.addIndexFactory(indexFactory);
 
             List<Method> pkGetter = new ArrayList<>(pk.length);

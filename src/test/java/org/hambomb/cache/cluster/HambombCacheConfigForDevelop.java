@@ -16,7 +16,6 @@
 package org.hambomb.cache.cluster;
 
 import org.hambomb.cache.HambombCache;
-import org.hambomb.cache.handler.LocalCacheHandler;
 import org.hambomb.cache.storage.RedisKeyGeneratorStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ComponentScan(basePackages = {"org.hambomb.cache"})
-public class HambombCacheConfigForMaster {
+public class HambombCacheConfigForDevelop {
 
 
     @Bean
@@ -36,11 +35,9 @@ public class HambombCacheConfigForMaster {
 
         org.hambomb.cache.Configuration configuration = new org.hambomb.cache.Configuration();
 
-        configuration.addCacheServerStrategy(org.hambomb.cache.Configuration.CacheServerStrategy.CLUSTER)
+        configuration.addCacheServerStrategy(org.hambomb.cache.Configuration.CacheServerStrategy.DEVELOP)
                 .addScanPackageName("org.hambomb.cache.db.entity")
-                .addKeyGeneratorStrategy(new RedisKeyGeneratorStrategy())
-                .addCacheHandler(new LocalCacheHandler())
-                .addZKUrl("localhost:2181");
+                .addKeyGeneratorStrategy(new RedisKeyGeneratorStrategy());
 
         HambombCache hambombCache = new HambombCache(configuration);
 

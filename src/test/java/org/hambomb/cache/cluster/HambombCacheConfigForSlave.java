@@ -19,8 +19,8 @@ import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.hambomb.cache.HambombCache;
 import org.hambomb.cache.cluster.node.ClusterRoot;
-import org.hambomb.cache.storage.RedisKeyCcombinedStrategy;
-import org.junit.Before;
+import org.hambomb.cache.handler.LocalCacheHandler;
+import org.hambomb.cache.storage.RedisKeyGeneratorStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +44,8 @@ public class HambombCacheConfigForSlave {
 
         configuration.addCacheServerStrategy(org.hambomb.cache.Configuration.CacheServerStrategy.CLUSTER)
                 .addScanPackageName("org.hambomb.cache.db.entity")
-                .addKeyCombinedStrategy(new RedisKeyCcombinedStrategy())
+                .addKeyGeneratorStrategy(new RedisKeyGeneratorStrategy())
+                .addCacheHandler(new LocalCacheHandler())
                 .addZKUrl("localhost:2181");
 
         HambombCache hambombCache = new HambombCache(configuration);

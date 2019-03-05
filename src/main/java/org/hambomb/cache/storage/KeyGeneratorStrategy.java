@@ -24,8 +24,7 @@ import java.util.Objects;
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public interface KeyCombinedStrategy {
-
+public interface KeyGeneratorStrategy {
 
     default String join(Iterable<String> iterable, String separator) {
 
@@ -66,6 +65,5 @@ public interface KeyCombinedStrategy {
     String toKey(List<String> keys);
 
     String toPrimaryKey(List<String> keys);
-
 
 }

@@ -15,19 +15,31 @@
  */
 package org.hambomb.cache.handler;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @date: 2019-03-05
  */
 public class LocalCacheHandler implements CacheHandler {
 
-    @Override
-    public void put(Object key, Object value) {
+    private Cache<String, Object> cache = CacheBuilder.newBuilder().build();
 
+    @Override
+
+    public void put(String key, Object value) {
+
+        cache.put(key, value);
     }
 
     @Override
-    public Object get(Object key) {
-        return null;
+    public Object get(String key) {
+        return cache.getIfPresent(key);
+    }
+
+    @Override
+    public void update(String key, Object value) {
+        cache.put(key, value);
     }
 }

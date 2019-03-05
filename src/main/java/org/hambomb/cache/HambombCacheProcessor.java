@@ -17,7 +17,6 @@ package org.hambomb.cache;
 
 import org.hambomb.cache.cluster.ClusterProcessor;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
-import org.hambomb.cache.cluster.node.CacheLoaderServer;
 import org.hambomb.cache.cluster.node.CacheLoaderSlave;
 import org.hambomb.cache.db.entity.CacheObjectMapper;
 import org.hambomb.cache.db.entity.Cachekey;
@@ -25,7 +24,6 @@ import org.hambomb.cache.db.entity.EntityLoader;
 import org.hambomb.cache.db.entity.MapperScanner;
 import org.hambomb.cache.handler.CacheHandler;
 import org.hambomb.cache.index.IndexFactory;
-import org.hambomb.cache.storage.RedisKeyCcombinedStrategy;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +73,15 @@ public class HambombCacheProcessor {
 
     }
 
+    public void addCacheHandler(CacheHandler cacheHandler) {
+        this.cacheHandler = cacheHandler;
+    }
+
     public CacheLoaderMaster fightMaster() {
 
         CacheLoaderMaster masterFlag = null;
 
-        if (Configuration.CacheServerStrategy.CLUSTER == configuration.strategy) {
+        if (Configuration.CacheServerStrategy.CLUSTER == configuration.cacheServerStrategy) {
 
             clusterProcessor.initNodes();
 
@@ -122,8 +124,8 @@ public class HambombCacheProcessor {
             mappers = scanner.scanMapper();
         }
 
-        if (configuration.handler != null) {
-            this.cacheHandler = configuration.handler;
+        if (configuration.cacheHandler != null) {
+            this.cacheHandler = configuration.cacheHandler;
         }
 
         List<EntityLoader> entityLoaders = buildLoaders(mappers);
@@ -131,15 +133,18 @@ public class HambombCacheProcessor {
         entityLoaderMap = new HashMap<>(entityLoaders.size());
 
         for (EntityLoader entityLoader : entityLoaders) {
-            entityLoader.loadEntities().stream().forEach(o -> {
-                entityLoader.getPkey(o);
-                entityLoader.getFKeys(o);
-            });
+
+            entityLoader.cacheHandler = cacheHandler;
+
+            entityLoader.loadData();
 
             entityLoaderMap.put(entityLoader.indexFactory.uniqueKey, entityLoader);
         }
 
-        clusterProcessor.finishDataLoadNode();
+        if (configuration.cacheServerStrategy.equals(Configuration.CacheServerStrategy.CLUSTER)) {
+
+            clusterProcessor.finishDataLoadNode();
+        }
     }
 
     private List<EntityLoader> buildLoaders(Set<Class<? extends CacheObjectMapper>> mappers) {
@@ -170,7 +175,9 @@ public class HambombCacheProcessor {
             String[] pk = cachekey.primaryKeys();
             String[] fk = cachekey.findKeys();
 
-            IndexFactory indexFactory = IndexFactory.create(mapper.getClass().getSimpleName(), pk, fk, new RedisKeyCcombinedStrategy());
+            IndexFactory indexFactory =
+                    IndexFactory.create(mapper.getClass().getSimpleName(), pk, fk, configuration.keyGeneratorStrategy);
+            indexFactory.keyPermutationStrategy = configuration.keyPermutationStrategy;
             entityLoader.addIndexFactory(indexFactory);
 
             entityLoader.initializeLoader();

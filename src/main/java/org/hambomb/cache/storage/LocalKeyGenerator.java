@@ -13,17 +13,26 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler;
+package org.hambomb.cache.storage;
+
+import java.util.List;
 
 /**
- * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-05
  */
-public interface CacheHandler {
+public class LocalKeyGenerator implements KeyGeneratorStrategy {
 
-    void put(String key, Object value);
+    public static final String DEFAULT_SEPARATOR = "-";
 
-    Object get(String key);
 
-    void update(String key, Object value);
+    @Override
+    public String toKey(List<String> keys) {
+        return join(keys, DEFAULT_SEPARATOR );
+    }
+
+    @Override
+    public String toPrimaryKey(List<String> keys) {
+        return join(keys, DEFAULT_SEPARATOR );
+    }
 }

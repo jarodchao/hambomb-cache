@@ -13,17 +13,14 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler;
+package org.hambomb.cache.storage;
 
 /**
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @date: 2019-03-05
  */
-public interface CacheHandler {
+public enum KeyPermutationStrategy {
 
-    void put(String key, Object value);
+    PERMUTATION,NONPERMUTATION;
 
-    Object get(String key);
-
-    void update(String key, Object value);
 }

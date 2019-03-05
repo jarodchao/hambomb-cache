@@ -16,8 +16,8 @@
 package org.hambomb.cache;
 
 import org.hambomb.cache.handler.CacheHandler;
-import org.hambomb.cache.storage.KeyCombinedStrategy;
-import sun.security.krb5.Config;
+import org.hambomb.cache.storage.KeyGeneratorStrategy;
+import org.hambomb.cache.storage.KeyPermutationStrategy;
 
 /**
  * Cache加载配置类
@@ -30,16 +30,18 @@ public class Configuration {
 
     public String zkUrl;
 
-    public CacheServerStrategy strategy = CacheServerStrategy.STANDALONE;
+    public CacheServerStrategy cacheServerStrategy = CacheServerStrategy.STANDALONE;
 
     public DataLoadStrategy dataLoadStrategy = DataLoadStrategy.FULL;
 
-    public KeyCombinedStrategy keyCombinedStrategy;
+    public KeyGeneratorStrategy keyGeneratorStrategy;
 
-    public CacheHandler handler;
+    public KeyPermutationStrategy keyPermutationStrategy = KeyPermutationStrategy.NONPERMUTATION;
+
+    public CacheHandler cacheHandler;
 
     public Configuration addCacheServerStrategy(CacheServerStrategy cacheServerStrategy) {
-        this.strategy = cacheServerStrategy;
+        this.cacheServerStrategy = cacheServerStrategy;
         return this;
     }
 
@@ -53,19 +55,19 @@ public class Configuration {
         return this;
     }
 
-    public Configuration addKeyCombinedStrategy(KeyCombinedStrategy keyCombinedStrategy) {
-        this.keyCombinedStrategy = keyCombinedStrategy;
+    public Configuration addKeyGeneratorStrategy(KeyGeneratorStrategy keyGeneratorStrategy) {
+        this.keyGeneratorStrategy = keyGeneratorStrategy;
         return this;
     }
 
-    Configuration addHandler(CacheHandler cacheHandler) {
-        this.handler = handler;
+    public Configuration addCacheHandler(CacheHandler cacheHandler) {
+        this.cacheHandler = cacheHandler;
         return this;
     }
 
     public enum CacheServerStrategy {
 
-        STANDALONE,CLUSTER;
+        STANDALONE,CLUSTER,DEVELOP;
     }
 
     enum DataLoadStrategy {

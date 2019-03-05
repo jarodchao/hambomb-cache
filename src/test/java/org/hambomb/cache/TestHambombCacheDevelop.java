@@ -13,17 +13,24 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler;
+package org.hambomb.cache;
+
+import org.hambomb.cache.cluster.HambombCacheConfigForDevelop;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-05
  */
-public interface CacheHandler {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {HambombCacheConfigForDevelop.class})
+public class TestHambombCacheDevelop {
 
-    void put(String key, Object value);
-
-    Object get(String key);
-
-    void update(String key, Object value);
+    @Test
+    public void test() {
+        System.out.println("test was done");
+    }
 }

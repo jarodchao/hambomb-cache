@@ -15,9 +15,9 @@
  */
 package org.hambomb.cache.index;
 
-import org.hambomb.cache.storage.KeyCombinedStrategy;
+import org.hambomb.cache.storage.KeyGeneratorStrategy;
 import com.google.common.collect.Lists;
-import org.raistlic.common.permutation.Combination;
+import org.hambomb.cache.storage.KeyPermutationStrategy;
 import org.raistlic.common.permutation.Permutation;
 
 import java.util.Arrays;
@@ -33,34 +33,38 @@ public class IndexFactory {
 
     String loaderName;
 
+    public String entityName;
+
     public String[] primaryIndex;
 
     public String[] indexKeys;
 
     public String uniqueKey;
 
-    public Map<Object, Object> lookup;
+    public Map<String, Object> lookup;
 
-    public KeyCombinedStrategy keyCombinedStrategy;
+    public KeyGeneratorStrategy keyGeneratorStrategy;
+
+    public KeyPermutationStrategy keyPermutationStrategy;
 
 
     public static IndexFactory create(String loaderName, String[] primaryIndex, String[] indexKeys,
-                                      KeyCombinedStrategy keyCombinedStrategy) {
+                                      KeyGeneratorStrategy keyGeneratorStrategy) {
 
-        return new IndexFactory(loaderName, primaryIndex, indexKeys, keyCombinedStrategy);
+        return new IndexFactory(loaderName, primaryIndex, indexKeys, keyGeneratorStrategy);
     }
 
 
-    public IndexFactory(String loaderName, String[] primaryIndex, String[] indexKeys, KeyCombinedStrategy keyCombinedStrategy) {
+    public IndexFactory(String loaderName, String[] primaryIndex, String[] indexKeys, KeyGeneratorStrategy keyGeneratorStrategy) {
         this.loaderName = loaderName;
         this.primaryIndex = primaryIndex;
         this.indexKeys = indexKeys;
-        this.keyCombinedStrategy = keyCombinedStrategy;
+        this.keyGeneratorStrategy = keyGeneratorStrategy;
 
     }
 
     public String buildUniqueKey(String[] primaryIndexValues){
-        uniqueKey = keyCombinedStrategy.toPrimaryKey(Lists.asList(loaderName, primaryIndexValues));
+        uniqueKey = keyGeneratorStrategy.toPrimaryKey(Lists.asList(entityName, primaryIndexValues));
         return uniqueKey;
     }
 
@@ -74,18 +78,27 @@ public class IndexFactory {
             lookup.put(findIndexValues[0], findIndexValues[0]);
         }
 
-        for (int i = 1; i <= size ; i++) {
+        if (keyPermutationStrategy.equals(KeyPermutationStrategy.PERMUTATION)) {
 
-            Permutation.of(Arrays.asList(findIndexValues), size).forEach(indexes -> {
+            for (int i = 1; i <= size; i++) {
 
-                List<String> keys = Lists.newArrayList(loaderName);
-                keys.addAll(indexes);
+                Permutation.of(Arrays.asList(findIndexValues), size).forEach(indexes -> {
 
-                String key = keyCombinedStrategy.toKey(keys);
+                    List<String> keys = Lists.newArrayList(entityName);
+                    keys.addAll(indexes);
 
-                lookup.put(key, key);
+                    String key = keyGeneratorStrategy.toKey(keys);
 
-            });
+                    lookup.put(key, key);
+
+                });
+            }
+        } else {
+            List<String> keys = Lists.newArrayList(entityName);
+            keys.addAll(Arrays.asList(findIndexValues));
+            String key = keyGeneratorStrategy.toKey(keys);
+
+            lookup.put(key, key);
         }
 
     }

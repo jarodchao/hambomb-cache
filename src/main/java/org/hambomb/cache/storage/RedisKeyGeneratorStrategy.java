@@ -21,7 +21,7 @@ import java.util.List;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public class RedisKeyCcombinedStrategy implements KeyCombinedStrategy {
+public class RedisKeyGeneratorStrategy implements KeyGeneratorStrategy {
 
     public static final String DEFAULT_SEPARATOR = ":";
     public static final String DEFAULT_P_SEPARATOR = "-";
@@ -30,10 +30,10 @@ public class RedisKeyCcombinedStrategy implements KeyCombinedStrategy {
     String separator;
     String pSeparator;
 
-    public RedisKeyCcombinedStrategy() {
+    public RedisKeyGeneratorStrategy() {
     }
 
-    public RedisKeyCcombinedStrategy(String separator) {
+    public RedisKeyGeneratorStrategy(String separator) {
         this.separator = separator;
     }
 

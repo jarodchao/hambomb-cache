@@ -16,14 +16,23 @@
 package org.hambomb.cache.handler;
 
 /**
- * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
+ * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public interface CacheHandler {
+public class StandaloneCacheHandler implements CacheHandler {
 
-    void put(String key, Object value);
+    @Override
+    public void put(String key, Object value) {
 
-    Object get(String key);
+    }
 
-    void update(String key, Object value);
+    @Override
+    public Object get(String key) {
+        return null;
+    }
+
+    @Override
+    public void update(String key, Object value) {
+
+    }
 }
