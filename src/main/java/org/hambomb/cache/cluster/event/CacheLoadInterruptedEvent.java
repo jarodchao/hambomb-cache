@@ -15,8 +15,6 @@
  */
 package org.hambomb.cache.cluster.event;
 
-import java.time.LocalDateTime;
-
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-01
@@ -30,8 +28,6 @@ public class CacheLoadInterruptedEvent extends CacheLoaderEvent {
 
 
     public CacheLoadInterruptedEvent(String instanceId) {
-        super(instanceId);
         this.setName(EVENT_NAME);
-        this.setEventTime(LocalDateTime.now());
     }
 }

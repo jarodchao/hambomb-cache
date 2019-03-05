@@ -24,6 +24,8 @@ import org.hambomb.cache.cluster.node.ClusterRoot;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -66,16 +68,28 @@ public class ClusterProcessor {
         return true;
     }
 
-    public CacheLoaderMaster selectMasterLoader() {
+    public CacheLoaderMaster selectMasterLoader(boolean firstMaster)  {
 
-        zkClient.subscribeDataChanges(ClusterRoot.getMasterPath(),cacheMasterListener);
+        if (firstMaster) {
+
+            zkClient.subscribeDataChanges(ClusterRoot.getMasterPath(), cacheMasterListener);
+        }else {
+            Random random = new Random();
+            int sleepTime = random.nextInt(5000);
+
+            try {
+                TimeUnit.MILLISECONDS.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
         CacheLoaderMaster master = null;
 
         if (!zkClient.exists(ClusterRoot.getMasterPath())) {
 
             master = new CacheLoaderMaster();
-            zkClient.createEphemeral(ClusterRoot.getMasterPath(),master);
+            zkClient.createEphemeral(ClusterRoot.getMasterPath(), master);
 
             return master;
         }

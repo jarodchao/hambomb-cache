@@ -42,7 +42,7 @@ public class CacheLoadInterruptedListener  implements CacheLoaderEventListener {
         if (zkClient.exists(ClusterRoot.getMasterData())) {
             CacheMasterLoaderData data = zkClient.readData(ClusterRoot.getMasterData());
 
-            if (data.getFlag() == CacheMasterLoaderData.UNFINISH_FLAG) {
+            if (data.getFlag().equals(CacheMasterLoaderData.UNFINISH_FLAG)) {
                 processor.restart();
             }
         }

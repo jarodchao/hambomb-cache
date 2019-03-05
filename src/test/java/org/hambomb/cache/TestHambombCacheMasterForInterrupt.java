@@ -16,7 +16,10 @@
 package org.hambomb.cache;
 
 import org.hambomb.cache.cluster.HambombCacheConfigForMaster;
+import org.hambomb.cache.cluster.HambombCacheConfigForSlave;
 import org.hambomb.cache.cluster.event.CacheLoadInterruptedEvent;
+import org.hambomb.cache.cluster.node.CacheMasterLoaderData;
+import org.hambomb.cache.cluster.node.ClusterRoot;
 import org.hambomb.cache.context.CacheLoaderContext;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,7 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @date: 2019-02-27
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HambombCacheConfigForMaster.class})
+@ContextConfiguration(classes = {HambombCacheConfigForSlave.class})
 public class TestHambombCacheMasterForInterrupt {
 
     @Autowired
@@ -39,7 +42,13 @@ public class TestHambombCacheMasterForInterrupt {
     @Test
     public void test_HambombCache_afterPropertiesSet() {
 
+        CacheMasterLoaderData data = cacheLoaderContext.zkClient.readData(ClusterRoot.getMasterData());
+        data.setFlag(CacheMasterLoaderData.UNFINISH_FLAG);
+        cacheLoaderContext.zkClient.writeData(ClusterRoot.getMasterData(), data);
+        cacheLoaderContext.zkClient.delete(ClusterRoot.getMasterPath());
         cacheLoaderContext.multicaster.publishEvent(new CacheLoadInterruptedEvent("test"));
+
+
 
     }
 }

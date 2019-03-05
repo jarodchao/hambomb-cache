@@ -48,7 +48,7 @@ public class CacheLoaderEventMulticaster {
 
     public void publishEvent(CacheLoaderEvent event) {
 
-
+        listeners.get(event).stream().forEach(listener -> listener.onApplicationEvent(event));
 
     }
 

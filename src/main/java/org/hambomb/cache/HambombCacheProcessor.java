@@ -83,7 +83,7 @@ public class HambombCacheProcessor {
 
             clusterProcessor.initNodes();
 
-            masterFlag = clusterProcessor.selectMasterLoader();
+            masterFlag = clusterProcessor.selectMasterLoader(true);
 
             clusterProcessor.initDataLoadNode();
 
@@ -97,9 +97,9 @@ public class HambombCacheProcessor {
 
         clusterProcessor.initNodes();
 
-        CacheLoaderMaster masterFlag = clusterProcessor.selectMasterLoader();
+        CacheLoaderMaster masterFlag = clusterProcessor.selectMasterLoader(false);
 
-        if (masterFlag != null) {
+        if (masterFlag == null) {
             LOG.info("Application Server not was a Master Node,HambombCache is stopping.");
             return;
         }

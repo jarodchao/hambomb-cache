@@ -29,10 +29,6 @@ public class CacheLoaderEvent implements Serializable {
 
     private String name;
 
-    private LocalDateTime eventTime;
-
-    private String instanceId;
-
     public String getName() {
         return name;
     }
@@ -41,28 +37,13 @@ public class CacheLoaderEvent implements Serializable {
         this.name = name;
     }
 
-    public LocalDateTime getEventTime() {
-        return eventTime;
-    }
-
-    public void setEventTime(LocalDateTime eventTime) {
-        this.eventTime = eventTime;
-    }
-
-    public String getInstanceId() {
-        return instanceId;
-    }
-
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
-    }
-
-    public CacheLoaderEvent(String instanceId) {
-        this.instanceId = instanceId;
-    }
-
     @Override
     public boolean equals(Object obj) {
         return this.getName().equals(((CacheLoaderEvent)obj).getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode() * 36;
     }
 }
