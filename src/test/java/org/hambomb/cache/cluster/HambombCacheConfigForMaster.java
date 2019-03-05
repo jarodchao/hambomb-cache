@@ -21,12 +21,14 @@ import org.hambomb.cache.storage.RedisKeyGeneratorStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-04
  */
 @Configuration
+@EnableAspectJAutoProxy
 @ComponentScan(basePackages = {"org.hambomb.cache"})
 public class HambombCacheConfigForMaster {
 

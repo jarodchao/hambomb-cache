@@ -148,6 +148,8 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
 
         hambombCacheProcessor.addCacheHandler(configuration.cacheHandler);
 
+        registerBeanObject(configuration.cacheHandler.getClass(), configuration.cacheHandler);
+
     }
 
     private void afterClusterCacheLoad() {

@@ -17,6 +17,7 @@ package org.hambomb.cache;
 
 import org.hambomb.cache.cluster.HambombCacheConfigForMaster;
 import org.hambomb.cache.context.CacheLoaderContext;
+import org.hambomb.cache.db.entity.PersonService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,11 +36,20 @@ public class TestHambombCacheMaster {
     @Autowired
     private CacheLoaderContext cacheLoaderContext;
 
+    @Autowired
+    private PersonService personService;
+
     @Test
     public void test_HambombCache_afterPropertiesSet() {
 
         Assert.assertTrue("masterFlag not true",cacheLoaderContext.masterFlag);
         Assert.assertTrue("slave not null",cacheLoaderContext.master != null);
 
+    }
+
+    @Test
+    public void test_getPerson() {
+
+        personService.getPerson("mike", 10, "男");
     }
 }
