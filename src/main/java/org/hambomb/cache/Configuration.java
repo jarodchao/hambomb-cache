@@ -16,6 +16,7 @@
 package org.hambomb.cache;
 
 import org.hambomb.cache.handler.CacheHandler;
+import org.hambomb.cache.handler.LocalCacheHandler;
 import org.hambomb.cache.storage.KeyGeneratorStrategy;
 import org.hambomb.cache.storage.KeyPermutationStrategy;
 
@@ -38,7 +39,7 @@ public class Configuration {
 
     public KeyPermutationStrategy keyPermutationStrategy = KeyPermutationStrategy.NONPERMUTATION;
 
-    public CacheHandler cacheHandler;
+    public CacheHandler cacheHandler = new LocalCacheHandler();
 
     public Configuration addCacheServerStrategy(CacheServerStrategy cacheServerStrategy) {
         this.cacheServerStrategy = cacheServerStrategy;

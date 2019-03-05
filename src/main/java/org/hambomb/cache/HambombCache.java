@@ -35,16 +35,18 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.*;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.StringUtils;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public class HambombCache implements ApplicationContextAware, InitializingBean, BeanFactoryPostProcessor {
+public class HambombCache implements ApplicationContextAware, InitializingBean, BeanFactoryPostProcessor, ApplicationListener<ContextRefreshedEvent> {
 
 
     ApplicationContext applicationContext;
@@ -107,10 +109,10 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
     }
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
+    public void onApplicationEvent(ContextRefreshedEvent event) {
 
         if (Configuration.CacheServerStrategy.CLUSTER.equals(configuration.cacheServerStrategy)) {
+
             afterClusterCacheLoad();
 
             CacheLoaderMaster masterFlag = hambombCacheProcessor.fightMaster();
@@ -137,18 +139,14 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
         hambombCacheProcessor.startup();
     }
 
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
+
     private void createCacheHandler() {
 
-        CacheHandler cacheHandler;
-
-        if (Configuration.CacheServerStrategy.DEVELOP.equals(configuration.cacheServerStrategy)) {
-            cacheHandler = new LocalCacheHandler();
-
-        } else {
-            cacheHandler = configuration.cacheHandler;
-        }
-
-        hambombCacheProcessor.addCacheHandler(cacheHandler);
+        hambombCacheProcessor.addCacheHandler(configuration.cacheHandler);
 
     }
 

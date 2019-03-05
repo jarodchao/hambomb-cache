@@ -124,10 +124,6 @@ public class HambombCacheProcessor {
             mappers = scanner.scanMapper();
         }
 
-        if (configuration.cacheHandler != null) {
-            this.cacheHandler = configuration.cacheHandler;
-        }
-
         List<EntityLoader> entityLoaders = buildLoaders(mappers);
 
         entityLoaderMap = new HashMap<>(entityLoaders.size());
