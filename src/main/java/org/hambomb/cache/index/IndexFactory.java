@@ -17,7 +17,8 @@ package org.hambomb.cache.index;
 
 import org.hambomb.cache.storage.KeyGeneratorStrategy;
 import com.google.common.collect.Lists;
-import org.hambomb.cache.storage.KeyPermutationStrategy;
+import org.hambomb.cache.storage.KeyPermutationCombinationStrategy;
+import org.raistlic.common.permutation.Combination;
 import org.raistlic.common.permutation.Permutation;
 
 import java.util.Arrays;
@@ -41,11 +42,11 @@ public class IndexFactory {
 
     public String uniqueKey;
 
-    public Map<String, Object> lookup;
+    public Map<String, Object> lookup = new HashMap<>();
 
     public KeyGeneratorStrategy keyGeneratorStrategy;
 
-    public KeyPermutationStrategy keyPermutationStrategy;
+    public KeyPermutationCombinationStrategy keyPermutationCombinationStrategy;
 
 
     public static IndexFactory create(String loaderName, String[] primaryIndex, String[] indexKeys,
@@ -68,38 +69,72 @@ public class IndexFactory {
         return uniqueKey;
     }
 
-    public void buildLookup(String[] findIndexValues) {
+    public Map<String, String> buildLookup(String[] findIndexValues) {
+
 
         int size = indexKeys.length;
-
-        lookup = new HashMap<>(size);
+        Map<String, String> curLookup = new HashMap<>(size);
 
         if (size == 1) {
             lookup.put(findIndexValues[0], findIndexValues[0]);
         }
 
-        if (keyPermutationStrategy.equals(KeyPermutationStrategy.PERMUTATION)) {
+        if (keyPermutationCombinationStrategy.equals(KeyPermutationCombinationStrategy.PERMUTATION)) {
 
             for (int i = 1; i <= size; i++) {
 
                 Permutation.of(Arrays.asList(findIndexValues), size).forEach(indexes -> {
 
-                    List<String> keys = Lists.newArrayList(entityName);
-                    keys.addAll(indexes);
-
-                    String key = keyGeneratorStrategy.toKey(keys);
+                    String key = toCacheKey(entityName, indexes);
 
                     lookup.put(key, key);
+                    curLookup.put(key, key);
+
+                });
+            }
+        } else if (keyPermutationCombinationStrategy.equals(KeyPermutationCombinationStrategy.COMBINATION)) {
+
+            for (int i = 1; i <= size; i++) {
+
+                Combination.of(Arrays.asList(findIndexValues), i).forEach(indexes -> {
+
+                    System.out.println("====================[" + indexes + "]============");
+
+                    String key = toCacheKey(entityName, indexes);
+
+                    lookup.put(key, key);
+                    curLookup.put(key, key);
 
                 });
             }
         } else {
-            List<String> keys = Lists.newArrayList(entityName);
-            keys.addAll(Arrays.asList(findIndexValues));
-            String key = keyGeneratorStrategy.toKey(keys);
+            String key = toCacheKey(entityName, findIndexValues);
 
             lookup.put(key, key);
+            curLookup.put(key, key);
         }
 
+        return curLookup;
+
+    }
+
+    public String toCacheKey(String... keys) {
+        return keyGeneratorStrategy.toKey(Arrays.asList(keys));
+    }
+
+    public String toCacheKey(String key,String... keys) {
+
+        List<String> cacheKeys = Lists.newArrayList(key);
+        cacheKeys.addAll(Arrays.asList(keys));
+
+        return keyGeneratorStrategy.toKey(cacheKeys);
+    }
+
+    public String toCacheKey(String key,List<String> keys) {
+
+        List<String> cacheKeys = Lists.newArrayList(key);
+        cacheKeys.addAll(keys);
+
+        return keyGeneratorStrategy.toKey(cacheKeys);
     }
 }

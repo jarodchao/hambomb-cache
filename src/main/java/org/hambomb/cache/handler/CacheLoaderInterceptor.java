@@ -15,17 +15,26 @@
  */
 package org.hambomb.cache.handler;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.hambomb.cache.HambombCacheProcessor;
+import org.hambomb.cache.db.entity.CacheObjectMapper;
+import org.hambomb.cache.db.entity.EntityLoader;
+import org.hambomb.cache.index.IndexFactory;
+import org.hambomb.cache.storage.KeyGeneratorStrategy;
+import org.hambomb.cache.storage.LocalKeyGenerator;
 import org.reflections.ReflectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,28 +45,97 @@ import java.util.Set;
 @Component
 public class CacheLoaderInterceptor {
 
-//    @Autowired
-//    private CacheHandler cacheHandler;
+    @Autowired
+    @Lazy
+    private HambombCacheProcessor processor;
 
-    @Around("@annotation(PostProcess)")
+    @Around("@annotation(org.hambomb.cache.handler.PostGetProcess)")
     public Object postServiceProcess(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        System.out.println("拦截到了" + joinPoint.getSignature().getName() +"方法...");
+        Object result = getCachekeyObject(joinPoint);
 
-        Object[] args = joinPoint.getArgs();
+        return result != null ? result : joinPoint.proceed();
+
+    }
+
+    private Object getCachekeyObject(ProceedingJoinPoint joinPoint) {
+        Object[] argValue = joinPoint.getArgs();
+
+        InterceptorMetaData metaData = getInterceptorAnnotation(joinPoint);
+
+        EntityLoader entityLoader = processor.getEntityLoader(metaData.method.getReturnType().getSimpleName());
+        String[] values = null;
+
+        if (argValue.length > 1) {
+            String[] args = metaData.postGetProcess.args();
+
+            values = new String[args.length];
+
+            for (int i = 0; i < args.length; i++) {
+
+                Integer holder = Integer.valueOf(args[i].replace("#", ""));
+
+                values[i] = argValue[holder] != null ? argValue[holder].toString() : null;
+
+            }
+        }else if (argValue.length == 1){
+            String[] args = metaData.postGetProcess.keys();
+
+            values = entityLoader.getEntityCacheKey(argValue[0], args);
+        }
+
+        String cacheKey = entityLoader.indexFactory.toCacheKey(entityLoader.entityClassName, values);
+
+        if (cacheKey.equals(entityLoader.indexFactory.uniqueKey)) {
+            return processor.getCacheHandler().get(cacheKey);
+        }
+
+        String uniqueKey = (String) processor.getCacheHandler().get(cacheKey);
+
+        return processor.getCacheHandler().get(uniqueKey);
+    }
+
+    private InterceptorMetaData getInterceptorAnnotation(ProceedingJoinPoint joinPoint) {
+
+        Signature signature = joinPoint.getSignature();
 
         Object target = joinPoint.getTarget();
-        Object t = joinPoint.getThis();
 
-        Set<Method> methods = ReflectionUtils.getMethods(target.getClass(), ReflectionUtils.withName(joinPoint.getSignature().getName()));
+        MethodSignature methodSignature = (MethodSignature) signature;
+
+        Set<Method> methods = ReflectionUtils.getMethods(target.getClass()
+                , ReflectionUtils.withName(signature.getName())
+                , ReflectionUtils.withParameters(methodSignature.getMethod().getParameterTypes()));
 
         Method method = methods.stream().findFirst().get();
 
-        PostProcess postProcess = (PostProcess) ReflectionUtils.getAnnotations(method).stream().findFirst().get();
+        PostGetProcess postGetProcess = (PostGetProcess) ReflectionUtils.getAnnotations(method).stream().findFirst().get();
+
+        InterceptorMetaData metaData = new InterceptorMetaData();
+        metaData.method = method;
+        metaData.postGetProcess = postGetProcess;
+        metaData.entityLoaderClass = postGetProcess.loaderClass();
+
+        return metaData;
+    }
+
+    private class InterceptorMetaData {
+
+        PostGetProcess postGetProcess;
+
+        Method method;
+
+        Class<CacheObjectMapper> entityLoaderClass;
 
 
-        return null;
-
+        @Override
+        public String toString() {
+            return "InterceptorMetaData{" +
+                    "postGetProcess=" + postGetProcess +
+                    ", method=" + method +
+                    ", entityLoaderClass=" + entityLoaderClass +
+                    '}';
+        }
     }
 
 }

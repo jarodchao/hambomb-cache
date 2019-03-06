@@ -15,6 +15,16 @@
  */
 package org.hambomb.cache;
 
+import org.reflections.ReflectionUtils;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Set;
+
+import static org.reflections.ReflectionUtils.withModifier;
+import static org.reflections.ReflectionUtils.withName;
+import static org.reflections.ReflectionUtils.withParametersCount;
+
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-27
@@ -37,5 +47,12 @@ public class CacheUtils {
         String f = v.substring(0, 1).toUpperCase();
 
         return f + v.substring(1, v.length());
+    }
+
+    public static Method getterMethod(String name, Class entityClazz) {
+        Set<Method> getters = ReflectionUtils.getAllMethods(entityClazz,
+                withModifier(Modifier.PUBLIC), withName(CacheUtils.getter(name)), withParametersCount(0));
+
+        return getters.stream().findFirst().get();
     }
 }

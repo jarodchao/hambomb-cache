@@ -15,15 +15,16 @@
  */
 package org.hambomb.cache.db.entity;
 
+import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.handler.CacheHandler;
 import org.hambomb.cache.index.IndexFactory;
 import com.google.common.reflect.Reflection;
-import org.hambomb.cache.storage.KeyPermutationStrategy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -39,7 +40,7 @@ public class EntityLoader<T> {
 
     Class<T> entityClazz;
 
-    String entityClassName;
+    public String entityClassName;
 
     String entityPackageName;
 
@@ -77,16 +78,11 @@ public class EntityLoader<T> {
 
         loadEntities().stream().forEach(o -> {
             getPkey(o);
-            getFKeys(o);
+            Map<String, String> lookup =  getFKeys(o);
 
-            if (indexFactory.keyPermutationStrategy.equals(KeyPermutationStrategy.PERMUTATION)) {
+            cacheHandler.put(indexFactory.uniqueKey, o);
 
-                cacheHandler.put(indexFactory.uniqueKey, o);
-
-                indexFactory.lookup.forEach((key, value) -> cacheHandler.put(key, indexFactory.uniqueKey));
-            } else {
-                indexFactory.lookup.forEach((key, value) -> cacheHandler.put(key, o));
-            }
+            lookup.forEach((key, value) -> cacheHandler.put(key, indexFactory.uniqueKey));
 
         });
     }
@@ -123,7 +119,7 @@ public class EntityLoader<T> {
 
     }
 
-    private void getFKeys(T t) {
+    private Map<String, String> getFKeys(T t) {
 
         String[] fkValues = new String[fkGetter.size()];
 
@@ -131,8 +127,20 @@ public class EntityLoader<T> {
             fkValues[i] = getValueByMethod(t, fkGetter.get(i));
         }
 
-        indexFactory.buildLookup(fkValues);
+        return indexFactory.buildLookup(fkValues);
 
+    }
+
+    public String[] getEntityCacheKey(T t, String[] keys) {
+
+        String[] fkValues = new String[keys.length];
+
+        for (int i = 0; i < keys.length; i++) {
+
+            fkValues[i] = getValueByMethod(t, CacheUtils.getterMethod(keys[i], t.getClass()));
+        }
+
+        return fkValues;
     }
 
     private String getValueByMethod(T t, Method method) {

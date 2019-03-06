@@ -19,8 +19,9 @@ package org.hambomb.cache.storage;
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-05
  */
-public enum KeyPermutationStrategy {
+public enum KeyPermutationCombinationStrategy {
 
-    PERMUTATION,NONPERMUTATION;
+    PERMUTATION, NONE, COMBINATION;
+
 
 }

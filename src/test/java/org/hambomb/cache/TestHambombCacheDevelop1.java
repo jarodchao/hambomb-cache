@@ -15,10 +15,9 @@
  */
 package org.hambomb.cache;
 
-import org.hambomb.cache.cluster.HambombCacheConfigForMaster;
-import org.hambomb.cache.context.CacheLoaderContext;
+import org.hambomb.cache.cluster.HambombCacheConfigForDevelop1;
+import org.hambomb.cache.db.entity.FindPerson;
 import org.hambomb.cache.db.entity.PersonService;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,22 +26,30 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-27
+ * @date: 2019-03-05
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HambombCacheConfigForMaster.class})
-public class TestHambombCacheMaster {
+@ContextConfiguration(classes = {HambombCacheConfigForDevelop1.class})
+public class TestHambombCacheDevelop1 {
 
     @Autowired
-    private CacheLoaderContext cacheLoaderContext;
+    private PersonService personService;
 
     @Test
-    public void test_HambombCache_afterPropertiesSet() {
+    public void test_getPerson() {
 
-        Assert.assertTrue("masterFlag not true",cacheLoaderContext.masterFlag);
-        Assert.assertTrue("slave not null",cacheLoaderContext.master != null);
-
+        System.out.println(personService.getPerson("mike", 10, null));
     }
 
+    @Test
+    public void test_getPerson1() {
 
+
+        FindPerson findPerson = new FindPerson();
+        findPerson.name = "mike";
+        findPerson.age = 10;
+        findPerson.sex = "男";
+
+        System.out.println(personService.getPerson(findPerson));
+    }
 }

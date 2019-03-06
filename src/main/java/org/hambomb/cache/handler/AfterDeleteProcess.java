@@ -15,6 +15,8 @@
  */
 package org.hambomb.cache.handler;
 
+import org.hambomb.cache.db.entity.CacheObjectMapper;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,13 +24,15 @@ import java.lang.annotation.Target;
 
 /**
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-05
+ * @date: 2019-03-06
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PostProcess {
+public @interface AfterDeleteProcess {
 
     String[] keys() default {};
 
     String[] args() default {};
+
+    Class<?> loaderClass() default CacheObjectMapper.class;
 }

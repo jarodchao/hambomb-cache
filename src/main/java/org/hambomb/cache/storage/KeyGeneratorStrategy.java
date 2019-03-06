@@ -15,9 +15,7 @@
  */
 package org.hambomb.cache.storage;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * NoSQL Key生存策略
@@ -28,7 +26,7 @@ public interface KeyGeneratorStrategy {
 
     default String join(Iterable<String> iterable, String separator) {
 
-        return iterable == null?null:join(iterable.iterator(), separator);
+        return iterable == null ? null : join(iterable.iterator(), separator);
     }
 
     default String join(Iterator<?> iterator, String separator) {
@@ -47,11 +45,13 @@ public interface KeyGeneratorStrategy {
                 }
 
                 while(iterator.hasNext()) {
-                    if(separator != null) {
+
+                    Object obj = iterator.next();
+
+                    if(separator != null && obj != null) {
                         buf.append(separator);
                     }
 
-                    Object obj = iterator.next();
                     if(obj != null) {
                         buf.append(obj);
                     }

@@ -15,7 +15,7 @@
  */
 package org.hambomb.cache.db.entity;
 
-import org.hambomb.cache.handler.PostProcess;
+import org.hambomb.cache.handler.PostGetProcess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +30,26 @@ public class PersonService {
     @Autowired
     private PersonMapper personMapper;
 
-    @PostProcess(args = {"#0","#1","#2"})
+    @PostGetProcess(args = {"#0","#1","#2"})
     public Person getPerson(String name, Integer age, String sex) {
 
         return personMapper.selectPersion(name, age, sex);
+
+    }
+
+    @PostGetProcess(args = {"#0","#1"})
+    public Person getPerson(String name, Integer age) {
+
+        return personMapper.selectPersion(name, age, "");
+
+    }
+
+    @PostGetProcess(keys = {"name","age","sex"})
+    public Person getPerson(FindPerson findPerson) {
+        return personMapper.selectPersion(findPerson.name, findPerson.age, findPerson.sex);
+    }
+
+    public void updatePerson(Person person) {
 
     }
 
@@ -45,4 +61,5 @@ public class PersonService {
         personMapper.updatePerson();
 
     }
+
 }

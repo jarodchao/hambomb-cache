@@ -25,8 +25,6 @@ import org.hambomb.cache.cluster.listener.CacheLoadInterruptedListener;
 import org.hambomb.cache.cluster.listener.CacheMasterListener;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
 import org.hambomb.cache.context.CacheLoaderContext;
-import org.hambomb.cache.handler.CacheHandler;
-import org.hambomb.cache.handler.LocalCacheHandler;
 import org.hambomb.cache.storage.LocalKeyGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,8 +91,8 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
             LOG.error("Configuration's keyGeneratorStrategy is null.");
         }
 
-        if (configuration.keyPermutationStrategy == null) {
-            LOG.error("Configuration's keyPermutationStrategy is null.");
+        if (configuration.keyPermutationCombinationStrategy == null) {
+            LOG.error("Configuration's keyPermutationCombinationStrategy is null.");
         }
 
         if (Configuration.CacheServerStrategy.DEVELOP == configuration.cacheServerStrategy) {

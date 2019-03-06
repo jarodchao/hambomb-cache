@@ -24,20 +24,15 @@ import org.hambomb.cache.db.entity.EntityLoader;
 import org.hambomb.cache.db.entity.MapperScanner;
 import org.hambomb.cache.handler.CacheHandler;
 import org.hambomb.cache.index.IndexFactory;
-import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.reflections.ReflectionUtils.*;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -73,6 +68,11 @@ public class HambombCacheProcessor {
 
     }
 
+    public EntityLoader getEntityLoader(String key) {
+
+        return entityLoaderMap.get(key);
+    }
+
     public void addCacheHandler(CacheHandler cacheHandler) {
         this.cacheHandler = cacheHandler;
     }
@@ -93,6 +93,10 @@ public class HambombCacheProcessor {
 
         return masterFlag;
 
+    }
+
+    public CacheHandler getCacheHandler() {
+        return cacheHandler;
     }
 
     public void restart() {
@@ -134,7 +138,7 @@ public class HambombCacheProcessor {
 
             entityLoader.loadData();
 
-            entityLoaderMap.put(entityLoader.indexFactory.uniqueKey, entityLoader);
+            entityLoaderMap.put(entityLoader.entityClassName, entityLoader);
         }
 
         if (configuration.cacheServerStrategy.equals(Configuration.CacheServerStrategy.CLUSTER)) {
@@ -173,19 +177,19 @@ public class HambombCacheProcessor {
 
             IndexFactory indexFactory =
                     IndexFactory.create(mapper.getClass().getSimpleName(), pk, fk, configuration.keyGeneratorStrategy);
-            indexFactory.keyPermutationStrategy = configuration.keyPermutationStrategy;
+            indexFactory.keyPermutationCombinationStrategy = configuration.keyPermutationCombinationStrategy;
             entityLoader.addIndexFactory(indexFactory);
 
             entityLoader.initializeLoader();
 
             for (String p : pk) {
 
-                entityLoader.addPkGetter(getterMethod(p, entityClass));
+                entityLoader.addPkGetter(CacheUtils.getterMethod(p, entityClass));
             }
 
             for (String f : fk) {
 
-                entityLoader.addFkGetter(getterMethod(f, entityClass));
+                entityLoader.addFkGetter(CacheUtils.getterMethod(f, entityClass));
             }
 
             return entityLoader;
@@ -194,10 +198,4 @@ public class HambombCacheProcessor {
 
     }
 
-    private Method getterMethod(String name, Class entityClazz) {
-        Set<Method> getters = ReflectionUtils.getAllMethods(entityClazz,
-                withModifier(Modifier.PUBLIC), withName(CacheUtils.getter(name)), withParametersCount(0));
-
-        return getters.stream().findFirst().get();
-    }
 }

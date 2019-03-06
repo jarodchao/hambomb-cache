@@ -43,7 +43,7 @@ public class PersonMapper implements CacheObjectMapper<Person> {
 
 
     public Person selectPersion(String name, Integer age, String sex) {
-        return new Person(1L, "mike", 10, "男","北京");
+        return new Person(1L, "mike", 10, "男","上海");
     }
 
     public void updatePerson() {
