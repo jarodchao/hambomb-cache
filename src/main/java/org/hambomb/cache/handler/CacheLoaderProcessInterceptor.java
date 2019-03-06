@@ -23,18 +23,13 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.hambomb.cache.HambombCacheProcessor;
 import org.hambomb.cache.db.entity.CacheObjectMapper;
 import org.hambomb.cache.db.entity.EntityLoader;
-import org.hambomb.cache.index.IndexFactory;
-import org.hambomb.cache.storage.KeyGeneratorStrategy;
-import org.hambomb.cache.storage.LocalKeyGenerator;
+import org.hambomb.cache.handler.annotation.PostGetProcess;
 import org.reflections.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -43,13 +38,13 @@ import java.util.Set;
  */
 @Aspect
 @Component
-public class CacheLoaderInterceptor {
+public class CacheLoaderProcessInterceptor {
 
     @Autowired
     @Lazy
     private HambombCacheProcessor processor;
 
-    @Around("@annotation(org.hambomb.cache.handler.PostGetProcess)")
+    @Around("@annotation(org.hambomb.cache.handler.annotation.PostGetProcess)")
     public Object postServiceProcess(ProceedingJoinPoint joinPoint) throws Throwable {
 
         Object result = getCachekeyObject(joinPoint);

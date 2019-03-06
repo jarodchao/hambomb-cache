@@ -15,9 +15,9 @@
  */
 package org.hambomb.cache.index;
 
-import org.hambomb.cache.storage.KeyGeneratorStrategy;
+import org.hambomb.cache.storage.key.KeyGeneratorStrategy;
 import com.google.common.collect.Lists;
-import org.hambomb.cache.storage.KeyPermutationCombinationStrategy;
+import org.hambomb.cache.storage.key.KeyPermutationCombinationStrategy;
 import org.raistlic.common.permutation.Combination;
 import org.raistlic.common.permutation.Permutation;
 

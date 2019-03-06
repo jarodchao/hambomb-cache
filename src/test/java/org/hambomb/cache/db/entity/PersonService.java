@@ -15,7 +15,7 @@
  */
 package org.hambomb.cache.db.entity;
 
-import org.hambomb.cache.handler.PostGetProcess;
+import org.hambomb.cache.handler.annotation.PostGetProcess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

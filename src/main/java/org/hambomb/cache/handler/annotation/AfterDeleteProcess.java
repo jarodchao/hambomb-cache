@@ -13,15 +13,26 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.storage;
+package org.hambomb.cache.handler.annotation;
+
+import org.hambomb.cache.db.entity.CacheObjectMapper;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-05
+ * @date: 2019-03-06
  */
-public enum KeyPermutationCombinationStrategy {
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AfterDeleteProcess {
 
-    PERMUTATION, NONE, COMBINATION;
+    String[] keys() default {};
 
+    String[] args() default {};
 
+    Class<?> loaderClass() default CacheObjectMapper.class;
 }

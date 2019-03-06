@@ -20,7 +20,7 @@ import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.hambomb.cache.HambombCache;
 import org.hambomb.cache.cluster.node.ClusterRoot;
 import org.hambomb.cache.handler.LocalCacheHandler;
-import org.hambomb.cache.storage.RedisKeyGeneratorStrategy;
+import org.hambomb.cache.storage.key.RedisKeyGeneratorStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

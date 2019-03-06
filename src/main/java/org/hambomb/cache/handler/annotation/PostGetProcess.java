@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler;
+package org.hambomb.cache.handler.annotation;
 
 import org.hambomb.cache.db.entity.CacheObjectMapper;
 

@@ -17,8 +17,8 @@ package org.hambomb.cache;
 
 import org.hambomb.cache.handler.CacheHandler;
 import org.hambomb.cache.handler.LocalCacheHandler;
-import org.hambomb.cache.storage.KeyGeneratorStrategy;
-import org.hambomb.cache.storage.KeyPermutationCombinationStrategy;
+import org.hambomb.cache.storage.key.KeyGeneratorStrategy;
+import org.hambomb.cache.storage.key.KeyPermutationCombinationStrategy;
 
 /**
  * Cache加载配置类

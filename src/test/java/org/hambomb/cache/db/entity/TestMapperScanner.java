@@ -17,7 +17,7 @@ package org.hambomb.cache.db.entity;
 
 import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.index.IndexFactory;
-import org.hambomb.cache.storage.RedisKeyGeneratorStrategy;
+import org.hambomb.cache.storage.key.RedisKeyGeneratorStrategy;
 import org.junit.Test;
 import org.reflections.ReflectionUtils;
 

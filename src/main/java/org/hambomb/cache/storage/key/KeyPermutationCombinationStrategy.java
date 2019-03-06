@@ -13,26 +13,15 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.storage;
-
-import java.util.List;
+package org.hambomb.cache.storage.key;
 
 /**
- * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
+ * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-05
  */
-public class LocalKeyGenerator implements KeyGeneratorStrategy {
+public enum KeyPermutationCombinationStrategy {
 
-    public static final String DEFAULT_SEPARATOR = "-";
+    PERMUTATION, NONE, COMBINATION;
 
 
-    @Override
-    public String toKey(List<String> keys) {
-        return join(keys, DEFAULT_SEPARATOR );
-    }
-
-    @Override
-    public String toPrimaryKey(List<String> keys) {
-        return join(keys, DEFAULT_SEPARATOR );
-    }
 }

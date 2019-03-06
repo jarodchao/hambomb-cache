@@ -25,7 +25,7 @@ import org.hambomb.cache.cluster.listener.CacheLoadInterruptedListener;
 import org.hambomb.cache.cluster.listener.CacheMasterListener;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
 import org.hambomb.cache.context.CacheLoaderContext;
-import org.hambomb.cache.storage.LocalKeyGenerator;
+import org.hambomb.cache.storage.key.LocalKeyGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;

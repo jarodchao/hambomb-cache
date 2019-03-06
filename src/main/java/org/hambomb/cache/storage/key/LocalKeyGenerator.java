@@ -13,26 +13,26 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler;
+package org.hambomb.cache.storage.key;
 
-import org.hambomb.cache.db.entity.CacheObjectMapper;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.List;
 
 /**
- * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-06
+ * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-05
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface AfterUpdateProcess {
+public class LocalKeyGenerator implements KeyGeneratorStrategy {
 
-    String[] keys() default {};
+    public static final String DEFAULT_SEPARATOR = "-";
 
-    String[] args() default {};
 
-    Class<?> loaderClass() default CacheObjectMapper.class;
+    @Override
+    public String toKey(List<String> keys) {
+        return join(keys, DEFAULT_SEPARATOR );
+    }
+
+    @Override
+    public String toPrimaryKey(List<String> keys) {
+        return join(keys, DEFAULT_SEPARATOR );
+    }
 }

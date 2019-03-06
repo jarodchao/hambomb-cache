@@ -17,7 +17,7 @@ package org.hambomb.cache.cluster;
 
 import org.hambomb.cache.HambombCache;
 import org.hambomb.cache.handler.LocalCacheHandler;
-import org.hambomb.cache.storage.RedisKeyGeneratorStrategy;
+import org.hambomb.cache.storage.key.RedisKeyGeneratorStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
