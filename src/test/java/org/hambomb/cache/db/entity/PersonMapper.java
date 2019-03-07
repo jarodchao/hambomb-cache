@@ -16,6 +16,9 @@
 package org.hambomb.cache.db.entity;
 
 
+import org.springframework.stereotype.Component;
+
+import java.net.Inet4Address;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,18 +26,28 @@ import java.util.List;
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
+@Component
 public class PersonMapper implements CacheObjectMapper<Person> {
 
 
     @Override
     public List<Person> selectAllCacheObject() {
 
-        Person person1 = new Person(1L, "mike", 10,"男");
-        Person person2 = new Person(2L, "hambomb", 3,"男");
-        Person person3 = new Person(3L, "Tom", 15,"男");
+        Person person1 = new Person(1L, "mike", 10,"男","北京");
+        Person person2 = new Person(2L, "hambomb", 3,"男","北京");
+        Person person3 = new Person(3L, "Tom", 15,"男","北京");
 
 
         return Arrays.asList(person1, person2, person3);
+    }
+
+
+    public Person selectPersion(String name, Integer age, String sex) {
+        return new Person(1L, "mike", 10, "男","上海");
+    }
+
+    public void updatePerson() {
+
     }
 
 }

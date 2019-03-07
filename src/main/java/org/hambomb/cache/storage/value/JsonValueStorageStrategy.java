@@ -13,38 +13,22 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.storage;
-
-import java.util.List;
+package org.hambomb.cache.storage.value;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public class RedisKeyCcombinedStrategy implements KeyCombinedStrategy {
+public class JsonValueStorageStrategy implements ValueStorageStrategy {
 
-    public static final String DEFAULT_SEPARATOR = ":";
-    public static final String DEFAULT_P_SEPARATOR = "-";
+    @Override
+    public Byte[] toByte(Object object) {
 
-
-    String separator;
-    String pSeparator;
-
-    public RedisKeyCcombinedStrategy() {
-    }
-
-    public RedisKeyCcombinedStrategy(String separator) {
-        this.separator = separator;
+        return new Byte[0];
     }
 
     @Override
-    public String toKey(List<String> keys) {
-
-        return join(keys, separator == null ? DEFAULT_SEPARATOR : separator);
-    }
-
-    @Override
-    public String toPrimaryKey(List<String> keys) {
-        return join(keys, pSeparator == null ? DEFAULT_SEPARATOR : pSeparator);
+    public String toStr(Object object) {
+        return null;
     }
 }

@@ -13,7 +13,9 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.db.entity;
+package org.hambomb.cache.handler.annotation;
+
+import org.hambomb.cache.db.entity.CacheObjectMapper;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,24 +24,15 @@ import java.lang.annotation.Target;
 
 /**
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @date: 2019-03-05
  */
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Cachekey {
+public @interface PostGetProcess {
 
+    String[] keys() default {};
 
-    /**
-     * 实体的唯一标识--Id或者复合主键
-     * @return
-     */
-    String[] primaryKeys() default {"id"};
+    String[] args() default {};
 
-    /**
-     * 查询实体用到的字段名
-     * @return
-     */
-    String[] findKeys();
-
-
+    Class<CacheObjectMapper> loaderClass() default CacheObjectMapper.class;
 }

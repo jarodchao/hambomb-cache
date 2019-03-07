@@ -15,8 +15,11 @@
  */
 package org.hambomb.cache.index;
 
-import org.hambomb.cache.storage.KeyCombinedStrategy;
+import org.hambomb.cache.CacheUtils;
+import org.hambomb.cache.ConfigurationException;
+import org.hambomb.cache.storage.key.KeyGeneratorStrategy;
 import com.google.common.collect.Lists;
+import org.hambomb.cache.storage.key.KeyPermutationCombinationStrategy;
 import org.raistlic.common.permutation.Combination;
 import org.raistlic.common.permutation.Permutation;
 
@@ -31,63 +34,117 @@ import java.util.Map;
  */
 public class IndexFactory {
 
+    public static final String RESERVED_WORD = "id";
+
     String loaderName;
+
+    public String entityName;
 
     public String[] primaryIndex;
 
     public String[] indexKeys;
 
-    public String uniqueKey;
+    public Map<String, Object> lookup = new HashMap<>();
 
-    public Map<Object, Object> lookup;
+    public KeyGeneratorStrategy keyGeneratorStrategy;
 
-    public KeyCombinedStrategy keyCombinedStrategy;
+    public KeyPermutationCombinationStrategy keyPermutationCombinationStrategy;
 
 
     public static IndexFactory create(String loaderName, String[] primaryIndex, String[] indexKeys,
-                                      KeyCombinedStrategy keyCombinedStrategy) {
+                                      KeyGeneratorStrategy keyGeneratorStrategy) {
 
-        return new IndexFactory(loaderName, primaryIndex, indexKeys, keyCombinedStrategy);
+        return new IndexFactory(loaderName, primaryIndex, indexKeys, keyGeneratorStrategy);
     }
 
 
-    public IndexFactory(String loaderName, String[] primaryIndex, String[] indexKeys, KeyCombinedStrategy keyCombinedStrategy) {
+    public IndexFactory(String loaderName, String[] primaryIndex, String[] indexKeys, KeyGeneratorStrategy keyGeneratorStrategy) {
         this.loaderName = loaderName;
         this.primaryIndex = primaryIndex;
         this.indexKeys = indexKeys;
-        this.keyCombinedStrategy = keyCombinedStrategy;
+        this.keyGeneratorStrategy = keyGeneratorStrategy;
 
     }
 
     public String buildUniqueKey(String[] primaryIndexValues){
-        uniqueKey = keyCombinedStrategy.toPrimaryKey(Lists.asList(loaderName, primaryIndexValues));
-        System.out.println("uniqueKey:" + uniqueKey);
-        return uniqueKey;
+        return keyGeneratorStrategy.toPrimaryKey(Lists.asList(entityName,"Primary", primaryIndexValues));
     }
 
-    public void buildLookup(String[] findIndexValues) {
+    public Map<String, String> buildLookup(String[] findIndexValues) {
+
 
         int size = indexKeys.length;
-
-        lookup = new HashMap<>(size);
+        Map<String, String> curLookup = new HashMap<>(size);
 
         if (size == 1) {
             lookup.put(findIndexValues[0], findIndexValues[0]);
         }
 
-        for (int i = 1; i <= size ; i++) {
+        if (keyPermutationCombinationStrategy.equals(KeyPermutationCombinationStrategy.PERMUTATION)) {
 
-            Permutation.of(Arrays.asList(findIndexValues), size).forEach(indexes -> {
+            for (int i = 1; i <= size; i++) {
 
-                List<String> keys = Lists.newArrayList(loaderName);
-                keys.addAll(indexes);
+                Permutation.of(Arrays.asList(findIndexValues), size).forEach(indexes -> {
 
-                String key = keyCombinedStrategy.toKey(keys);
+                    String key = toCacheKey(entityName, indexes);
 
-                System.out.println("FindKeys:" + key);
-                lookup.put(key, key);
+                    lookup.put(key, key);
+                    curLookup.put(key, key);
 
-            });
+                });
+            }
+        } else if (keyPermutationCombinationStrategy.equals(KeyPermutationCombinationStrategy.COMBINATION)) {
+
+            for (int i = 1; i <= size; i++) {
+
+                Combination.of(Arrays.asList(findIndexValues), i).forEach(indexes -> {
+
+                    String key = toCacheKey(entityName, indexes);
+
+                    lookup.put(key, key);
+                    curLookup.put(key, key);
+
+                });
+            }
+        } else {
+            String key = toCacheKey(entityName, findIndexValues);
+
+            lookup.put(key, key);
+            curLookup.put(key, key);
+        }
+
+        return curLookup;
+
+    }
+
+    public String toCacheKey(String... keys) {
+        return keyGeneratorStrategy.toKey(Arrays.asList(keys));
+    }
+
+    public String toCacheKey(String key,String... keys) {
+
+        List<String> cacheKeys = Lists.newArrayList(key);
+        cacheKeys.addAll(Arrays.asList(keys));
+
+        return keyGeneratorStrategy.toKey(cacheKeys);
+    }
+
+    public String toCacheKey(String key,List<String> keys) {
+
+        List<String> cacheKeys = Lists.newArrayList(key);
+        cacheKeys.addAll(keys);
+
+        return keyGeneratorStrategy.toKey(cacheKeys);
+    }
+
+    public void validate() {
+
+        if (Arrays.binarySearch(this.indexKeys, RESERVED_WORD) > 0
+                || Arrays.binarySearch(this.indexKeys, RESERVED_WORD.toUpperCase()) > 0
+                || Arrays.binarySearch(this.indexKeys, CacheUtils.upCase(RESERVED_WORD)) > 0) {
+
+            throw new ConfigurationException("Configuration containing reserved word.");
+
         }
 
     }

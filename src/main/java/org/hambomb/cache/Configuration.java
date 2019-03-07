@@ -16,8 +16,9 @@
 package org.hambomb.cache;
 
 import org.hambomb.cache.handler.CacheHandler;
-import org.hambomb.cache.storage.KeyCombinedStrategy;
-import sun.security.krb5.Config;
+import org.hambomb.cache.handler.LocalCacheHandler;
+import org.hambomb.cache.storage.key.KeyGeneratorStrategy;
+import org.hambomb.cache.storage.key.KeyPermutationCombinationStrategy;
 
 /**
  * Cache加载配置类
@@ -26,39 +27,56 @@ import sun.security.krb5.Config;
  */
 public class Configuration {
 
-    String scanPackageName;
+    public String scanPackageName;
 
-    String zkUrl;
+    public String zkUrl;
 
-    CacheServerStrategy strategy = CacheServerStrategy.CLUSTER;
+    public CacheServerStrategy cacheServerStrategy = CacheServerStrategy.STANDALONE;
 
-    KeyCombinedStrategy keyCombinedStrategy;
+    public DataLoadStrategy dataLoadStrategy = DataLoadStrategy.FULL;
 
-    CacheHandler handler;
+    public KeyGeneratorStrategy keyGeneratorStrategy;
 
-    Configuration addZKUrl(String zkUrl) {
+    public KeyPermutationCombinationStrategy keyPermutationCombinationStrategy = KeyPermutationCombinationStrategy.NONE;
+
+    public CacheHandler cacheHandler = new LocalCacheHandler();
+
+    public Configuration addCacheServerStrategy(CacheServerStrategy cacheServerStrategy) {
+        this.cacheServerStrategy = cacheServerStrategy;
+        return this;
+    }
+
+    public Configuration addZKUrl(String zkUrl) {
         this.zkUrl = zkUrl;
         return this;
     }
 
-    Configuration addScanPackageName(String scanPackageName) {
+    public Configuration addScanPackageName(String scanPackageName) {
         this.scanPackageName = scanPackageName;
         return this;
     }
 
-    Configuration addKeyCombinedStrategy(KeyCombinedStrategy keyCombinedStrategy) {
-        this.keyCombinedStrategy = keyCombinedStrategy;
+    public Configuration addKeyGeneratorStrategy(KeyGeneratorStrategy keyGeneratorStrategy) {
+        this.keyGeneratorStrategy = keyGeneratorStrategy;
         return this;
     }
 
-    Configuration addHandler(CacheHandler cacheHandler) {
-        this.handler = handler;
+    public Configuration addCacheHandler(CacheHandler cacheHandler) {
+        this.cacheHandler = cacheHandler;
         return this;
     }
 
-    enum CacheServerStrategy {
+    public Configuration addKeyPermutationCombinationStrategy(KeyPermutationCombinationStrategy keyPermutationCombinationStrategy) {
+        this.keyPermutationCombinationStrategy = keyPermutationCombinationStrategy;
+        return this;
 
-        STANDALONE,CLUSTER;
+    }
+    public enum CacheServerStrategy {
+
+        STANDALONE,CLUSTER,DEVELOP;
     }
 
+    enum DataLoadStrategy {
+        FULL,INCREMENT;
+    }
 }

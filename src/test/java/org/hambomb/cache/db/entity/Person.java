@@ -30,6 +30,8 @@ public class Person {
 
     private String sex;
 
+    private String address;
+
     public Long getId() {
         return id;
     }
@@ -62,6 +64,14 @@ public class Person {
         this.sex = sex;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public Person(Long id, String name, Integer age) {
         this.id = id;
         this.name = name;
@@ -75,12 +85,22 @@ public class Person {
         this.sex = sex;
     }
 
+    public Person(Long id, String name, Integer age, String sex, String address) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.sex = sex;
+        this.address = address;
+    }
+
     @Override
     public String toString() {
         return "Person{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", age=" + age +
+                ", sex='" + sex + '\'' +
+                ", address='" + address + '\'' +
                 '}';
     }
 }

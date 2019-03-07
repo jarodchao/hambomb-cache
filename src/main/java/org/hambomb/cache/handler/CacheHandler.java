@@ -21,7 +21,11 @@ package org.hambomb.cache.handler;
  */
 public interface CacheHandler {
 
-    void put(Object key, Object value);
+    void put(String key, Object value);
 
-    Object get(Object key);
+    Object get(String key);
+
+    void update(String key, Object value);
+
+    void delete(String key);
 }

@@ -17,29 +17,37 @@ package org.hambomb.cache.cluster;
 
 import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
-import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
+import org.hambomb.cache.cluster.node.CacheLoaderSlave;
 import org.hambomb.cache.cluster.node.CacheMasterLoaderData;
 import org.hambomb.cache.cluster.node.ClusterRoot;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-27
  */
-@Component
 public class ClusterProcessor {
 
-    public static ZkClient zkClient;
+    public ZkClient zkClient;
 
-    @Autowired
-    private IZkDataListener cacheMasterListener;
 
-    public ClusterProcessor(String zkUrl) throws IOException {
-        zkClient = new ZkClient(zkUrl, 5000, 5000, new SerializableSerializer());
+    public IZkDataListener cacheMasterListener;
+
+    public ClusterProcessor(ZkClient zkClient) throws IOException {
+        this.zkClient = zkClient;
+    }
+
+    public ClusterProcessor(ZkClient zkClient, IZkDataListener cacheMasterListener) {
+        this.zkClient = zkClient;
+        this.cacheMasterListener = cacheMasterListener;
+    }
+
+    public IZkDataListener getCacheMasterListener() {
+        return cacheMasterListener;
     }
 
     public Boolean initNodes() {
@@ -52,20 +60,40 @@ public class ClusterProcessor {
             zkClient.createPersistent(ClusterRoot.getDataPath());
         }
 
+        if (!zkClient.exists(ClusterRoot.getSlavesPath())) {
+            zkClient.createPersistent(ClusterRoot.getSlavesPath());
+        }
+
         return true;
     }
 
-    public Boolean selectMasterLoader() {
+    public CacheLoaderMaster selectMasterLoader(boolean firstMaster)  {
 
-        zkClient.subscribeDataChanges(ClusterRoot.getMasterPath(),cacheMasterListener);
+        if (firstMaster) {
 
-        if (!zkClient.exists(ClusterRoot.getMasterPath())) {
-            zkClient.createEphemeral(ClusterRoot.getMasterPath(),new CacheLoaderMaster());
+            zkClient.subscribeDataChanges(ClusterRoot.getMasterPath(), cacheMasterListener);
+        }else {
+            Random random = new Random();
+            int sleepTime = random.nextInt(5000);
 
-            return true;
+            try {
+                TimeUnit.MILLISECONDS.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
-        return false;
+        CacheLoaderMaster master = null;
+
+        if (!zkClient.exists(ClusterRoot.getMasterPath())) {
+
+            master = new CacheLoaderMaster();
+            zkClient.createEphemeral(ClusterRoot.getMasterPath(), master);
+
+            return master;
+        }
+
+        return master;
     }
 
     public void finishDataLoadNode() {
@@ -84,7 +112,18 @@ public class ClusterProcessor {
 
             CacheMasterLoaderData cacheMasterLoaderData = new CacheMasterLoaderData();
 
-            zkClient.createPersistent(ClusterRoot.getMasterData(),new CacheMasterLoaderData());
+            zkClient.createPersistent(ClusterRoot.getMasterData(),cacheMasterLoaderData);
         }
+    }
+
+    public CacheLoaderSlave createSlaveNode() {
+        CacheLoaderSlave slave = new CacheLoaderSlave();
+
+        String slavePath = zkClient.createEphemeralSequential(ClusterRoot.getSlavePath(), slave);
+
+        slave.setSlavePath(slavePath);
+
+        return slave;
+
     }
 }

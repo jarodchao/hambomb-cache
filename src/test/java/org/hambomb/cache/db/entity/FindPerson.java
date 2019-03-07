@@ -13,38 +13,41 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+package org.hambomb.cache.db.entity;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-05
+ * @date: 2019-03-06
  */
-public class LocalCacheHandler implements CacheHandler {
+public class FindPerson {
 
-    private Cache<String, Object> cache = CacheBuilder.newBuilder().build();
+    public String name;
 
-    @Override
+    public Integer age;
 
-    public void put(String key, Object value) {
+    public String sex;
 
-        cache.put(key, value);
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public Object get(String key) {
-        return cache.getIfPresent(key);
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @Override
-    public void update(String key, Object value) {
-        cache.put(key, value);
+    public Integer getAge() {
+        return age;
     }
 
-    @Override
-    public void delete(String key) {
+    public void setAge(Integer age) {
+        this.age = age;
+    }
 
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
     }
 }

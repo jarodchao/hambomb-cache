@@ -15,15 +15,13 @@
  */
 package org.hambomb.cache.db.entity;
 
-import com.google.common.base.Predicate;
 import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.index.IndexFactory;
-import org.hambomb.cache.storage.RedisKeyCcombinedStrategy;
+import org.hambomb.cache.storage.key.RedisKeyGeneratorStrategy;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.reflections.ReflectionUtils;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -40,6 +38,7 @@ import static org.reflections.ReflectionUtils.*;
 public class TestMapperScanner {
 
     @Test
+    @Ignore
     public void testScanPackage() {
 
         MapperScanner scanner = new MapperScanner("org.hambomb.cache.db.entity");
@@ -47,7 +46,6 @@ public class TestMapperScanner {
         Set<Class<? extends CacheObjectMapper>> mappers = scanner.scanMapper();
 
         mappers.stream().forEach((Class<? extends CacheObjectMapper> aClass) -> {
-            System.out.println(aClass.getSimpleName());
 
             CacheObjectMapper mapper = null;
 
@@ -70,7 +68,7 @@ public class TestMapperScanner {
             String[] pk = cachekey.primaryKeys();
             String[] fk = cachekey.findKeys();
 
-            IndexFactory indexFactory = IndexFactory.create("", pk, fk, new RedisKeyCcombinedStrategy());
+            IndexFactory indexFactory = IndexFactory.create("", pk, fk, new RedisKeyGeneratorStrategy());
             entityLoader.addIndexFactory(indexFactory);
 
             List<Method> pkGetter = new ArrayList<>(pk.length);
@@ -94,24 +92,24 @@ public class TestMapperScanner {
             mapper.selectAllCacheObject().stream().forEach(o -> {
 
                 for (Method method : pkGetter) {
-//                    try {
-//                        System.out.println(method.invoke(o, null));
-//                    } catch (IllegalAccessException e) {
-//                        e.printStackTrace();
-//                    } catch (InvocationTargetException e) {
-//                        e.printStackTrace();
-//                    }
-                }
-
-                for (Method method : fkGetter) {
                     try {
-                        System.out.println(method.invoke(o, null));
+                        method.invoke(o, null);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     } catch (InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 }
+
+//                for (Method method : fkGetter) {
+//                    try {
+//                        method.invoke(o, null);
+//                    } catch (IllegalAccessException e) {
+//                        e.printStackTrace();
+//                    } catch (InvocationTargetException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
             });
 
         });

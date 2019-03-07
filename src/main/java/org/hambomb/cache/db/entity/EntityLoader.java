@@ -15,6 +15,8 @@
  */
 package org.hambomb.cache.db.entity;
 
+import org.hambomb.cache.CacheUtils;
+import org.hambomb.cache.handler.CacheHandler;
 import org.hambomb.cache.index.IndexFactory;
 import com.google.common.reflect.Reflection;
 
@@ -22,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -37,9 +40,11 @@ public class EntityLoader<T> {
 
     Class<T> entityClazz;
 
-    String entityClassName;
+    public String entityClassName;
 
     String entityPackageName;
+
+    public CacheHandler cacheHandler;
 
     public IndexFactory indexFactory;
 
@@ -65,10 +70,25 @@ public class EntityLoader<T> {
         pkGetter = new ArrayList<>(indexFactory.primaryIndex.length);
         fkGetter = new ArrayList<>(indexFactory.indexKeys.length);
 
+        indexFactory.entityName = entityClassName;
+
+    }
+
+    public void loadData() {
+
+        loadEntities().stream().forEach(o -> {
+            String uniqueKey = getPkey(o);
+            Map<String, String> lookup =  getFKeys(o);
+
+            cacheHandler.put(uniqueKey, o);
+
+            lookup.forEach((key, value) -> cacheHandler.put(key, uniqueKey));
+
+        });
     }
 
 
-    public List<T> loadEntities() {
+    private List<T> loadEntities() {
 
         AllCacheObjectHandler<T> handler = new AllCacheObjectHandler<>(cacheObjectMapper);
 
@@ -87,7 +107,7 @@ public class EntityLoader<T> {
         this.fkGetter.add(getter);
     }
 
-    public void getPkey(T t) {
+    public String getPkey(T t) {
 
         String[] pkValues = new String[pkGetter.size()];
 
@@ -95,11 +115,11 @@ public class EntityLoader<T> {
             pkValues[i] = getValueByMethod(t, pkGetter.get(i));
         }
 
-        indexFactory.buildUniqueKey(pkValues);
+        return indexFactory.buildUniqueKey(pkValues);
 
     }
 
-    public void getFKeys(T t) {
+    private Map<String, String> getFKeys(T t) {
 
         String[] fkValues = new String[fkGetter.size()];
 
@@ -107,8 +127,20 @@ public class EntityLoader<T> {
             fkValues[i] = getValueByMethod(t, fkGetter.get(i));
         }
 
-        indexFactory.buildLookup(fkValues);
+        return indexFactory.buildLookup(fkValues);
 
+    }
+
+    public String[] getEntityCacheKey(T t, String[] keys) {
+
+        String[] fkValues = new String[keys.length];
+
+        for (int i = 0; i < keys.length; i++) {
+
+            fkValues[i] = getValueByMethod(t, CacheUtils.getterMethod(keys[i], t.getClass()));
+        }
+
+        return fkValues;
     }
 
     private String getValueByMethod(T t, Method method) {

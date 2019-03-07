@@ -13,23 +13,20 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.storage;
+package org.hambomb.cache.storage.key;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * NoSQL Key生存策略
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public interface KeyCombinedStrategy {
-
+public interface KeyGeneratorStrategy {
 
     default String join(Iterable<String> iterable, String separator) {
 
-        return iterable == null?null:join(iterable.iterator(), separator);
+        return iterable == null ? null : join(iterable.iterator(), separator);
     }
 
     default String join(Iterator<?> iterator, String separator) {
@@ -48,11 +45,13 @@ public interface KeyCombinedStrategy {
                 }
 
                 while(iterator.hasNext()) {
-                    if(separator != null) {
+
+                    Object obj = iterator.next();
+
+                    if(separator != null && obj != null) {
                         buf.append(separator);
                     }
 
-                    Object obj = iterator.next();
                     if(obj != null) {
                         buf.append(obj);
                     }
@@ -66,6 +65,5 @@ public interface KeyCombinedStrategy {
     String toKey(List<String> keys);
 
     String toPrimaryKey(List<String> keys);
-
 
 }

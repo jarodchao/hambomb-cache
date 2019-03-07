@@ -71,10 +71,18 @@ public class ClusterRoot implements Serializable {
 
     }
 
-    public static String getSlavePath() {
+    public static String getSlavesPath() {
         StringBuilder stringBuilder = new StringBuilder(path);
 
         return stringBuilder.append(CacheLoaderSlave.path).toString();
+    }
+
+    public static String getSlavePath() {
+        StringBuilder stringBuilder = new StringBuilder(path);
+
+        stringBuilder.append(CacheLoaderSlave.path);
+
+        return stringBuilder.append(CacheLoaderSlave.subPath).toString();
     }
 
     public static String getDataPath() {

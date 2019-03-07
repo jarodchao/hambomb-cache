@@ -15,23 +15,36 @@
  */
 package org.hambomb.cache.cluster.listener;
 
-import org.hambomb.cache.cluster.event.CacheLoadInterruptedEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.I0Itec.zkclient.ZkClient;
+import org.hambomb.cache.HambombCacheProcessor;
+import org.hambomb.cache.cluster.event.CacheLoaderEvent;
+import org.hambomb.cache.cluster.node.CacheMasterLoaderData;
+import org.hambomb.cache.cluster.node.ClusterRoot;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-01
  */
-public class CacheLoadInterruptedListener implements ApplicationListener<CacheLoadInterruptedEvent> {
+public class CacheLoadInterruptedListener  implements CacheLoaderEventListener {
 
-    private SimpleApplicationEventMulticaster multicaster;
+    private ZkClient zkClient;
 
+    private HambombCacheProcessor processor;
+
+    public CacheLoadInterruptedListener(ZkClient zkClient, HambombCacheProcessor processor) {
+        this.zkClient = zkClient;
+        this.processor = processor;
+    }
 
     @Override
-    public void onApplicationEvent(CacheLoadInterruptedEvent cacheLoadInterruptedEvent) {
+    public void onApplicationEvent(CacheLoaderEvent event) {
 
+        if (zkClient.exists(ClusterRoot.getMasterData())) {
+            CacheMasterLoaderData data = zkClient.readData(ClusterRoot.getMasterData());
 
-
+            if (data.getFlag().equals(CacheMasterLoaderData.UNFINISH_FLAG)) {
+                processor.restart();
+            }
+        }
     }
 }

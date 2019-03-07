@@ -15,18 +15,19 @@
  */
 package org.hambomb.cache.cluster.event;
 
-import org.springframework.context.ApplicationEvent;
-
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-01
  */
-public class CacheLoadInterruptedEvent extends ApplicationEvent {
+public class CacheLoadInterruptedEvent extends CacheLoaderEvent {
 
 
     private static final long serialVersionUID = 6617189121063204346L;
 
-    public CacheLoadInterruptedEvent(Object source) {
-        super(source);
+    private static final String EVENT_NAME = "CacheLoadInterruptedEvent";
+
+
+    public CacheLoadInterruptedEvent(String instanceId) {
+        this.setName(EVENT_NAME);
     }
 }

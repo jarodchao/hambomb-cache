@@ -13,38 +13,26 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler;
+package org.hambomb.cache.storage.key;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import java.util.List;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-05
  */
-public class LocalCacheHandler implements CacheHandler {
+public class LocalKeyGenerator implements KeyGeneratorStrategy {
 
-    private Cache<String, Object> cache = CacheBuilder.newBuilder().build();
+    public static final String DEFAULT_SEPARATOR = "-";
+
 
     @Override
-
-    public void put(String key, Object value) {
-
-        cache.put(key, value);
+    public String toKey(List<String> keys) {
+        return join(keys, DEFAULT_SEPARATOR );
     }
 
     @Override
-    public Object get(String key) {
-        return cache.getIfPresent(key);
-    }
-
-    @Override
-    public void update(String key, Object value) {
-        cache.put(key, value);
-    }
-
-    @Override
-    public void delete(String key) {
-
+    public String toPrimaryKey(List<String> keys) {
+        return join(keys, DEFAULT_SEPARATOR );
     }
 }

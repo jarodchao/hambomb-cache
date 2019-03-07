@@ -13,38 +13,37 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler;
+package org.hambomb.cache.cluster.event;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-05
+ * @date: 2019-03-01
  */
-public class LocalCacheHandler implements CacheHandler {
+public class CacheLoaderEvent implements Serializable {
 
-    private Cache<String, Object> cache = CacheBuilder.newBuilder().build();
 
-    @Override
+    private static final long serialVersionUID = -3364126116020878559L;
 
-    public void put(String key, Object value) {
+    private String name;
 
-        cache.put(key, value);
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
-    public Object get(String key) {
-        return cache.getIfPresent(key);
+    public boolean equals(Object obj) {
+        return this.getName().equals(((CacheLoaderEvent)obj).getName());
     }
 
     @Override
-    public void update(String key, Object value) {
-        cache.put(key, value);
-    }
-
-    @Override
-    public void delete(String key) {
-
+    public int hashCode() {
+        return name.hashCode() * 36;
     }
 }

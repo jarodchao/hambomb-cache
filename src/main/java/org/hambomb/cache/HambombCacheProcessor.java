@@ -16,38 +16,26 @@
 package org.hambomb.cache;
 
 import org.hambomb.cache.cluster.ClusterProcessor;
+import org.hambomb.cache.cluster.node.CacheLoaderMaster;
+import org.hambomb.cache.cluster.node.CacheLoaderSlave;
 import org.hambomb.cache.db.entity.CacheObjectMapper;
 import org.hambomb.cache.db.entity.Cachekey;
 import org.hambomb.cache.db.entity.EntityLoader;
 import org.hambomb.cache.db.entity.MapperScanner;
 import org.hambomb.cache.handler.CacheHandler;
 import org.hambomb.cache.index.IndexFactory;
-import org.hambomb.cache.storage.RedisKeyCcombinedStrategy;
-import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.reflections.ReflectionUtils.*;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @date: 2019-03-01
  */
-public class HambombCacheProcessor implements ApplicationContextAware, InitializingBean {
-
+public class HambombCacheProcessor {
 
     ApplicationContext applicationContext;
 
@@ -61,45 +49,74 @@ public class HambombCacheProcessor implements ApplicationContextAware, Initializ
 
     private Set<Class<? extends CacheObjectMapper>> mappers;
 
-    private static final Logger LOG = LoggerFactory.getLogger(HambombCacheProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HambombCache.class);
 
-    @Autowired
     private ClusterProcessor clusterProcessor;
 
-    public HambombCacheProcessor(Configuration configuration) {
+    public HambombCacheProcessor(ApplicationContext applicationContext, Configuration configuration, ClusterProcessor clusterProcessor) {
+        this.applicationContext = applicationContext;
         this.configuration = configuration;
+        this.clusterProcessor = clusterProcessor;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    public void startup() {
 
-        Boolean masterFlag = false;
+        startLoader();
 
-        if (Configuration.CacheServerStrategy.CLUSTER == configuration.strategy) {
+    }
+
+    public EntityLoader getEntityLoader(String key) {
+
+        return entityLoaderMap.get(key);
+    }
+
+    public void addCacheHandler(CacheHandler cacheHandler) {
+        this.cacheHandler = cacheHandler;
+    }
+
+    public CacheLoaderMaster fightMaster() {
+
+        CacheLoaderMaster masterFlag = null;
+
+        if (Configuration.CacheServerStrategy.CLUSTER == configuration.cacheServerStrategy) {
 
             clusterProcessor.initNodes();
 
-            masterFlag = clusterProcessor.selectMasterLoader();
+            masterFlag = clusterProcessor.selectMasterLoader(true);
 
             clusterProcessor.initDataLoadNode();
 
         }
 
-        if (!masterFlag) {
-            LOG.info("Application Server not was a Master Node,HambombCacheProcessor is stopping.");
+        return masterFlag;
+
+    }
+
+    public CacheHandler getCacheHandler() {
+        return cacheHandler;
+    }
+
+    public void restart() {
+
+        clusterProcessor.initNodes();
+
+        CacheLoaderMaster masterFlag = clusterProcessor.selectMasterLoader(false);
+
+        if (masterFlag == null) {
+            LOG.info("Application Server not was a Master Node,HambombCache is stopping.");
             return;
         }
 
-        process();
+        startLoader();
 
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    public CacheLoaderSlave createSlave() {
+        return clusterProcessor.createSlaveNode();
     }
 
-    private void process() {
+
+    private void startLoader() {
 
         if (configuration.scanPackageName != null && !"".equals(configuration.scanPackageName)) {
 
@@ -108,28 +125,22 @@ public class HambombCacheProcessor implements ApplicationContextAware, Initializ
             mappers = scanner.scanMapper();
         }
 
-        if (configuration.handler != null) {
-            this.cacheHandler = configuration.handler;
-        }
-
         List<EntityLoader> entityLoaders = buildLoaders(mappers);
-
-        startLoader(entityLoaders);
-
-        clusterProcessor.finishDataLoadNode();
-    }
-
-    private void startLoader(List<EntityLoader> entityLoaders) {
 
         entityLoaderMap = new HashMap<>(entityLoaders.size());
 
         for (EntityLoader entityLoader : entityLoaders) {
-            entityLoader.loadEntities().stream().forEach(o -> {
-                entityLoader.getPkey(o);
-                entityLoader.getFKeys(o);
-            });
 
-            entityLoaderMap.put(entityLoader.indexFactory.uniqueKey, entityLoader);
+            entityLoader.cacheHandler = cacheHandler;
+
+            entityLoader.loadData();
+
+            entityLoaderMap.put(entityLoader.entityClassName, entityLoader);
+        }
+
+        if (configuration.cacheServerStrategy.equals(Configuration.CacheServerStrategy.CLUSTER)) {
+
+            clusterProcessor.finishDataLoadNode();
         }
     }
 
@@ -161,19 +172,25 @@ public class HambombCacheProcessor implements ApplicationContextAware, Initializ
             String[] pk = cachekey.primaryKeys();
             String[] fk = cachekey.findKeys();
 
-            IndexFactory indexFactory = IndexFactory.create(mapper.getClass().getSimpleName(), pk, fk, new RedisKeyCcombinedStrategy());
+            IndexFactory indexFactory =
+                    IndexFactory.create(mapper.getClass().getSimpleName(), pk, fk, configuration.keyGeneratorStrategy);
+
+            indexFactory.keyPermutationCombinationStrategy = configuration.keyPermutationCombinationStrategy;
+
+            indexFactory.validate();
+
             entityLoader.addIndexFactory(indexFactory);
 
             entityLoader.initializeLoader();
 
             for (String p : pk) {
 
-                entityLoader.addPkGetter(getterMethod(p, entityClass));
+                entityLoader.addPkGetter(CacheUtils.getterMethod(p, entityClass));
             }
 
             for (String f : fk) {
 
-                entityLoader.addFkGetter(getterMethod(f, entityClass));
+                entityLoader.addFkGetter(CacheUtils.getterMethod(f, entityClass));
             }
 
             return entityLoader;
@@ -182,10 +199,4 @@ public class HambombCacheProcessor implements ApplicationContextAware, Initializ
 
     }
 
-    private Method getterMethod(String name, Class entityClazz) {
-        Set<Method> getters = ReflectionUtils.getAllMethods(entityClazz,
-                withModifier(Modifier.PUBLIC), withName(CacheUtils.getter(name)), withParametersCount(0));
-
-        return getters.stream().findFirst().get();
-    }
 }

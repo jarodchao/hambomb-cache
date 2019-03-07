@@ -13,33 +13,15 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.db.entity;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.hambomb.cache.storage.key;
 
 /**
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @date: 2019-03-05
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Cachekey {
+public enum KeyPermutationCombinationStrategy {
 
-
-    /**
-     * 实体的唯一标识--Id或者复合主键
-     * @return
-     */
-    String[] primaryKeys() default {"id"};
-
-    /**
-     * 查询实体用到的字段名
-     * @return
-     */
-    String[] findKeys();
+    PERMUTATION, NONE, COMBINATION;
 
 
 }

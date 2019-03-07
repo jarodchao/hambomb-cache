@@ -13,21 +13,15 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.db.entity;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+package org.hambomb.cache;
 
 /**
- * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-07
  */
-@Retention(RetentionPolicy.CLASS)
-public @interface CacheMapper {
+public class ConfigurationException extends RuntimeException {
 
-    /**
-     * Mybatis Mapper Name
-     * @return
-     */
-    String name();
+    public ConfigurationException(String message) {
+        super(message);
+    }
 }
