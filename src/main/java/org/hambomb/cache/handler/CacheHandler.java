@@ -26,4 +26,6 @@ public interface CacheHandler {
     Object get(String key);
 
     void update(String key, Object value);
+
+    void delete(String key);
 }

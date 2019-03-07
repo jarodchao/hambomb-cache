@@ -23,6 +23,7 @@ import org.hambomb.cache.cluster.node.ClusterRoot;
 import org.hambomb.cache.context.CacheLoaderContext;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.raistlic.common.permutation.Combination;
@@ -65,32 +66,5 @@ public class TestHambombCacheSlave {
             zkClient.deleteRecursive(ClusterRoot.getMasterPath());
         }
 
-    }
-
-    @Test
-    public void test_P() {
-        String[] findIndexValues = new String[]{"a", "b", "c"};
-        int size = findIndexValues.length;
-
-        for (int i = 1; i <= size; i++) {
-
-            Permutation.of(Arrays.asList(findIndexValues), size).forEach(indexes -> {
-
-                System.out.println(indexes);
-
-            });
-        }
-
-
-        System.out.println("========华丽的分割线============");
-
-        for (int i = 1; i <= size; i++) {
-
-            Combination.of(Arrays.asList(findIndexValues), i).forEach(indexes -> {
-
-                System.out.println(indexes);
-
-            });
-        }
     }
 }

@@ -13,16 +13,22 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.storage;
+package org.hambomb.cache.storage.value;
 
 /**
- * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
+ * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public interface ValueStorageStrategy {
+public class JsonValueStorageStrategy implements ValueStorageStrategy {
 
+    @Override
+    public Byte[] toByte(Object object) {
 
-    Byte[] toByte(Object object);
+        return new Byte[0];
+    }
 
-    String toStr(Object object);
+    @Override
+    public String toStr(Object object) {
+        return null;
+    }
 }

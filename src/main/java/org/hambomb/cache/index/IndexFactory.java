@@ -15,6 +15,8 @@
  */
 package org.hambomb.cache.index;
 
+import org.hambomb.cache.CacheUtils;
+import org.hambomb.cache.ConfigurationException;
 import org.hambomb.cache.storage.key.KeyGeneratorStrategy;
 import com.google.common.collect.Lists;
 import org.hambomb.cache.storage.key.KeyPermutationCombinationStrategy;
@@ -32,6 +34,8 @@ import java.util.Map;
  */
 public class IndexFactory {
 
+    public static final String RESERVED_WORD = "id";
+
     String loaderName;
 
     public String entityName;
@@ -39,8 +43,6 @@ public class IndexFactory {
     public String[] primaryIndex;
 
     public String[] indexKeys;
-
-    public String uniqueKey;
 
     public Map<String, Object> lookup = new HashMap<>();
 
@@ -65,8 +67,7 @@ public class IndexFactory {
     }
 
     public String buildUniqueKey(String[] primaryIndexValues){
-        uniqueKey = keyGeneratorStrategy.toPrimaryKey(Lists.asList(entityName, primaryIndexValues));
-        return uniqueKey;
+        return keyGeneratorStrategy.toPrimaryKey(Lists.asList(entityName,"Primary", primaryIndexValues));
     }
 
     public Map<String, String> buildLookup(String[] findIndexValues) {
@@ -97,8 +98,6 @@ public class IndexFactory {
             for (int i = 1; i <= size; i++) {
 
                 Combination.of(Arrays.asList(findIndexValues), i).forEach(indexes -> {
-
-                    System.out.println("====================[" + indexes + "]============");
 
                     String key = toCacheKey(entityName, indexes);
 
@@ -136,5 +135,17 @@ public class IndexFactory {
         cacheKeys.addAll(keys);
 
         return keyGeneratorStrategy.toKey(cacheKeys);
+    }
+
+    public void validate() {
+
+        if (Arrays.binarySearch(this.indexKeys, RESERVED_WORD) > 0
+                || Arrays.binarySearch(this.indexKeys, RESERVED_WORD.toUpperCase()) > 0
+                || Arrays.binarySearch(this.indexKeys, CacheUtils.upCase(RESERVED_WORD)) > 0) {
+
+            throw new ConfigurationException("Configuration containing reserved word.");
+
+        }
+
     }
 }

@@ -112,6 +112,7 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
         if (Configuration.CacheServerStrategy.CLUSTER.equals(configuration.cacheServerStrategy)) {
 
             afterClusterCacheLoad();
+            createCacheHandler();
 
             CacheLoaderMaster masterFlag = hambombCacheProcessor.fightMaster();
 
@@ -129,10 +130,9 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
         } else if (Configuration.CacheServerStrategy.DEVELOP.equals(configuration.cacheServerStrategy)) {
 
             afterDevelopCacheLoad();
+            createCacheHandler();
 
         }
-
-        createCacheHandler();
 
         hambombCacheProcessor.startup();
     }

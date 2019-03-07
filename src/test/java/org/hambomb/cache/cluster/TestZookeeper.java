@@ -55,11 +55,9 @@ public class TestZookeeper {
 
         if (!zkClient.exists("/test/master")) {
             String s = zkClient.create("/test/master", master, CreateMode.PERSISTENT);
-            System.out.println(s);
 
             Stat stat = new Stat();
             CacheLoaderMaster master1 = zkClient.readData("/test/master", stat);
-            System.out.println(master1.getCreateTime());
             zkClient.delete("/test/master");
         }
     }
@@ -88,7 +86,6 @@ public class TestZookeeper {
             zkClient.writeData(node, master);
 
             CacheLoaderSlave slave = zkClient.readData(node);
-            System.out.println(slave.getHost());
         }
     }
 }

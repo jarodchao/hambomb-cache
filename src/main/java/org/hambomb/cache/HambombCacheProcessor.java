@@ -28,10 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -177,7 +174,11 @@ public class HambombCacheProcessor {
 
             IndexFactory indexFactory =
                     IndexFactory.create(mapper.getClass().getSimpleName(), pk, fk, configuration.keyGeneratorStrategy);
+
             indexFactory.keyPermutationCombinationStrategy = configuration.keyPermutationCombinationStrategy;
+
+            indexFactory.validate();
+
             entityLoader.addIndexFactory(indexFactory);
 
             entityLoader.initializeLoader();

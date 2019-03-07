@@ -15,7 +15,6 @@
  */
 package org.hambomb.cache;
 
-import org.hambomb.cache.cluster.HambombCacheConfigForMaster;
 import org.hambomb.cache.cluster.HambombCacheConfigForSlave;
 import org.hambomb.cache.cluster.event.CacheLoadInterruptedEvent;
 import org.hambomb.cache.cluster.node.CacheMasterLoaderData;
@@ -47,7 +46,9 @@ public class TestHambombCacheMasterForInterrupt {
         cacheLoaderContext.zkClient.writeData(ClusterRoot.getMasterData(), data);
         cacheLoaderContext.zkClient.delete(ClusterRoot.getMasterPath());
         cacheLoaderContext.multicaster.publishEvent(new CacheLoadInterruptedEvent("test"));
+        data = cacheLoaderContext.zkClient.readData(ClusterRoot.getMasterData());
 
+        Assert.assertTrue("未完成加载",data.getFlag() != CacheMasterLoaderData.FINISH_FLAG);
 
 
     }

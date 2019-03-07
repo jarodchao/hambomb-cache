@@ -13,31 +13,16 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler;
+package org.hambomb.cache.storage.value;
 
 /**
- * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
+ * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public class StandaloneCacheHandler implements CacheHandler {
+public interface ValueStorageStrategy {
 
-    @Override
-    public void put(String key, Object value) {
 
-    }
+    Byte[] toByte(Object object);
 
-    @Override
-    public Object get(String key) {
-        return null;
-    }
-
-    @Override
-    public void update(String key, Object value) {
-
-    }
-
-    @Override
-    public void delete(String key) {
-
-    }
+    String toStr(Object object);
 }

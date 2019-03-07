@@ -42,4 +42,9 @@ public class LocalCacheHandler implements CacheHandler {
     public void update(String key, Object value) {
         cache.put(key, value);
     }
+
+    @Override
+    public void delete(String key) {
+
+    }
 }

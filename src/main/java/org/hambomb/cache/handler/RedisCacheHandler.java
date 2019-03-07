@@ -35,4 +35,9 @@ public class RedisCacheHandler implements CacheHandler {
     public void update(String key, Object value) {
 
     }
+
+    @Override
+    public void delete(String key) {
+
+    }
 }

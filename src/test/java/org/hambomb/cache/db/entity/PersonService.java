@@ -15,6 +15,7 @@
  */
 package org.hambomb.cache.db.entity;
 
+import org.hambomb.cache.handler.annotation.AfterUpdateProcess;
 import org.hambomb.cache.handler.annotation.PostGetProcess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,7 @@ public class PersonService {
         return personMapper.selectPersion(findPerson.name, findPerson.age, findPerson.sex);
     }
 
+    @AfterUpdateProcess
     public void updatePerson(Person person) {
 
     }

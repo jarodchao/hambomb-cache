@@ -20,16 +20,19 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.HambombCacheProcessor;
 import org.hambomb.cache.db.entity.CacheObjectMapper;
 import org.hambomb.cache.db.entity.EntityLoader;
 import org.hambomb.cache.handler.annotation.PostGetProcess;
 import org.reflections.ReflectionUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Set;
 
 /**
@@ -47,13 +50,72 @@ public class CacheLoaderProcessInterceptor {
     @Around("@annotation(org.hambomb.cache.handler.annotation.PostGetProcess)")
     public Object postServiceProcess(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        Object result = getCachekeyObject(joinPoint);
+        Object result = getCacheObject(joinPoint);
 
         return result != null ? result : joinPoint.proceed();
 
     }
 
-    private Object getCachekeyObject(ProceedingJoinPoint joinPoint) {
+    @Around("@annotation(org.hambomb.cache.handler.annotation.AfterUpdateProcess)")
+    public Object afterUpdateServiceProcess(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        Object object = joinPoint.proceed();
+
+        updateCacheObject(joinPoint);
+
+        return object;
+
+    }
+
+    @Around("@annotation(org.hambomb.cache.handler.annotation.AfterDeleteProcess)")
+    public Object afterDeleteServiceProcess(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        Object object = joinPoint.proceed();
+
+        deleteCacheObject(joinPoint);
+
+        return object;
+
+    }
+
+    private void deleteCacheObject(ProceedingJoinPoint joinPoint) {
+
+        Object[] argValue = joinPoint.getArgs();
+
+        if (argValue.length > 1) {
+            throw new RuntimeException("不支持！");
+        }
+
+        EntityLoader entityLoader = processor.getEntityLoader(argValue[0].getClass().getSimpleName());
+
+        processor.getCacheHandler().delete("");
+
+
+    }
+
+    private void updateCacheObject(ProceedingJoinPoint joinPoint) {
+        Object[] argValue = joinPoint.getArgs();
+
+        if (argValue.length > 1) {
+            throw new RuntimeException("不支持！");
+        }
+
+        EntityLoader entityLoader = processor.getEntityLoader(argValue[0].getClass().getSimpleName());
+
+        String id = entityLoader.getPkey(argValue[0]);
+
+        Object cacheObject = processor.getCacheHandler().get(id);
+
+        BeanUtils.copyProperties(argValue[0], cacheObject, CacheUtils.getNullPropertyNames(argValue[0]));
+
+        processor.getCacheHandler().update(id, cacheObject);
+
+
+    }
+
+    private Object getCacheObject(ProceedingJoinPoint joinPoint) {
+
+
         Object[] argValue = joinPoint.getArgs();
 
         InterceptorMetaData metaData = getInterceptorAnnotation(joinPoint);
@@ -81,9 +143,9 @@ public class CacheLoaderProcessInterceptor {
 
         String cacheKey = entityLoader.indexFactory.toCacheKey(entityLoader.entityClassName, values);
 
-        if (cacheKey.equals(entityLoader.indexFactory.uniqueKey)) {
-            return processor.getCacheHandler().get(cacheKey);
-        }
+//        if (cacheKey.equals(entityLoader.indexFactory.uniqueKey)) {
+//            return processor.getCacheHandler().get(cacheKey);
+//        }
 
         String uniqueKey = (String) processor.getCacheHandler().get(cacheKey);
 

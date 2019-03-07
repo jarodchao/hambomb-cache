@@ -17,7 +17,9 @@ package org.hambomb.cache;
 
 import org.hambomb.cache.cluster.HambombCacheConfigForDevelop;
 import org.hambomb.cache.db.entity.FindPerson;
+import org.hambomb.cache.db.entity.Person;
 import org.hambomb.cache.db.entity.PersonService;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +38,9 @@ public class TestHambombCacheDevelop {
     private PersonService personService;
 
     @Test
-    public void test() {
-        System.out.println("test was done");
-    }
-
-    @Test
     public void test_getPerson() {
 
-        System.out.println(personService.getPerson("mike", 10, "男"));
+        Assert.assertTrue("执行错误",personService.getPerson("mike", 10, "男") != null);
     }
 
     @Test
@@ -55,6 +52,9 @@ public class TestHambombCacheDevelop {
         findPerson.age = 10;
         findPerson.sex = "男";
 
-        System.out.println(personService.getPerson(findPerson));
+        Person person = personService.getPerson(findPerson);
+
+        Assert.assertTrue("没有命中cache", !person.getAddress().equals(""));
+
     }
 }

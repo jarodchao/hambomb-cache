@@ -13,22 +13,15 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.storage;
+package org.hambomb.cache;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @date: 2019-03-07
  */
-public class JsonValueStorageStrategy implements ValueStorageStrategy {
+public class ConfigurationException extends RuntimeException {
 
-    @Override
-    public Byte[] toByte(Object object) {
-
-        return new Byte[0];
-    }
-
-    @Override
-    public String toStr(Object object) {
-        return null;
+    public ConfigurationException(String message) {
+        super(message);
     }
 }

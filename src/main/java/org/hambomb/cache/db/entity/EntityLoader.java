@@ -77,12 +77,12 @@ public class EntityLoader<T> {
     public void loadData() {
 
         loadEntities().stream().forEach(o -> {
-            getPkey(o);
+            String uniqueKey = getPkey(o);
             Map<String, String> lookup =  getFKeys(o);
 
-            cacheHandler.put(indexFactory.uniqueKey, o);
+            cacheHandler.put(uniqueKey, o);
 
-            lookup.forEach((key, value) -> cacheHandler.put(key, indexFactory.uniqueKey));
+            lookup.forEach((key, value) -> cacheHandler.put(key, uniqueKey));
 
         });
     }
@@ -107,7 +107,7 @@ public class EntityLoader<T> {
         this.fkGetter.add(getter);
     }
 
-    private void getPkey(T t) {
+    public String getPkey(T t) {
 
         String[] pkValues = new String[pkGetter.size()];
 
@@ -115,7 +115,7 @@ public class EntityLoader<T> {
             pkValues[i] = getValueByMethod(t, pkGetter.get(i));
         }
 
-        indexFactory.buildUniqueKey(pkValues);
+        return indexFactory.buildUniqueKey(pkValues);
 
     }
 

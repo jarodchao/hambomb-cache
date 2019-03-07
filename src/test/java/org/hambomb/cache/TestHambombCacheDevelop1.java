@@ -17,7 +17,10 @@ package org.hambomb.cache;
 
 import org.hambomb.cache.cluster.HambombCacheConfigForDevelop1;
 import org.hambomb.cache.db.entity.FindPerson;
+import org.hambomb.cache.db.entity.Person;
 import org.hambomb.cache.db.entity.PersonService;
+import org.hambomb.cache.handler.CacheHandler;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,21 +38,35 @@ public class TestHambombCacheDevelop1 {
     @Autowired
     private PersonService personService;
 
-    @Test
-    public void test_getPerson() {
+    @Autowired
+    private CacheHandler cacheHandler;
 
-        System.out.println(personService.getPerson("mike", 10, null));
-    }
 
     @Test
     public void test_getPerson1() {
 
 
         FindPerson findPerson = new FindPerson();
-        findPerson.name = "mike";
-        findPerson.age = 10;
+        findPerson.name = "hambomb";
+        findPerson.age = 3;
         findPerson.sex = "男";
 
-        System.out.println(personService.getPerson(findPerson));
+        Person person = personService.getPerson(findPerson);
+
+        Assert.assertTrue("没有命中cache", !person.getAddress().equals(""));
+    }
+
+    @Test
+    public void test_getPerson2() {
+
+
+        Person findPerson = new Person(2L,null,null,null,"纽约");
+
+        personService.updatePerson(findPerson);
+
+        Person cacheObject = (Person) cacheHandler.get("Person-Primary-2");
+
+        Assert.assertEquals("不等于", cacheObject.getAddress(), findPerson.getAddress());
+
     }
 }
