@@ -23,8 +23,9 @@
 /dist/
 /nbdist/
 /.nb-gradle/
-### 忽略test写的所有文件
-test/resources/
+
+
+src/main/test
 
 logs
 /anytxn-account-api/src/main/resources/logback-spring.xml
