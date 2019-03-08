@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # 概述
+=======
+# 概叙
+>>>>>>> 0ce1c1deb686ed9a2f725ebcb8e6924d91c8198c
 hambomb-cache是基于spring开发的业务层缓存框架，hambomb-cache可以通过配置实现多种部署方式，也可以支持多种缓存模式。
 # 服务器模式
 ## 单机
