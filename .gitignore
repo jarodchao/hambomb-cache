@@ -25,7 +25,7 @@
 /.nb-gradle/
 
 
-src/main/test
+/src/test
 
 logs
 /anytxn-account-api/src/main/resources/logback-spring.xml
