@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:hambomb;MODE=MYSQL;
+    driver-class-name: org.h2.Driver
+    username:
+    password:
+  application:
+    name: hambomb-cache
+
+server:
+  port: 9999
+
+
