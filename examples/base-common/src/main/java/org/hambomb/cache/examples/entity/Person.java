@@ -108,4 +108,18 @@ public class Person implements Serializable {
     public void setAddress(String address) {
         this.address = address;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", gender='" + gender + '\'' +
+                ", age=" + age +
+                ", height='" + height + '\'' +
+                ", weight=" + weight +
+                ", cardId='" + cardId + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }

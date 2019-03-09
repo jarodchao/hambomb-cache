@@ -26,6 +26,8 @@ import org.hambomb.cache.db.entity.CacheObjectMapper;
 import org.hambomb.cache.db.entity.EntityLoader;
 import org.hambomb.cache.handler.annotation.PostGetProcess;
 import org.reflections.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -46,13 +48,25 @@ public class CacheLoaderProcessInterceptor {
     @Lazy
     private HambombCacheProcessor processor;
 
+    private static final Logger LOG = LoggerFactory.getLogger(CacheLoaderProcessInterceptor.class);
+
     @Around("@annotation(org.hambomb.cache.handler.annotation.PostGetProcess)")
     public Object postServiceProcess(ProceedingJoinPoint joinPoint) throws Throwable {
 
         Object result = getCacheObject(joinPoint);
 
-        return result != null ? result : joinPoint.proceed();
+        return result != null ? log(result): joinPoint.proceed();
 
+    }
+
+    private Object log(Object result) {
+
+        if (LOG.isDebugEnabled()) {
+
+            LOG.debug("This operation hits the cache.Result is {}",result);
+        }
+
+        return result;
     }
 
     @Around("@annotation(org.hambomb.cache.handler.annotation.AfterUpdateProcess)")
