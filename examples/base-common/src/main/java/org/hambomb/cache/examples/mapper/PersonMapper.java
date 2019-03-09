@@ -37,4 +37,9 @@ public interface PersonMapper {
             "from t_person " +
             "where id = #{id,jdbcType=DECIMAL}")
     Person selectById(Long id);
+
+    @Select("select id,name,gender,age,height,weight,cardId,address " +
+            "from t_person " +
+            "where cardId = #{cardId,jdbcType=VARCHAR}")
+    Person selectByCardId(String cardId);
 }

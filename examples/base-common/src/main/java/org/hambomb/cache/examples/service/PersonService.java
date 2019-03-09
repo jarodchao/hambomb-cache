@@ -33,4 +33,8 @@ public class PersonService {
     public Person getPersonById(Long id) {
         return personMapper.selectById(id);
     }
+
+    public Person getPersonByCardId(String cardId) {
+        return personMapper.selectByCardId(cardId);
+    }
 }
