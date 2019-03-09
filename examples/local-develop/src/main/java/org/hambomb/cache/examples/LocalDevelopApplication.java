@@ -20,12 +20,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-08
+ * @date: 2019-03-09
  */
 @SpringBootApplication
-public class BaseApplication {
+public class LocalDevelopApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BaseApplication.class);
+        SpringApplication.run(LocalDevelopApplication.class);
     }
 }

@@ -32,7 +32,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Set;
 
 /**
@@ -123,7 +122,7 @@ public class CacheLoaderProcessInterceptor {
         EntityLoader entityLoader = processor.getEntityLoader(metaData.method.getReturnType().getSimpleName());
         String[] values = null;
 
-        if (argValue.length > 1) {
+        if (metaData.postGetProcess.args() != null ) {
             String[] args = metaData.postGetProcess.args();
 
             values = new String[args.length];
@@ -135,10 +134,11 @@ public class CacheLoaderProcessInterceptor {
                 values[i] = argValue[holder] != null ? argValue[holder].toString() : null;
 
             }
-        }else if (argValue.length == 1){
+        } else if (argValue.length == 1 && metaData.postGetProcess.keys() != null ){
             String[] args = metaData.postGetProcess.keys();
 
             values = entityLoader.getEntityCacheKey(argValue[0], args);
+
         }
 
         String cacheKey = entityLoader.indexFactory.toCacheKey(entityLoader.entityClassName, values);

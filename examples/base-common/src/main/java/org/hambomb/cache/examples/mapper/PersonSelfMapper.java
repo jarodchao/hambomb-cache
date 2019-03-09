@@ -13,30 +13,25 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.examples.service;
+package org.hambomb.cache.examples.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+import org.hambomb.cache.db.entity.CacheObjectMapper;
 import org.hambomb.cache.examples.entity.Person;
-import org.hambomb.cache.examples.mapper.PersonMapper;
-import org.hambomb.cache.handler.annotation.PostGetProcess;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
- * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-08
+ * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-09
  */
-@Service
-public class PersonService {
+@Mapper
+public interface PersonSelfMapper extends CacheObjectMapper<Person> {
 
-    @Autowired
-    private PersonMapper personMapper;
 
-    public Person getPersonById(Long id) {
-        return personMapper.selectById(id);
-    }
-
-    @PostGetProcess(args = {"#0"})
-    public Person getPersonByCardId(String cardId) {
-        return personMapper.selectByCardId(cardId);
-    }
+    @Select("select id,name,gender,age,height,weight,cardId,address " +
+            "from t_person ")
+    @Override
+    List<Person> selectAllCacheObject();
 }

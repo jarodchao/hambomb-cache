@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -34,15 +33,15 @@ public class BaseController {
     private PersonService personService;
 
     @GetMapping(path = "/hambomb/person/{id}")
-    public Mono<Person> getPerson(@PathVariable Long id) {
+    public Person getPerson(@PathVariable Long id) {
 
-        return Mono.just(personService.getPersonById(id));
+        return personService.getPersonById(id);
     }
 
-    @GetMapping(path = "/hambomb/person/cardids/{cardId}")
-    public Mono<Person> getPersonByCardId(String cardId) {
+    @GetMapping(path = "/hambomb/cardIds/{cardId}")
+    public Person getPersonByCardId(@PathVariable String cardId) {
 
-        return Mono.just(personService.getPersonByCardId(cardId));
+        return personService.getPersonByCardId(cardId);
 
     }
 
