@@ -15,8 +15,7 @@
  */
 package org.hambomb.cache.examples.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.hambomb.cache.examples.entity.Person;
 
 /**
@@ -42,4 +41,15 @@ public interface PersonMapper {
             "from t_person " +
             "where cardId = #{cardId,jdbcType=VARCHAR}")
     Person selectByCardId(String cardId);
+
+
+    @Update("update t_person " +
+            "set address = #{address,jdbcType=VARCHAR}" +
+            "where id =#{id,jdbcType=DECIMAL}")
+    void updateAddressById(@Param(value = "id") Long id, @Param(value = "address") String address);
+
+
+    @Delete("delete from t_person " +
+            "where id = #{id,jdbcType=DECIMAL} ")
+    void deleteById(Long id);
 }

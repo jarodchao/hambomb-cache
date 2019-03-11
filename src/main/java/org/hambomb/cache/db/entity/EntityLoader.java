@@ -119,7 +119,7 @@ public class EntityLoader<T> {
 
     }
 
-    private Map<String, String> getFKeys(T t) {
+    public Map<String, String> getFKeys(T t) {
 
         String[] fkValues = new String[fkGetter.size()];
 

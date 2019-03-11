@@ -15,8 +15,6 @@
  */
 package org.hambomb.cache.handler.annotation;
 
-import org.hambomb.cache.db.entity.CacheObjectMapper;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,9 +28,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AfterDeleteProcess {
 
-    String[] keys() default {};
+    boolean byPrimaryKey() default true;
+
+    String[] attrs() default {};
 
     String[] args() default {};
 
-    Class<?> loaderClass() default CacheObjectMapper.class;
+    Class<?> enityClass() default Object.class;
 }

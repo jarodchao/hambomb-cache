@@ -13,25 +13,25 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler.annotation;
+package org.hambomb.cache.examples.mapper;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+import org.hambomb.cache.db.entity.CacheObjectMapper;
+import org.hambomb.cache.examples.entity.Phone;
+
+import java.util.List;
 
 /**
- * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-06
+ * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-11
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface AfterUpdateProcess {
+@Mapper
+public interface PhoneSelfMapper extends CacheObjectMapper<Phone> {
 
-    boolean byPrimaryKey() default true;
 
-    String[] attrs() default {};
-
-    String[] args() default {};
-
+    @Select("select id,Brand, model, memory, color, weight, pattern, origin " +
+            "from t_phone ")
+    @Override
+    List<Phone> selectAllCacheObject();
 }

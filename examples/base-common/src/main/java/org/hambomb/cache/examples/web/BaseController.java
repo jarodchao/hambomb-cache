@@ -16,11 +16,13 @@
 package org.hambomb.cache.examples.web;
 
 import org.hambomb.cache.examples.entity.Person;
+import org.hambomb.cache.examples.entity.Phone;
 import org.hambomb.cache.examples.service.PersonService;
+import org.hambomb.cache.examples.service.PhoneCond;
+import org.hambomb.cache.examples.service.PhoneService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -32,10 +34,13 @@ public class BaseController {
     @Autowired
     private PersonService personService;
 
-    @GetMapping(path = "/hambomb/person/{id}")
-    public Person getPerson(@PathVariable Long id) {
+    @Autowired
+    private PhoneService phoneService;
 
-        return personService.getPersonById(id);
+    @GetMapping(path = "/hambomb/person/{id}")
+    public Mono<Person> getPerson(@PathVariable Long id) {
+
+        return Mono.just(personService.getPersonById(id));
     }
 
     @GetMapping(path = "/hambomb/cardIds/{cardId}")
@@ -43,6 +48,62 @@ public class BaseController {
 
         return personService.getPersonByCardId(cardId);
 
+    }
+
+    @PutMapping(path = "/hambomb/persons")
+    public String putPersonById(@RequestBody Person person) {
+        try {
+            personService.modifyAddressById(person);
+        } catch (Exception e) {
+            return "Fail";
+        }
+
+        return "isOk";
+    }
+
+    @DeleteMapping(path = "/hambomb/persons/{id}")
+    public void deletePerson(@PathVariable Long id) {
+
+        personService.deletePersonById(id);
+    }
+
+    @GetMapping(path = "/hambomb/phones")
+    public Mono<Phone> getPhoneByCond(@RequestParam String brand,
+                                       @RequestParam String model,
+                                      @RequestParam Integer memory,
+                                      @RequestParam String color) {
+
+        PhoneCond cond = new PhoneCond(brand, model, memory, color);
+
+        return Mono.just(phoneService.getPhoneByCond(cond));
+    }
+
+    @PutMapping(path = "/hambomb/phones")
+    public Mono<String> putPhoneByObject(@RequestBody Phone phone) {
+
+        phoneService.modifyPhone(phone);
+        return Mono.just("isOK");
+
+    }
+
+    @DeleteMapping(path = "/hambomb/phones")
+    public Mono<String> deletePhoneByObject(@RequestParam String brand,
+                                         @RequestParam String model,
+                                         @RequestParam Integer memory,
+                                         @RequestParam String color) {
+        PhoneCond cond = new PhoneCond(brand, model, memory, color);
+        phoneService.deletePhone(cond);
+        return Mono.just("isOK");
+    }
+
+    @DeleteMapping(path = "/hambomb/phones/{brand}/{model}/{memory}/{color}")
+    public Mono<String> deletePhoneByObject1(@PathVariable(value = "brand") String brand,
+                                         @PathVariable(value = "model") String model,
+                                         @PathVariable(value = "memory") Integer memory,
+                                         @PathVariable(value = "color") String color) {
+        PhoneCond cond = new PhoneCond(brand, model, memory, color);
+        phoneService.deletePhone(cond);
+        return Mono.just("isOK");
     }
 
 }

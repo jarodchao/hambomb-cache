@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PostGetProcess {
 
-    String[] keys() default {};
+    String[] attrs() default {};
 
     String[] args() default {};
 

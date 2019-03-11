@@ -15,8 +15,8 @@
  */
 package org.hambomb.cache.examples.service;
 
-import org.hambomb.cache.examples.entity.Person;
-import org.hambomb.cache.examples.mapper.PersonMapper;
+import org.hambomb.cache.examples.entity.Phone;
+import org.hambomb.cache.examples.mapper.PhoneMapper;
 import org.hambomb.cache.handler.annotation.AfterDeleteProcess;
 import org.hambomb.cache.handler.annotation.AfterUpdateProcess;
 import org.hambomb.cache.handler.annotation.PostGetProcess;
@@ -25,31 +25,36 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-08
+ * @date: 2019-03-11
  */
 @Service
-public class PersonService {
+public class PhoneService {
 
     @Autowired
-    private PersonMapper personMapper;
+    private PhoneMapper phoneMapper;
 
-    public Person getPersonById(Long id) {
-        return personMapper.selectById(id);
+
+    @PostGetProcess(attrs = {"brand", "model", "memory", "color"} )
+    public Phone getPhoneByCond(PhoneCond cond) {
+
+        return phoneMapper.selectPhoneByCond(cond);
     }
 
-    @PostGetProcess(args = {"#0"})
-    public Person getPersonByCardId(String cardId) {
-        return personMapper.selectByCardId(cardId);
+    @AfterUpdateProcess(byPrimaryKey = false, attrs = {"brand", "model", "memory", "color"})
+    public void modifyPhone(Phone modify) {
+
+        phoneMapper.updatePhoneByCond(modify);
+
     }
 
-    @AfterUpdateProcess
-    public void modifyAddressById(Person modifyPerson) {
-
-        personMapper.updateAddressById(modifyPerson.getId(),modifyPerson.getAddress());
+    @AfterDeleteProcess(byPrimaryKey = false, attrs = {"brand", "model", "memory", "color"},enityClass = Phone.class)
+    public void deletePhone(PhoneCond cond) {
+        phoneMapper.deletePhoneByCond(cond);
     }
 
-    @AfterDeleteProcess(enityClass = Person.class)
-    public void deletePersonById(Long id) {
-        personMapper.deleteById(id);
+    @AfterDeleteProcess(byPrimaryKey = false, attrs = {"brand", "model", "memory", "color"}, enityClass = Phone.class)
+    public void deletePhone(String brand, String model, Integer memory, String color) {
+
+        phoneMapper.deletePhoneByCond(new PhoneCond(brand, model, memory, color));
     }
 }

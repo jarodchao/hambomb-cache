@@ -13,25 +13,20 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler.annotation;
+package org.hambomb.cache.examples.web;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
- * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-06
+ * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-09
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface AfterUpdateProcess {
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        TestBaseController.class
+})
+public class TestLocalDevelopBaseController {
 
-    boolean byPrimaryKey() default true;
-
-    String[] attrs() default {};
-
-    String[] args() default {};
 
 }
