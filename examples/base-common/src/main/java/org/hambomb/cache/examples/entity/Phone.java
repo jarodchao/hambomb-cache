@@ -23,7 +23,6 @@ import java.io.Serializable;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-11
  */
-@Cachekey(findKeys = {"brand", "model", "memory", "color"})
 public class Phone implements Serializable {
 
     private static final long serialVersionUID = -8446319967823518965L;

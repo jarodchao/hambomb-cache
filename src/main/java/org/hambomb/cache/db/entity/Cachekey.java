@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Cachekey {
 

@@ -23,7 +23,6 @@ import java.io.Serializable;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-08
  */
-@Cachekey(findKeys = {"cardId"})
 public class Person implements Serializable {
 
     private static final long serialVersionUID = 3267254298048023381L;

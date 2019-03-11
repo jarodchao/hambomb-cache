@@ -252,8 +252,7 @@ public class CacheLoaderProcessInterceptor {
         InterceptorMetaData metaData = new InterceptorMetaData();
         metaData.method = method;
 
-        metaData.methodAnnotation = ReflectionUtils.getAnnotations(method).stream()
-                .filter(annotation -> annotation.annotationType() == methodAnnotation).findFirst().get();
+        metaData.methodAnnotation = CacheUtils.getAnnotation(method, methodAnnotation);
 
         return metaData;
     }

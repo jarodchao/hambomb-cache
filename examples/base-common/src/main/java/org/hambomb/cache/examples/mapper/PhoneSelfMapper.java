@@ -18,6 +18,7 @@ package org.hambomb.cache.examples.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.hambomb.cache.db.entity.CacheObjectMapper;
+import org.hambomb.cache.db.entity.Cachekey;
 import org.hambomb.cache.examples.entity.Phone;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public interface PhoneSelfMapper extends CacheObjectMapper<Phone> {
 
     @Select("select id,Brand, model, memory, color, weight, pattern, origin " +
             "from t_phone ")
+    @Cachekey(findKeys = {"brand", "model", "memory", "color"})
     @Override
     List<Phone> selectAllCacheObject();
 }

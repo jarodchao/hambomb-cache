@@ -24,12 +24,16 @@ import org.hambomb.cache.db.entity.EntityLoader;
 import org.hambomb.cache.db.entity.MapperScanner;
 import org.hambomb.cache.handler.CacheHandler;
 import org.hambomb.cache.index.IndexFactory;
+import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.reflections.ReflectionUtils.withAnnotation;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -162,12 +166,16 @@ public class HambombCacheProcessor {
                 }
             }
 
+            Method selectAllCacheObject =
+                    ReflectionUtils.getMethods(aClass, ReflectionUtils.withName("selectAllCacheObject"))
+                            .stream().findFirst().get();
+
             EntityLoader entityLoader = new EntityLoader(mapper);
 
             Class entityClass = mapper.getSubEntityClass();
 
             /** 取@的值 */
-            Cachekey cachekey = (Cachekey) entityClass.getAnnotation(Cachekey.class);
+            Cachekey cachekey = (Cachekey) CacheUtils.getAnnotation(selectAllCacheObject, Cachekey.class);
 
             String[] pk = cachekey.primaryKeys();
             String[] fk = cachekey.findKeys();
@@ -185,12 +193,12 @@ public class HambombCacheProcessor {
 
             for (String p : pk) {
 
-                entityLoader.addPkGetter(CacheUtils.getterMethod(p, entityClass));
+                entityLoader.addPkGetter(CacheUtils.getGetterMethod(p, entityClass));
             }
 
             for (String f : fk) {
 
-                entityLoader.addFkGetter(CacheUtils.getterMethod(f, entityClass));
+                entityLoader.addFkGetter(CacheUtils.getGetterMethod(f, entityClass));
             }
 
             return entityLoader;

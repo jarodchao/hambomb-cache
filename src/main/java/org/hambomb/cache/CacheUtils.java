@@ -19,6 +19,7 @@ import org.reflections.ReflectionUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
@@ -52,11 +53,18 @@ public class CacheUtils {
         return f + v.substring(1, v.length());
     }
 
-    public static Method getterMethod(String name, Class entityClazz) {
+    public static Method getGetterMethod(String name, Class entityClazz) {
         Set<Method> getters = ReflectionUtils.getAllMethods(entityClazz,
                 withModifier(Modifier.PUBLIC), withName(CacheUtils.getter(name)), withParametersCount(0));
 
         return getters.stream().findFirst().get();
+    }
+
+    public static <T extends Annotation> Annotation getAnnotation(Method method, Class<T> reflectAnnotation) {
+
+        return ReflectionUtils.getAnnotations(method).stream()
+                .filter(annotation -> annotation.annotationType() == reflectAnnotation).findFirst().get();
+
     }
 
     public static String[] getNullPropertyNames (Object source) {
