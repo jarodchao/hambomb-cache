@@ -37,8 +37,6 @@ public class Configuration {
 
     public KeyGeneratorStrategy keyGeneratorStrategy;
 
-    public KeyPermutationCombinationStrategy keyPermutationCombinationStrategy = KeyPermutationCombinationStrategy.NONE;
-
     public CacheHandler cacheHandler = new LocalCacheHandler();
 
     public Configuration addCacheServerStrategy(CacheServerStrategy cacheServerStrategy) {
@@ -66,11 +64,6 @@ public class Configuration {
         return this;
     }
 
-    public Configuration addKeyPermutationCombinationStrategy(KeyPermutationCombinationStrategy keyPermutationCombinationStrategy) {
-        this.keyPermutationCombinationStrategy = keyPermutationCombinationStrategy;
-        return this;
-
-    }
     public enum CacheServerStrategy {
 
         STANDALONE,CLUSTER,DEVELOP;

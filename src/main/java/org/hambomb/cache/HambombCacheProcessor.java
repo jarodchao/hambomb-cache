@@ -181,9 +181,10 @@ public class HambombCacheProcessor {
             String[] fk = cachekey.findKeys();
 
             IndexFactory indexFactory =
-                    IndexFactory.create(mapper.getClass().getSimpleName(), pk, fk, configuration.keyGeneratorStrategy);
+                    IndexFactory.create(mapper.getClass().getSimpleName(), pk, fk,
+                            configuration.keyGeneratorStrategy,cachekey.peek() == 0 ? fk.length : cachekey.peek());
 
-            indexFactory.keyPermutationCombinationStrategy = configuration.keyPermutationCombinationStrategy;
+            indexFactory.keyPermutationCombinationStrategy = cachekey.strategy();
 
             indexFactory.validate();
 

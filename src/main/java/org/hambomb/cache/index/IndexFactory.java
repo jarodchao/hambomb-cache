@@ -17,11 +17,14 @@ package org.hambomb.cache.index;
 
 import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.ConfigurationException;
+import org.hambomb.cache.HambombCache;
 import org.hambomb.cache.storage.key.KeyGeneratorStrategy;
 import com.google.common.collect.Lists;
 import org.hambomb.cache.storage.key.KeyPermutationCombinationStrategy;
 import org.raistlic.common.permutation.Combination;
 import org.raistlic.common.permutation.Permutation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -50,19 +53,25 @@ public class IndexFactory {
 
     public KeyPermutationCombinationStrategy keyPermutationCombinationStrategy;
 
+    public int peek;
+
+    private static final Logger LOG = LoggerFactory.getLogger(IndexFactory.class);
 
     public static IndexFactory create(String loaderName, String[] primaryIndex, String[] indexKeys,
-                                      KeyGeneratorStrategy keyGeneratorStrategy) {
+                                      KeyGeneratorStrategy keyGeneratorStrategy,int peek) {
 
-        return new IndexFactory(loaderName, primaryIndex, indexKeys, keyGeneratorStrategy);
+        return new IndexFactory(loaderName, primaryIndex, indexKeys, keyGeneratorStrategy, peek);
     }
 
 
-    public IndexFactory(String loaderName, String[] primaryIndex, String[] indexKeys, KeyGeneratorStrategy keyGeneratorStrategy) {
+    public IndexFactory(String loaderName, String[] primaryIndex,
+                        String[] indexKeys, KeyGeneratorStrategy keyGeneratorStrategy,
+                        int peek) {
         this.loaderName = loaderName;
         this.primaryIndex = primaryIndex;
         this.indexKeys = indexKeys;
         this.keyGeneratorStrategy = keyGeneratorStrategy;
+        this.peek = peek;
 
     }
 
@@ -82,7 +91,7 @@ public class IndexFactory {
 
         if (keyPermutationCombinationStrategy.equals(KeyPermutationCombinationStrategy.PERMUTATION)) {
 
-            for (int i = 1; i <= size; i++) {
+            for (int i = peek; i <= size; i++) {
 
                 Permutation.of(Arrays.asList(findIndexValues), size).forEach(indexes -> {
 
@@ -95,7 +104,7 @@ public class IndexFactory {
             }
         } else if (keyPermutationCombinationStrategy.equals(KeyPermutationCombinationStrategy.COMBINATION)) {
 
-            for (int i = 1; i <= size; i++) {
+            for (int i = peek; i <= size; i++) {
 
                 Combination.of(Arrays.asList(findIndexValues), i).forEach(indexes -> {
 
@@ -106,11 +115,6 @@ public class IndexFactory {
 
                 });
             }
-        } else {
-            String key = toCacheKey(entityName, findIndexValues);
-
-            lookup.put(key, key);
-            curLookup.put(key, key);
         }
 
         return curLookup;

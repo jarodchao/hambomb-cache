@@ -21,7 +21,10 @@ package org.hambomb.cache.storage.key;
  */
 public enum KeyPermutationCombinationStrategy {
 
-    PERMUTATION, NONE, COMBINATION;
+    /** 排列 */
+    PERMUTATION,
+    /** 组合 */
+    COMBINATION
 
 
 }

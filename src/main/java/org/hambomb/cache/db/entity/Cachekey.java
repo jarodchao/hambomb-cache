@@ -15,6 +15,8 @@
  */
 package org.hambomb.cache.db.entity;
 
+import org.hambomb.cache.storage.key.KeyPermutationCombinationStrategy;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -42,4 +44,8 @@ public @interface Cachekey {
     String[] findKeys();
 
 
+    KeyPermutationCombinationStrategy strategy() default KeyPermutationCombinationStrategy.COMBINATION;
+
+    /** default values is findKeys().length */
+    int peek() default 0;
 }

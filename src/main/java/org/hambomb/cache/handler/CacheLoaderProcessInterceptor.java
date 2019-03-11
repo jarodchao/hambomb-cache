@@ -225,10 +225,6 @@ public class CacheLoaderProcessInterceptor {
 
         String cacheKey = entityLoader.indexFactory.toCacheKey(entityLoader.entityClassName, values);
 
-//        if (cacheKey.equals(entityLoader.indexFactory.uniqueKey)) {
-//            return processor.getCacheHandler().get(cacheKey);
-//        }
-
         String uniqueKey = (String) processor.getCacheHandler().get(cacheKey);
 
         return processor.getCacheHandler().get(uniqueKey);

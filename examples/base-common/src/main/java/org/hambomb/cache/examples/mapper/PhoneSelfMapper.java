@@ -33,7 +33,7 @@ public interface PhoneSelfMapper extends CacheObjectMapper<Phone> {
 
     @Select("select id,Brand, model, memory, color, weight, pattern, origin " +
             "from t_phone ")
-    @Cachekey(findKeys = {"brand", "model", "memory", "color"})
+    @Cachekey(findKeys = {"brand", "model", "memory", "color"}, peek = 3)
     @Override
     List<Phone> selectAllCacheObject();
 }

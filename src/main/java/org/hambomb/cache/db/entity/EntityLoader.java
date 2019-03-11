@@ -19,6 +19,8 @@ import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.handler.CacheHandler;
 import org.hambomb.cache.index.IndexFactory;
 import com.google.common.reflect.Reflection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -47,6 +49,8 @@ public class EntityLoader<T> {
     public CacheHandler cacheHandler;
 
     public IndexFactory indexFactory;
+
+    private static final Logger LOG = LoggerFactory.getLogger(EntityLoader.class);
 
     public EntityLoader(CacheObjectMapper<T> cacheObjectMapper) {
         this.cacheObjectMapper = cacheObjectMapper;
@@ -82,7 +86,14 @@ public class EntityLoader<T> {
 
             cacheHandler.put(uniqueKey, o);
 
-            lookup.forEach((key, value) -> cacheHandler.put(key, uniqueKey));
+            lookup.forEach((key, value) -> {
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("EntityLoader[{}] was cache data: Key[{}] Value[{}]", this.entityClassName,
+                            key, uniqueKey);
+                }
+                cacheHandler.put(key, uniqueKey);
+            });
 
         });
     }
