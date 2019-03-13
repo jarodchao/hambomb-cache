@@ -25,4 +25,8 @@ public interface ValueStorageStrategy {
     Byte[] toByte(Object object);
 
     String toStr(Object object);
+
+    Object toObject(String value);
+
+    Object toObject(String value,Class clazz);
 }

@@ -17,7 +17,7 @@ package org.hambomb.cache.db.entity;
 
 import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.handler.CacheHandler;
-import org.hambomb.cache.index.IndexFactory;
+import org.hambomb.cache.index.IndexRepository;
 import com.google.common.reflect.Reflection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public class EntityLoader<T> {
 
     public CacheHandler cacheHandler;
 
-    public IndexFactory indexFactory;
+    public IndexRepository indexRepository;
 
     private static final Logger LOG = LoggerFactory.getLogger(EntityLoader.class);
 
@@ -56,8 +56,8 @@ public class EntityLoader<T> {
         this.cacheObjectMapper = cacheObjectMapper;
     }
 
-    public EntityLoader addIndexFactory(IndexFactory indexFactory) {
-        this.indexFactory = indexFactory;
+    public EntityLoader addIndexFactory(IndexRepository indexRepository) {
+        this.indexRepository = indexRepository;
         return this;
     }
 
@@ -71,10 +71,10 @@ public class EntityLoader<T> {
         entityClassName = entityClazz.getSimpleName();
         entityPackageName = Reflection.getPackageName(entityClazz);
 
-        pkGetter = new ArrayList<>(indexFactory.primaryIndex.length);
-        fkGetter = new ArrayList<>(indexFactory.indexKeys.length);
+        pkGetter = new ArrayList<>(indexRepository.primaryIndex.length);
+        fkGetter = new ArrayList<>(indexRepository.indexKeys.length);
 
-        indexFactory.entityName = entityClassName;
+        indexRepository.entityName = entityClassName;
 
     }
 
@@ -126,7 +126,7 @@ public class EntityLoader<T> {
             pkValues[i] = getValueByMethod(t, pkGetter.get(i));
         }
 
-        return indexFactory.buildUniqueKey(pkValues);
+        return indexRepository.buildUniqueKey(pkValues);
 
     }
 
@@ -138,7 +138,7 @@ public class EntityLoader<T> {
             fkValues[i] = getValueByMethod(t, fkGetter.get(i));
         }
 
-        return indexFactory.buildLookup(fkValues);
+        return indexRepository.buildLookup(fkValues);
 
     }
 

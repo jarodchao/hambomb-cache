@@ -19,13 +19,13 @@ package org.hambomb.cache.handler;
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public interface CacheHandler {
+public interface CacheHandler<T> {
 
-    void put(String key, Object value);
+    void put(String key, T value);
 
-    Object get(String key);
+    T get(String key);
 
-    void update(String key, Object value);
+    void update(String key, T value);
 
     void delete(String key);
 }

@@ -15,6 +15,8 @@
  */
 package org.hambomb.cache;
 
+import com.google.common.base.Predicate;
+import org.hambomb.cache.db.entity.Cachekey;
 import org.reflections.ReflectionUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -62,8 +64,9 @@ public class CacheUtils {
 
     public static <T extends Annotation> Annotation getAnnotation(Method method, Class<T> reflectAnnotation) {
 
-        return ReflectionUtils.getAnnotations(method).stream()
-                .filter(annotation -> annotation.annotationType() == reflectAnnotation).findFirst().get();
+        Predicate<Annotation> findAnnotation = input -> input != null && input.annotationType() == reflectAnnotation;
+
+        return ReflectionUtils.getAnnotations(method, findAnnotation).stream().findFirst().get();
 
     }
 

@@ -17,7 +17,6 @@ package org.hambomb.cache.index;
 
 import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.ConfigurationException;
-import org.hambomb.cache.HambombCache;
 import org.hambomb.cache.storage.key.KeyGeneratorStrategy;
 import com.google.common.collect.Lists;
 import org.hambomb.cache.storage.key.KeyPermutationCombinationStrategy;
@@ -35,7 +34,7 @@ import java.util.Map;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public class IndexFactory {
+public class IndexRepository {
 
     public static final String RESERVED_WORD = "id";
 
@@ -55,18 +54,18 @@ public class IndexFactory {
 
     public int peek;
 
-    private static final Logger LOG = LoggerFactory.getLogger(IndexFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IndexRepository.class);
 
-    public static IndexFactory create(String loaderName, String[] primaryIndex, String[] indexKeys,
-                                      KeyGeneratorStrategy keyGeneratorStrategy,int peek) {
+    public static IndexRepository create(String loaderName, String[] primaryIndex, String[] indexKeys,
+                                         KeyGeneratorStrategy keyGeneratorStrategy, int peek) {
 
-        return new IndexFactory(loaderName, primaryIndex, indexKeys, keyGeneratorStrategy, peek);
+        return new IndexRepository(loaderName, primaryIndex, indexKeys, keyGeneratorStrategy, peek);
     }
 
 
-    public IndexFactory(String loaderName, String[] primaryIndex,
-                        String[] indexKeys, KeyGeneratorStrategy keyGeneratorStrategy,
-                        int peek) {
+    public IndexRepository(String loaderName, String[] primaryIndex,
+                           String[] indexKeys, KeyGeneratorStrategy keyGeneratorStrategy,
+                           int peek) {
         this.loaderName = loaderName;
         this.primaryIndex = primaryIndex;
         this.indexKeys = indexKeys;

@@ -130,14 +130,14 @@ public class CacheLoaderProcessInterceptor {
         if (afterDeleteProcess.byPrimaryKey()) {
             String[] pValues = new String[]{ String.valueOf(argValue[0])};
 
-            id = entityLoader.indexFactory.buildUniqueKey(pValues);
+            id = entityLoader.indexRepository.buildUniqueKey(pValues);
         }else {
 
             String[] args = afterDeleteProcess.attrs();
 
             String[] values = entityLoader.getEntityCacheKey(argValue[0], args);
 
-            String cacheKey = entityLoader.indexFactory.toCacheKey(entityLoader.entityClassName, values);
+            String cacheKey = entityLoader.indexRepository.toCacheKey(entityLoader.entityClassName, values);
 
             id = (String) processor.getCacheHandler().get(cacheKey);
         }
@@ -178,7 +178,7 @@ public class CacheLoaderProcessInterceptor {
 
             String[] values = entityLoader.getEntityCacheKey(argValue[0], args);
 
-            String cacheKey = entityLoader.indexFactory.toCacheKey(entityLoader.entityClassName, values);
+            String cacheKey = entityLoader.indexRepository.toCacheKey(entityLoader.entityClassName, values);
 
             id = (String) processor.getCacheHandler().get(cacheKey);
         }
@@ -223,7 +223,7 @@ public class CacheLoaderProcessInterceptor {
 
         }
 
-        String cacheKey = entityLoader.indexFactory.toCacheKey(entityLoader.entityClassName, values);
+        String cacheKey = entityLoader.indexRepository.toCacheKey(entityLoader.entityClassName, values);
 
         String uniqueKey = (String) processor.getCacheHandler().get(cacheKey);
 

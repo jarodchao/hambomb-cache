@@ -23,7 +23,7 @@ import org.hambomb.cache.db.entity.Cachekey;
 import org.hambomb.cache.db.entity.EntityLoader;
 import org.hambomb.cache.db.entity.MapperScanner;
 import org.hambomb.cache.handler.CacheHandler;
-import org.hambomb.cache.index.IndexFactory;
+import org.hambomb.cache.index.IndexRepository;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +32,6 @@ import org.springframework.context.ApplicationContext;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.reflections.ReflectionUtils.withAnnotation;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -177,18 +175,22 @@ public class HambombCacheProcessor {
             /** 取@的值 */
             Cachekey cachekey = (Cachekey) CacheUtils.getAnnotation(selectAllCacheObject, Cachekey.class);
 
+            if (cachekey == null) {
+                LOG.error("The CacheKey is missing from the selectAllCacheObject method implementation");
+            }
+
             String[] pk = cachekey.primaryKeys();
             String[] fk = cachekey.findKeys();
 
-            IndexFactory indexFactory =
-                    IndexFactory.create(mapper.getClass().getSimpleName(), pk, fk,
+            IndexRepository indexRepository =
+                    IndexRepository.create(mapper.getClass().getSimpleName(), pk, fk,
                             configuration.keyGeneratorStrategy,cachekey.peek() == 0 ? fk.length : cachekey.peek());
 
-            indexFactory.keyPermutationCombinationStrategy = cachekey.strategy();
+            indexRepository.keyPermutationCombinationStrategy = cachekey.strategy();
 
-            indexFactory.validate();
+            indexRepository.validate();
 
-            entityLoader.addIndexFactory(indexFactory);
+            entityLoader.addIndexFactory(indexRepository);
 
             entityLoader.initializeLoader();
 

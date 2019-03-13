@@ -13,31 +13,19 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler;
+package org.hambomb.cache.examples.web;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @date: 2019-03-12
  */
-public class StandaloneCacheHandler implements CacheHandler {
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        TestBaseController.class
+})
+public class TestRedisClusterBaseController {
 
-    @Override
-    public void put(String key, Object value) {
-
-    }
-
-    @Override
-    public Object get(String key) {
-        return null;
-    }
-
-    @Override
-    public void update(String key, Object value) {
-
-    }
-
-    @Override
-    public void delete(String key) {
-
-    }
 }

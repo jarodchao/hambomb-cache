@@ -15,6 +15,8 @@
  */
 package org.hambomb.cache.storage.value;
 
+import com.alibaba.fastjson.JSON;
+
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
@@ -29,6 +31,16 @@ public class JsonValueStorageStrategy implements ValueStorageStrategy {
 
     @Override
     public String toStr(Object object) {
+        return JSON.toJSONString(object);
+    }
+
+    @Override
+    public Object toObject(String value,Class clazz) {
+        return JSON.parseObject(value, clazz);
+    }
+
+    @Override
+    public Object toObject(String value) {
         return null;
     }
 }

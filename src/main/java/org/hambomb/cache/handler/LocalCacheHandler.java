@@ -22,7 +22,7 @@ import com.google.common.cache.CacheBuilder;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-05
  */
-public class LocalCacheHandler implements CacheHandler {
+public class LocalCacheHandler implements CacheHandler<Object> {
 
     private Cache<String, Object> cache = CacheBuilder.newBuilder().build();
 
@@ -45,6 +45,6 @@ public class LocalCacheHandler implements CacheHandler {
 
     @Override
     public void delete(String key) {
-
+        cache.invalidate(key);
     }
 }

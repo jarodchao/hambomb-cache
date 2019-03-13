@@ -78,7 +78,7 @@ public class TestBaseController {
     @Test
     public void test_putPhoneByObject() {
 
-        Phone phone = new Phone("华为", "Mate 20", 16, "黑色","拉萨");
+        Phone phone = new Phone("华为", "Mate 20", 32, "黑色","拉萨");
 
         this.webTestClient.put().uri("/hambomb/phones").syncBody(phone)
                 .exchange().expectStatus().isOk()
@@ -104,7 +104,7 @@ public class TestBaseController {
     @Test
     public void test_deletePhoneByObject1() {
 
-        PhoneCond cond = new PhoneCond("华为", "Mate 20", 16, "黑色");
+        PhoneCond cond = new PhoneCond("华为", "Mate 20", 16, "银色");
 
         this.webTestClient.delete().uri(uriBuilder -> uriBuilder.path("/hambomb/phones")
                 .pathSegment(cond.getBrand(),cond.getModel(),String.valueOf(cond.getMemory()),cond.getColor())
