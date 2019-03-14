@@ -15,9 +15,8 @@
  */
 package org.hambomb.cache.examples.config;
 
-import org.hambomb.cache.Configuration;
+import org.hambomb.cache.HambombCacheConfiguration;
 import org.hambomb.cache.HambombCache;
-import org.hambomb.cache.handler.LocalCacheHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,20 +30,19 @@ import org.springframework.context.annotation.ComponentScan;
 public class LocalDevelopConfig {
 
     @Bean
-    public Configuration hambombCacheConfig() {
-        Configuration configuration = new Configuration();
-        configuration.addScanPackageName("org.hambomb.cache.examples.mapper");
-        configuration.addCacheServerStrategy(Configuration.CacheServerStrategy.DEVELOP);
-        configuration.addCacheHandler(new LocalCacheHandler());
+    public HambombCacheConfiguration hambombCacheConfig() {
+        HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
+        hambombCacheConfiguration.addScanPackageName("org.hambomb.cache.examples.mapper");
+        hambombCacheConfiguration.addCacheServerStrategy(HambombCacheConfiguration.CacheServerStrategy.DEVELOP);
 
-        return configuration;
+        return hambombCacheConfiguration;
     }
 
     @Bean
     @Autowired
-    public HambombCache hambombCache(Configuration configuration) {
+    public HambombCache hambombCache(HambombCacheConfiguration hambombCacheConfiguration) {
 
-        HambombCache hambombCache = new HambombCache(configuration);
+        HambombCache hambombCache = new HambombCache(hambombCacheConfiguration);
         return hambombCache;
     }
 }

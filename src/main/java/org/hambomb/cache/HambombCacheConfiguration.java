@@ -15,17 +15,15 @@
  */
 package org.hambomb.cache;
 
-import org.hambomb.cache.handler.CacheHandler;
-import org.hambomb.cache.handler.LocalCacheHandler;
 import org.hambomb.cache.storage.key.KeyGeneratorStrategy;
-import org.hambomb.cache.storage.key.KeyPermutationCombinationStrategy;
+import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * Cache加载配置类
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public class Configuration {
+public class HambombCacheConfiguration {
 
     public String scanPackageName;
 
@@ -37,32 +35,28 @@ public class Configuration {
 
     public KeyGeneratorStrategy keyGeneratorStrategy;
 
-    public CacheHandler cacheHandler = new LocalCacheHandler();
+    public RedisTemplate<String, Object> redisTemplate;
 
-    public Configuration addCacheServerStrategy(CacheServerStrategy cacheServerStrategy) {
+    public HambombCacheConfiguration addCacheServerStrategy(CacheServerStrategy cacheServerStrategy) {
         this.cacheServerStrategy = cacheServerStrategy;
         return this;
     }
 
-    public Configuration addZKUrl(String zkUrl) {
+    public HambombCacheConfiguration addZKUrl(String zkUrl) {
         this.zkUrl = zkUrl;
         return this;
     }
 
-    public Configuration addScanPackageName(String scanPackageName) {
+    public HambombCacheConfiguration addScanPackageName(String scanPackageName) {
         this.scanPackageName = scanPackageName;
         return this;
     }
 
-    public Configuration addKeyGeneratorStrategy(KeyGeneratorStrategy keyGeneratorStrategy) {
+    public HambombCacheConfiguration addKeyGeneratorStrategy(KeyGeneratorStrategy keyGeneratorStrategy) {
         this.keyGeneratorStrategy = keyGeneratorStrategy;
         return this;
     }
 
-    public Configuration addCacheHandler(CacheHandler cacheHandler) {
-        this.cacheHandler = cacheHandler;
-        return this;
-    }
 
     public enum CacheServerStrategy {
 

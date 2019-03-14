@@ -139,16 +139,16 @@ public class CacheLoaderProcessInterceptor {
 
             String cacheKey = entityLoader.indexRepository.toCacheKey(entityLoader.entityClassName, values);
 
-            id = (String) processor.getCacheHandler().get(cacheKey);
+            id = (String) entityLoader.cacheHandler.get(cacheKey);
         }
 
-        Object cacheObject = processor.getCacheHandler().get(id);
+        Object cacheObject = entityLoader.cacheHandler.get(id);
 
-        processor.getCacheHandler().delete(id);
+        entityLoader.cacheHandler.delete(id);
 
         Map<String, String> lookup =  entityLoader.getFKeys(cacheObject);
 
-        lookup.forEach((key, value) -> processor.getCacheHandler().delete(key));
+        lookup.forEach((key, value) -> entityLoader.cacheHandler.delete(key));
 
 
     }
@@ -180,14 +180,14 @@ public class CacheLoaderProcessInterceptor {
 
             String cacheKey = entityLoader.indexRepository.toCacheKey(entityLoader.entityClassName, values);
 
-            id = (String) processor.getCacheHandler().get(cacheKey);
+            id = (String) entityLoader.cacheHandler.get(cacheKey);
         }
 
-        Object cacheObject = processor.getCacheHandler().get(id);
+        Object cacheObject = entityLoader.cacheHandler.get(id);
 
         BeanUtils.copyProperties(argValue[0], cacheObject, CacheUtils.getNullPropertyNames(argValue[0]));
 
-        processor.getCacheHandler().update(id, cacheObject);
+        entityLoader.cacheHandler.update(id, cacheObject);
 
     }
 
@@ -225,9 +225,9 @@ public class CacheLoaderProcessInterceptor {
 
         String cacheKey = entityLoader.indexRepository.toCacheKey(entityLoader.entityClassName, values);
 
-        String uniqueKey = (String) processor.getCacheHandler().get(cacheKey);
+        String uniqueKey = (String) entityLoader.cacheHandler.get(cacheKey);
 
-        return processor.getCacheHandler().get(uniqueKey);
+        return entityLoader.cacheHandler.get(uniqueKey);
     }
 
     private <T extends Annotation> InterceptorMetaData getInterceptorAnnotation(

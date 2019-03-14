@@ -12,10 +12,19 @@ spring:
         max-idle: 8
         min-idle: 0
       shutdown-timeout: 100
+hambomb:
+  cache:
+    cacheServerStrategy: HambombCacheConfiguration.CacheServerStrategy.CLUSTER
+    zkUrl: localhost:2181
+    scanPackageName: org.hambomb.cache.examples.mapper
+    dataLoadStrategy: HambombCacheConfiguration.DataLoadStrategy.FULL
+
+#
 #hambomb:
 #  cache:
 #    scan-package-name: org.hambomb.cache.examples.mapper
 #    zk-url: localhost:2181
 #    cache-server-strategy: cluster
 #    data-load-strategy: full
+
 

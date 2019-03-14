@@ -13,17 +13,20 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.storage.value;
+package org.hambomb.cache;
+
+import org.springframework.context.annotation.Import;
+
+import java.lang.annotation.*;
 
 /**
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @date: 2019-03-14
  */
-public interface ValueStorageStrategy<T> {
-
-
-    byte[] serialize(T t);
-
-    T deserialize(byte[] bytes);
-
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@Import({HambombCacheAutoConfiguration.class})
+public @interface EnableHambombCache {
 }

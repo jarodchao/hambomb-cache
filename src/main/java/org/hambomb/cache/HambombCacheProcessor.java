@@ -23,14 +23,22 @@ import org.hambomb.cache.db.entity.Cachekey;
 import org.hambomb.cache.db.entity.EntityLoader;
 import org.hambomb.cache.db.entity.MapperScanner;
 import org.hambomb.cache.handler.CacheHandler;
+import org.hambomb.cache.handler.LocalCacheHandler;
+import org.hambomb.cache.handler.RedisTemplateCacheHandler;
 import org.hambomb.cache.index.IndexRepository;
+import org.hambomb.cache.storage.value.KryoSerializationRedisSerializer;
+import org.hambomb.cache.storage.value.RedisValueStorageStrategy;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -41,11 +49,9 @@ public class HambombCacheProcessor {
 
     ApplicationContext applicationContext;
 
-    Configuration configuration;
+    HambombCacheConfiguration hambombCacheConfiguration;
 
     private Map<String, EntityLoader> entityLoaderMap;
-
-    private CacheHandler cacheHandler;
 
     private MapperScanner scanner;
 
@@ -55,9 +61,11 @@ public class HambombCacheProcessor {
 
     private ClusterProcessor clusterProcessor;
 
-    public HambombCacheProcessor(ApplicationContext applicationContext, Configuration configuration, ClusterProcessor clusterProcessor) {
+    RedisTemplate<String, Object> redisTemplate;
+
+    public HambombCacheProcessor(ApplicationContext applicationContext, HambombCacheConfiguration hambombCacheConfiguration, ClusterProcessor clusterProcessor) {
         this.applicationContext = applicationContext;
-        this.configuration = configuration;
+        this.hambombCacheConfiguration = hambombCacheConfiguration;
         this.clusterProcessor = clusterProcessor;
     }
 
@@ -72,15 +80,11 @@ public class HambombCacheProcessor {
         return entityLoaderMap.get(key);
     }
 
-    public void addCacheHandler(CacheHandler cacheHandler) {
-        this.cacheHandler = cacheHandler;
-    }
-
     public CacheLoaderMaster fightMaster() {
 
         CacheLoaderMaster masterFlag = null;
 
-        if (Configuration.CacheServerStrategy.CLUSTER == configuration.cacheServerStrategy) {
+        if (HambombCacheConfiguration.CacheServerStrategy.CLUSTER == hambombCacheConfiguration.cacheServerStrategy) {
 
             clusterProcessor.initNodes();
 
@@ -92,10 +96,6 @@ public class HambombCacheProcessor {
 
         return masterFlag;
 
-    }
-
-    public CacheHandler getCacheHandler() {
-        return cacheHandler;
     }
 
     public void restart() {
@@ -120,9 +120,9 @@ public class HambombCacheProcessor {
 
     private void startLoader() {
 
-        if (configuration.scanPackageName != null && !"".equals(configuration.scanPackageName)) {
+        if (hambombCacheConfiguration.scanPackageName != null && !"".equals(hambombCacheConfiguration.scanPackageName)) {
 
-            scanner = new MapperScanner(configuration.scanPackageName);
+            scanner = new MapperScanner(hambombCacheConfiguration.scanPackageName);
 
             mappers = scanner.scanMapper();
         }
@@ -133,14 +133,25 @@ public class HambombCacheProcessor {
 
         for (EntityLoader entityLoader : entityLoaders) {
 
-            entityLoader.cacheHandler = cacheHandler;
+            if (hambombCacheConfiguration.cacheServerStrategy.equals(HambombCacheConfiguration.CacheServerStrategy.CLUSTER)) {
+
+                KryoSerializationRedisSerializer<Object> kryoSerializationRedisSerializer = new KryoSerializationRedisSerializer();
+
+                RedisValueStorageStrategy<Object> redisValueStorageStrategy = new RedisValueStorageStrategy(kryoSerializationRedisSerializer);
+
+                CacheHandler<Object> redisTemplateCacheHandler = new RedisTemplateCacheHandler(hambombCacheConfiguration.redisTemplate, redisValueStorageStrategy);
+
+                entityLoader.cacheHandler = redisTemplateCacheHandler;
+            }else {
+                entityLoader.cacheHandler = new LocalCacheHandler();
+            }
 
             entityLoader.loadData();
 
             entityLoaderMap.put(entityLoader.entityClassName, entityLoader);
         }
 
-        if (configuration.cacheServerStrategy.equals(Configuration.CacheServerStrategy.CLUSTER)) {
+        if (hambombCacheConfiguration.cacheServerStrategy.equals(HambombCacheConfiguration.CacheServerStrategy.CLUSTER)) {
 
             clusterProcessor.finishDataLoadNode();
         }
@@ -184,7 +195,7 @@ public class HambombCacheProcessor {
 
             IndexRepository indexRepository =
                     IndexRepository.create(mapper.getClass().getSimpleName(), pk, fk,
-                            configuration.keyGeneratorStrategy,cachekey.peek() == 0 ? fk.length : cachekey.peek());
+                            hambombCacheConfiguration.keyGeneratorStrategy,cachekey.peek() == 0 ? fk.length : cachekey.peek());
 
             indexRepository.keyPermutationCombinationStrategy = cachekey.strategy();
 

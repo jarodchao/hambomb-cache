@@ -15,41 +15,41 @@
  */
 package org.hambomb.cache.handler;
 
-import org.hambomb.cache.storage.value.JsonValueStorageStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
+import org.hambomb.cache.storage.value.RedisValueStorageStrategy;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public class RedisTemplateCacheHandler implements CacheHandler {
+public class RedisTemplateCacheHandler<T> implements CacheHandler<T> {
 
-    private RedisTemplate<String,String> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
-    private JsonValueStorageStrategy valueStorageStrategy;
+    private RedisValueStorageStrategy valueStorageStrategy;
 
-    public RedisTemplateCacheHandler(RedisTemplate<String, String> redisTemplate, JsonValueStorageStrategy valueStorageStrategy) {
+    public RedisTemplateCacheHandler(RedisTemplate<String, Object> redisTemplate, RedisValueStorageStrategy valueStorageStrategy) {
         this.redisTemplate = redisTemplate;
-        this.valueStorageStrategy = valueStorageStrategy != null ? valueStorageStrategy : new JsonValueStorageStrategy();
+        this.valueStorageStrategy = valueStorageStrategy;
     }
 
     @Override
-    public void put(String key, Object value) {
-        redisTemplate.opsForValue().set(key, valueStorageStrategy.toStr(value));
+    public void put(String key, T value) {
+        redisTemplate.opsForValue().set(key, value);
     }
 
     @Override
-    public Object get(String key) {
-        return valueStorageStrategy.toObject(redisTemplate.opsForValue().get(key), Object.class);
+    public T get(String key) {
+//        byte[] data = redisTemplate.opsForValue().get(key);
+
+//        return (T) valueStorageStrategy.deserialize(data);
+
+        return (T) redisTemplate.opsForValue().get(key);
     }
 
     @Override
-    public void update(String key, Object value) {
-        redisTemplate.opsForValue().set(key, valueStorageStrategy.toStr(value));
+    public void update(String key, T value) {
+        put(key, value);
     }
 
     @Override

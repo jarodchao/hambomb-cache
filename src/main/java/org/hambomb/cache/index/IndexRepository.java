@@ -146,7 +146,7 @@ public class IndexRepository {
                 || Arrays.binarySearch(this.indexKeys, RESERVED_WORD.toUpperCase()) > 0
                 || Arrays.binarySearch(this.indexKeys, CacheUtils.upCase(RESERVED_WORD)) > 0) {
 
-            throw new ConfigurationException("Configuration containing reserved word.");
+            throw new ConfigurationException("HambombCacheConfiguration containing reserved word.");
 
         }
 

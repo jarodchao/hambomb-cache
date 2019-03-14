@@ -40,7 +40,7 @@ public class EntityLoader<T> {
 
     public List<Method> fkGetter;
 
-    Class<T> entityClazz;
+    public Class<T> entityClazz;
 
     public String entityClassName;
 

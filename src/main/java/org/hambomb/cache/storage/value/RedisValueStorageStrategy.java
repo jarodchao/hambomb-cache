@@ -15,32 +15,28 @@
  */
 package org.hambomb.cache.storage.value;
 
-import com.alibaba.fastjson.JSON;
+import org.springframework.data.redis.serializer.RedisSerializer;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public class JsonValueStorageStrategy implements ValueStorageStrategy {
+public class RedisValueStorageStrategy<T> implements ValueStorageStrategy<T> {
 
-    @Override
-    public Byte[] toByte(Object object) {
 
-        return new Byte[0];
+    private RedisSerializer<T> redisSerializer;
+
+    public RedisValueStorageStrategy(RedisSerializer<T> redisSerializer) {
+        this.redisSerializer = redisSerializer;
     }
 
     @Override
-    public String toStr(Object object) {
-        return JSON.toJSONString(object);
+    public byte[] serialize(T t) {
+        return redisSerializer.serialize(t);
     }
 
     @Override
-    public Object toObject(String value,Class clazz) {
-        return JSON.parseObject(value, clazz);
-    }
-
-    @Override
-    public Object toObject(String value) {
-        return null;
+    public T deserialize(byte[] bytes) {
+        return redisSerializer.deserialize(bytes);
     }
 }

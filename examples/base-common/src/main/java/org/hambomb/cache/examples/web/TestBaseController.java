@@ -43,7 +43,7 @@ public class TestBaseController {
         String cardId = "10000000000000005";
 
         this.webTestClient.get().uri("/hambomb/cardIds/{cardId}", cardId)
-                .exchange().expectStatus().isOk();
+                .exchange().expectStatus().isOk().expectBody(String.class).value(s1 -> System.out.println(s1));
     }
 
     @Test

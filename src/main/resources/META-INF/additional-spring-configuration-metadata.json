@@ -1,0 +1,38 @@
+{
+  "groups": [
+    {
+      "name": "hambomb.cache",
+      "type": "org.hambomb.cache.HambombCacheProperties",
+      "sourceType": "org.hambomb.cache.HambombCacheProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "hambomb.cache.scanPackageName",
+      "type": "java.lang.String",
+      "sourceType": "org.hambomb.cache.HambombCacheProperties"
+    },
+    {
+      "name": "hambomb.cache.zkUrl",
+      "type": "java.lang.String",
+      "sourceType": "org.hambomb.cache.HambombCacheProperties"
+    },
+    {
+      "name": "hambomb.cache.cacheServerStrategy",
+      "sourceType": "org.hambomb.cache.HambombCacheProperties",
+      "defaultValue": [
+        "HambombCacheConfiguration.CacheServerStrategy.STANDALONE",
+        "HambombCacheConfiguration.CacheServerStrategy.DEVELOP",
+        "HambombCacheConfiguration.CacheServerStrategy.CLUSTER"
+      ]
+    },
+    {
+      "name": "hambomb.cache.dataLoadStrategy",
+      "sourceType": "org.hambomb.cache.HambombCacheProperties",
+      "defaultValue": [
+        "HambombCacheConfiguration.DataLoadStrategy.FULL",
+        "HambombCacheConfiguration.DataLoadStrategy.INCREMENT"
+      ]
+    }
+  ]
+}

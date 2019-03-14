@@ -13,37 +13,33 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.examples.config;
+package org.hambomb.cache;
 
-import org.hambomb.cache.HambombCache;
-import org.hambomb.cache.HambombCacheConfiguration;
 import org.hambomb.cache.storage.key.RedisKeyGeneratorStrategy;
 import org.hambomb.cache.storage.value.KryoSerializationRedisSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-12
+ * @date: 2019-03-14
  */
-@Configuration
-@ComponentScan(basePackages = {"org.hambomb.cache"})
-public class RedisClusterConfig {
+@EnableConfigurationProperties(HambombCacheProperties.class)
+public class HambombCacheAutoConfiguration {
 
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
+    @Autowired
+    private HambombCacheProperties hambombCacheProperties;
 
-        return new LettuceConnectionFactory(new RedisStandaloneConfiguration("localhost", 6379));
+    public HambombCacheAutoConfiguration() {
+
     }
 
-
     @Bean
+    @ConditionalOnMissingBean(name = "redisTemplate")
     @Autowired
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
@@ -51,26 +47,29 @@ public class RedisClusterConfig {
         template.setEnableDefaultSerializer(false);
         template.setValueSerializer(new KryoSerializationRedisSerializer());
         template.setKeySerializer(new KryoSerializationRedisSerializer<>());
-//        template.setDefaultSerializer(new KryoSerializationRedisSerializer());
-//        template.setHashValueSerializer(new KryoSerializationRedisSerializer());
         template.afterPropertiesSet();
         return template;
     }
 
     @Bean
-    @Autowired
+    @ConditionalOnMissingBean(name = "hambombCacheConfiguration")
     public HambombCacheConfiguration hambombCacheConfig(RedisTemplate<String, Object> redisTemplate) {
+
         HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
-        hambombCacheConfiguration.addScanPackageName("org.hambomb.cache.examples.mapper");
-        hambombCacheConfiguration.addZKUrl("localhost:2181");
-        hambombCacheConfiguration.addKeyGeneratorStrategy(new RedisKeyGeneratorStrategy());
-        hambombCacheConfiguration.addCacheServerStrategy(HambombCacheConfiguration.CacheServerStrategy.CLUSTER);
-        hambombCacheConfiguration.redisTemplate = redisTemplate;
+        hambombCacheConfiguration.addScanPackageName(hambombCacheProperties.getScanPackageName());
+        hambombCacheConfiguration.addCacheServerStrategy(hambombCacheProperties.getCacheServerStrategy());
+
+        if (hambombCacheProperties.getCacheServerStrategy().equals(HambombCacheConfiguration.CacheServerStrategy.CLUSTER)) {
+            hambombCacheConfiguration.addZKUrl(hambombCacheProperties.getZkUrl());
+            hambombCacheConfiguration.addKeyGeneratorStrategy(new RedisKeyGeneratorStrategy());
+            hambombCacheConfiguration.redisTemplate = redisTemplate;
+        }
 
         return hambombCacheConfiguration;
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = "hambombCacheConfiguration")
     @Autowired
     public HambombCache hambombCache(HambombCacheConfiguration hambombCacheConfiguration) {
 
