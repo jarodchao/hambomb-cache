@@ -77,7 +77,7 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
             LOG.error("HambombCacheConfiguration's  scanPackageName is null.");
         }
 
-        if (HambombCacheConfiguration.CacheServerStrategy.CLUSTER == hambombCacheConfiguration.cacheServerStrategy) {
+        if (CacheServerStrategy.CLUSTER == hambombCacheConfiguration.cacheServerStrategy) {
             if (StringUtils.isEmpty(hambombCacheConfiguration.zkUrl)) {
                 LOG.error("HambombCacheConfiguration's  zkUrl is null.");
             }
@@ -88,7 +88,7 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
             LOG.error("HambombCacheConfiguration's keyGeneratorStrategy is null.");
         }
 
-        if (HambombCacheConfiguration.CacheServerStrategy.DEVELOP == hambombCacheConfiguration.cacheServerStrategy) {
+        if (CacheServerStrategy.DEVELOP == hambombCacheConfiguration.cacheServerStrategy) {
             LOG.info("HambombCache will start develop mode.");
         }
 
@@ -102,7 +102,7 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
 
-        if (HambombCacheConfiguration.CacheServerStrategy.CLUSTER.equals(hambombCacheConfiguration.cacheServerStrategy)) {
+        if (CacheServerStrategy.CLUSTER.equals(hambombCacheConfiguration.cacheServerStrategy)) {
 
             afterClusterCacheLoad();
 
@@ -119,7 +119,7 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
             } else {
                 cacheLoaderContext.master = masterFlag;
             }
-        } else if (HambombCacheConfiguration.CacheServerStrategy.DEVELOP.equals(hambombCacheConfiguration.cacheServerStrategy)) {
+        } else if (CacheServerStrategy.DEVELOP.equals(hambombCacheConfiguration.cacheServerStrategy)) {
 
             afterDevelopCacheLoad();
 

@@ -28,27 +28,27 @@ public class HambombCacheProperties {
 
     private String zkUrl;
 
-    private HambombCacheConfiguration.CacheServerStrategy cacheServerStrategy = HambombCacheConfiguration.CacheServerStrategy.STANDALONE;
+    private CacheServerStrategy cacheServerStrategy = CacheServerStrategy.STANDALONE;
 
-    private HambombCacheConfiguration.DataLoadStrategy dataLoadStrategy = HambombCacheConfiguration.DataLoadStrategy.FULL;
+    private DataLoadStrategy dataLoadStrategy = DataLoadStrategy.FULL;
 
     public HambombCacheProperties() {
         System.out.println("HambombCacheProperties");
     }
 
-    public HambombCacheConfiguration.CacheServerStrategy getCacheServerStrategy() {
+    public CacheServerStrategy getCacheServerStrategy() {
         return cacheServerStrategy;
     }
 
-    public void setCacheServerStrategy(HambombCacheConfiguration.CacheServerStrategy cacheServerStrategy) {
+    public void setCacheServerStrategy(CacheServerStrategy cacheServerStrategy) {
         this.cacheServerStrategy = cacheServerStrategy;
     }
 
-    public HambombCacheConfiguration.DataLoadStrategy getDataLoadStrategy() {
+    public DataLoadStrategy getDataLoadStrategy() {
         return dataLoadStrategy;
     }
 
-    public void setDataLoadStrategy(HambombCacheConfiguration.DataLoadStrategy dataLoadStrategy) {
+    public void setDataLoadStrategy(DataLoadStrategy dataLoadStrategy) {
         this.dataLoadStrategy = dataLoadStrategy;
     }
 

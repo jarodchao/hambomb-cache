@@ -84,7 +84,7 @@ public class HambombCacheProcessor {
 
         CacheLoaderMaster masterFlag = null;
 
-        if (HambombCacheConfiguration.CacheServerStrategy.CLUSTER == hambombCacheConfiguration.cacheServerStrategy) {
+        if (CacheServerStrategy.CLUSTER.equals(hambombCacheConfiguration.cacheServerStrategy) ) {
 
             clusterProcessor.initNodes();
 
@@ -133,7 +133,7 @@ public class HambombCacheProcessor {
 
         for (EntityLoader entityLoader : entityLoaders) {
 
-            if (hambombCacheConfiguration.cacheServerStrategy.equals(HambombCacheConfiguration.CacheServerStrategy.CLUSTER)) {
+            if (hambombCacheConfiguration.cacheServerStrategy.equals(CacheServerStrategy.CLUSTER)) {
 
                 KryoSerializationRedisSerializer<Object> kryoSerializationRedisSerializer = new KryoSerializationRedisSerializer();
 
@@ -151,7 +151,7 @@ public class HambombCacheProcessor {
             entityLoaderMap.put(entityLoader.entityClassName, entityLoader);
         }
 
-        if (hambombCacheConfiguration.cacheServerStrategy.equals(HambombCacheConfiguration.CacheServerStrategy.CLUSTER)) {
+        if (hambombCacheConfiguration.cacheServerStrategy.equals(CacheServerStrategy.CLUSTER)) {
 
             clusterProcessor.finishDataLoadNode();
         }

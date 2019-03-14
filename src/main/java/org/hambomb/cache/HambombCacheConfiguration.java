@@ -58,12 +58,4 @@ public class HambombCacheConfiguration {
     }
 
 
-    public enum CacheServerStrategy {
-
-        STANDALONE,CLUSTER,DEVELOP;
-    }
-
-    enum DataLoadStrategy {
-        FULL,INCREMENT;
-    }
 }

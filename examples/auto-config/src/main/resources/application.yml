@@ -14,12 +14,11 @@ spring:
       shutdown-timeout: 100
 hambomb:
   cache:
-    cacheServerStrategy: HambombCacheConfiguration.CacheServerStrategy.CLUSTER
+    cacheServerStrategy: cluster
     zkUrl: localhost:2181
     scanPackageName: org.hambomb.cache.examples.mapper
-    dataLoadStrategy: HambombCacheConfiguration.DataLoadStrategy.FULL
+    dataLoadStrategy: full
 
-#
 #hambomb:
 #  cache:
 #    scan-package-name: org.hambomb.cache.examples.mapper

@@ -59,7 +59,7 @@ public class HambombCacheAutoConfiguration {
         hambombCacheConfiguration.addScanPackageName(hambombCacheProperties.getScanPackageName());
         hambombCacheConfiguration.addCacheServerStrategy(hambombCacheProperties.getCacheServerStrategy());
 
-        if (hambombCacheProperties.getCacheServerStrategy().equals(HambombCacheConfiguration.CacheServerStrategy.CLUSTER)) {
+        if (hambombCacheProperties.getCacheServerStrategy().equals(CacheServerStrategy.CLUSTER)) {
             hambombCacheConfiguration.addZKUrl(hambombCacheProperties.getZkUrl());
             hambombCacheConfiguration.addKeyGeneratorStrategy(new RedisKeyGeneratorStrategy());
             hambombCacheConfiguration.redisTemplate = redisTemplate;

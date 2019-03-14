@@ -19,20 +19,13 @@
     },
     {
       "name": "hambomb.cache.cacheServerStrategy",
-      "sourceType": "org.hambomb.cache.HambombCacheProperties",
-      "defaultValue": [
-        "HambombCacheConfiguration.CacheServerStrategy.STANDALONE",
-        "HambombCacheConfiguration.CacheServerStrategy.DEVELOP",
-        "HambombCacheConfiguration.CacheServerStrategy.CLUSTER"
-      ]
+      "type": "org.hambomb.cache.CacheServerStrategy",
+      "sourceType": "org.hambomb.cache.HambombCacheProperties"
     },
     {
       "name": "hambomb.cache.dataLoadStrategy",
-      "sourceType": "org.hambomb.cache.HambombCacheProperties",
-      "defaultValue": [
-        "HambombCacheConfiguration.DataLoadStrategy.FULL",
-        "HambombCacheConfiguration.DataLoadStrategy.INCREMENT"
-      ]
+      "type": "org.hambomb.cache.DataLoadStrategy",
+      "sourceType": "org.hambomb.cache.HambombCacheProperties"
     }
   ]
 }
