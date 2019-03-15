@@ -15,6 +15,7 @@
  */
 package org.hambomb.cache.examples.config;
 
+import org.hambomb.cache.CacheServerStrategy;
 import org.hambomb.cache.HambombCache;
 import org.hambomb.cache.HambombCacheConfiguration;
 import org.hambomb.cache.storage.key.RedisKeyGeneratorStrategy;
@@ -64,7 +65,7 @@ public class RedisClusterConfig {
         hambombCacheConfiguration.addScanPackageName("org.hambomb.cache.examples.mapper");
         hambombCacheConfiguration.addZKUrl("localhost:2181");
         hambombCacheConfiguration.addKeyGeneratorStrategy(new RedisKeyGeneratorStrategy());
-        hambombCacheConfiguration.addCacheServerStrategy(HambombCacheConfiguration.CacheServerStrategy.CLUSTER);
+        hambombCacheConfiguration.addCacheServerStrategy(CacheServerStrategy.CLUSTER);
         hambombCacheConfiguration.redisTemplate = redisTemplate;
 
         return hambombCacheConfiguration;

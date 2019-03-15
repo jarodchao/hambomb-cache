@@ -37,6 +37,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.StringUtils;
 
@@ -44,7 +45,7 @@ import org.springframework.util.StringUtils;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-02-26
  */
-public class HambombCache implements ApplicationContextAware, InitializingBean, BeanFactoryPostProcessor, ApplicationListener<ContextRefreshedEvent> {
+public class HambombCache implements ApplicationContextAware, InitializingBean, ApplicationListener<ContextRefreshedEvent> {
 
 
     ApplicationContext applicationContext;
@@ -53,7 +54,7 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
 
     HambombCacheProcessor hambombCacheProcessor;
 
-    BeanFactory beanFactory;
+    ConfigurableListableBeanFactory beanFactory;
 
     ZkClient zkClient;
 
@@ -128,11 +129,6 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
         hambombCacheProcessor.startup();
     }
 
-    @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
-    }
-
     private void afterClusterCacheLoad() {
 
         zkClient = new ZkClient(hambombCacheConfiguration.zkUrl, 5000, 5000, new SerializableSerializer());
@@ -186,9 +182,14 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
 
     private void registerBeanObject(Class<?> clazz, Object object) {
 
-        DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) beanFactory;
+        if (beanFactory == null) {
+            ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) applicationContext;
 
-        defaultListableBeanFactory.registerSingleton(toBeanName(clazz), object);
+            beanFactory = configurableApplicationContext.getBeanFactory();
+
+        }
+
+        beanFactory.registerSingleton(toBeanName(clazz), object);
 
     }
 

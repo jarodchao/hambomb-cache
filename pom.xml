@@ -174,11 +174,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <hambombCacheConfiguration>
+                <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                </hambombCacheConfiguration>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -205,10 +205,10 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
-                        <hambombCacheConfiguration>
+                        <configuration>
                             <dataFile>target/jacoco.exec</dataFile>
                             <outputDirectory>target/jacoco-ut</outputDirectory>
-                        </hambombCacheConfiguration>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
