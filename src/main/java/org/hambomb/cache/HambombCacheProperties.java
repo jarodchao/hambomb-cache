@@ -32,10 +32,6 @@ public class HambombCacheProperties {
 
     private DataLoadStrategy dataLoadStrategy = DataLoadStrategy.FULL;
 
-    public HambombCacheProperties() {
-        System.out.println("HambombCacheProperties");
-    }
-
     public CacheServerStrategy getCacheServerStrategy() {
         return cacheServerStrategy;
     }

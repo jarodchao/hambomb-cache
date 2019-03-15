@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hambombCacheConfiguration scan="true" scanPeriod="60 seconds">
+<configuration scan="true" scanPeriod="60 seconds">
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -7,8 +7,8 @@
         </encoder>
     </appender>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
 
-</hambombCacheConfiguration>
+</configuration>

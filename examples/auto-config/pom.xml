@@ -41,9 +41,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.hambomb</groupId>
-			<artifactId>hambomb-cache</artifactId>
-			<version>1.0.1.beta</version>
+			<groupId>org.hambomb.cache.examples</groupId>
+			<artifactId>base-common</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

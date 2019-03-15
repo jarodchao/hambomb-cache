@@ -15,6 +15,7 @@
  */
 package org.hambomb.cache;
 
+import com.sun.xml.internal.ws.handler.HandlerException;
 import org.hambomb.cache.cluster.ClusterProcessor;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
 import org.hambomb.cache.cluster.node.CacheLoaderSlave;
@@ -31,6 +32,7 @@ import org.hambomb.cache.storage.value.RedisValueStorageStrategy;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -127,6 +129,8 @@ public class HambombCacheProcessor {
             mappers = scanner.scanMapper();
         }
 
+        LOG.info("HambombCache: {} need to be processed were scanned.", mappers.size());
+
         List<EntityLoader> entityLoaders = buildLoaders(mappers);
 
         entityLoaderMap = new HashMap<>(entityLoaders.size());
@@ -164,7 +168,13 @@ public class HambombCacheProcessor {
             CacheObjectMapper mapper = null;
 
             if (applicationContext != null) {
-                mapper = applicationContext.getBean(aClass);
+                try {
+
+                    mapper = applicationContext.getBean(aClass);
+                } catch (BeansException ex) {
+                    LOG.error(ex.getMessage());
+                    throw new ConfigurationException(String.format("Bean %s not found.",aClass.getSimpleName()));
+                }
             } else {
                 try {
                     mapper = aClass.newInstance();

@@ -96,6 +96,8 @@ public class EntityLoader<T> {
             });
 
         });
+
+        LOG.info("EntityLoader[{}] has finished loading.", entityClassName);
     }
 
 
@@ -106,6 +108,8 @@ public class EntityLoader<T> {
         CacheObjectMapper<T> mapperProxy = Reflection.newProxy(CacheObjectMapper.class, handler);
 
         List<T> data = mapperProxy.selectAllCacheObject();
+
+        LOG.info("EntityLoader[{}] queried [{}] pieces of data .", entityClassName, data.size());
 
         return data;
     }

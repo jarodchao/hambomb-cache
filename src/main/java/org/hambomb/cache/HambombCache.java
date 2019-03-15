@@ -85,10 +85,6 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
 
         }
 
-        if (hambombCacheConfiguration.keyGeneratorStrategy == null) {
-            LOG.error("HambombCacheConfiguration's keyGeneratorStrategy is null.");
-        }
-
         if (CacheServerStrategy.DEVELOP == hambombCacheConfiguration.cacheServerStrategy) {
             LOG.info("HambombCache will start develop mode.");
         }

@@ -15,6 +15,7 @@
  */
 package org.hambomb.cache.examples.config;
 
+import org.hambomb.cache.CacheServerStrategy;
 import org.hambomb.cache.HambombCacheConfiguration;
 import org.hambomb.cache.HambombCache;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class LocalDevelopConfig {
     public HambombCacheConfiguration hambombCacheConfig() {
         HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
         hambombCacheConfiguration.addScanPackageName("org.hambomb.cache.examples.mapper");
-        hambombCacheConfiguration.addCacheServerStrategy(HambombCacheConfiguration.CacheServerStrategy.DEVELOP);
+        hambombCacheConfiguration.addCacheServerStrategy(CacheServerStrategy.DEVELOP);
 
         return hambombCacheConfiguration;
     }
