@@ -22,6 +22,7 @@ import org.hambomb.cache.examples.entity.Person;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-08
  */
+
 @Mapper
 public interface PersonMapper {
 
