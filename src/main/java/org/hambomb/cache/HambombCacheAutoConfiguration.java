@@ -38,8 +38,7 @@ public class HambombCacheAutoConfiguration {
     private HambombCacheProperties hambombCacheProperties;
 
     @Bean
-//    @ConditionalOnMissingBean(name = "hambombCacheConfiguration")
-    @ConditionalOnBean(name = "redisTemplate")
+    @ConditionalOnBean(name = "hambombCacheRedisTemplate")
     public HambombCacheConfiguration hambombCacheConfig(RedisTemplate<String, Object> redisTemplate) {
 
         HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
@@ -56,16 +55,20 @@ public class HambombCacheAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "redisTemplate")
+    @ConditionalOnMissingBean(name = "hambombCacheRedisTemplate")
     public HambombCacheConfiguration hambombCacheConfig(){
-        return  new HambombCacheConfiguration();
+
+        HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
+        hambombCacheConfiguration.addScanPackageName(hambombCacheProperties.getScanPackageName());
+        hambombCacheConfiguration.addCacheServerStrategy(hambombCacheProperties.getCacheServerStrategy());
+
+        return  hambombCacheConfiguration;
     }
 
 
 
     @Bean
     @ConditionalOnMissingBean(name = "hambombCacheConfiguration")
-    @Autowired
     public HambombCache hambombCache(HambombCacheConfiguration hambombCacheConfiguration) {
 
         HambombCache hambombCache = new HambombCache(hambombCacheConfiguration);

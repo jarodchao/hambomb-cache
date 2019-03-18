@@ -29,7 +29,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 public class HambombCacheRedisConfig {
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
+    public RedisTemplate<String, Object> hambombCacheRedisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(factory);
         template.setEnableDefaultSerializer(false);
