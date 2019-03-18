@@ -15,7 +15,7 @@ spring:
 hambomb:
   cache:
     cacheServerStrategy: develop
-#    zkUrl: localhost:2181
+    #zkUrl: localhost:2181
     scanPackageName: org.hambomb.cache.examples.mapper
     dataLoadStrategy: full
 

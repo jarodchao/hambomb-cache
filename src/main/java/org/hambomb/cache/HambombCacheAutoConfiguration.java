@@ -18,6 +18,7 @@ package org.hambomb.cache;
 import org.hambomb.cache.storage.key.RedisKeyGeneratorStrategy;
 import org.hambomb.cache.storage.value.KryoSerializationRedisSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -38,6 +39,7 @@ public class HambombCacheAutoConfiguration {
 
     @Bean
 //    @ConditionalOnMissingBean(name = "hambombCacheConfiguration")
+    @ConditionalOnBean(name = "redisTemplate")
     public HambombCacheConfiguration hambombCacheConfig(RedisTemplate<String, Object> redisTemplate) {
 
         HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
@@ -52,6 +54,14 @@ public class HambombCacheAutoConfiguration {
 
         return hambombCacheConfiguration;
     }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "redisTemplate")
+    public HambombCacheConfiguration hambombCacheConfig(){
+        return  new HambombCacheConfiguration();
+    }
+
+
 
     @Bean
     @ConditionalOnMissingBean(name = "hambombCacheConfiguration")

@@ -25,7 +25,7 @@ import org.springframework.data.redis.core.RedisTemplate;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-15
  */
-//@ConditionalOnProperty(prefix = "hambomb.cache", name = "cacheServerStrategy", havingValue = "cluster")
+@ConditionalOnProperty(prefix = "hambomb.cache", name = "cacheServerStrategy", havingValue = "cluster")
 public class HambombCacheRedisConfig {
 
     @Bean

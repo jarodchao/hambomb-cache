@@ -30,13 +30,13 @@ import java.sql.SQLException;
 @Configuration
 public class BaseConfig {
 
-    @Bean
+   /* @Bean
     DataSource dataSource() throws SQLException {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:/H2_TYPE.sql")
-                .addScript("classpath:/INIT_TABLE.sql")
-                .addScript("classpath:/INIT_DATA.sql")
+                .addScript("classpath:H2_TYPE.sql")
+                .addScript("classpath:INIT_TABLE.sql")
+                .addScript("classpath:INIT_DATA.sql")
                 .build();
-    }
+    }*/
 }
