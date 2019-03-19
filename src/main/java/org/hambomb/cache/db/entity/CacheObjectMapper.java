@@ -33,7 +33,7 @@ public interface CacheObjectMapper<T> {
      */
     List<T> selectAllCacheObject();
 
-    default Class<T> getSubEntityClass() {
+    default Class<T> getSubCacheObjectClass() {
         TypeToken<T> typeToken = new TypeToken<T>(getClass()) { };
 
         return (Class<T>) typeToken.getRawType();

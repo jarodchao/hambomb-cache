@@ -17,6 +17,7 @@ package org.hambomb.cache.examples.web;/*
 import org.hambomb.cache.examples.entity.Person;
 import org.hambomb.cache.examples.entity.Phone;
 import org.hambomb.cache.examples.service.PhoneCond;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class TestBaseController {
     private WebTestClient webTestClient;
 
     @Test
+    @Ignore
     public void test_getPersonByCardId() throws Exception {
 
         String cardId = "10000000000000005";
@@ -47,6 +49,7 @@ public class TestBaseController {
     }
 
     @Test
+    @Ignore
     public void test_putPersonById() {
         Person person = new Person();
 
@@ -58,12 +61,31 @@ public class TestBaseController {
     }
 
     @Test
+    public void test_PostPeron() {
+
+        Person person = new Person();
+        person.setAddress("ddd");
+        person.setAge(11);
+        person.setCardId("11111111111111");
+        person.setGender("nan");
+        person.setHeight("111");
+        person.setWeight(100.0);
+
+        this.webTestClient.post().uri("/hambomb/persons").syncBody(person)
+                .exchange().expectStatus().isOk()
+                .expectBody(String.class).value(s -> System.out.println(s));
+
+    }
+
+    @Test
+    @Ignore
     public void test_deletePerson(){
         this.webTestClient.delete().uri("/hambomb/persons/{id}", 2L)
                 .exchange().expectStatus().isOk();
     }
 
     @Test
+    @Ignore
     public void test_getPhoneByCond(){
 
         PhoneCond cond = new PhoneCond("华为", "Mate 20", 16, "黑色");
@@ -76,6 +98,7 @@ public class TestBaseController {
     }
 
     @Test
+    @Ignore
     public void test_putPhoneByObject() {
 
         Phone phone = new Phone("华为", "Mate 20", 32, "黑色","拉萨");
@@ -88,6 +111,7 @@ public class TestBaseController {
     }
 
     @Test
+    @Ignore
     public void test_deletePhoneByObject() {
 
         PhoneCond cond = new PhoneCond("华为", "Mate 20", 16, "黑色");
@@ -102,6 +126,7 @@ public class TestBaseController {
     }
 
     @Test
+    @Ignore
     public void test_deletePhoneByObject1() {
 
         PhoneCond cond = new PhoneCond("华为", "Mate 20", 16, "银色");

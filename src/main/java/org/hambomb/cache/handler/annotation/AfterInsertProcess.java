@@ -22,18 +22,12 @@ import java.lang.annotation.Target;
 
 /**
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-06
+ * @date: 2019-03-19
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AfterUpdateProcess {
+public @interface AfterInsertProcess {
 
-    boolean byPrimaryKey() default true;
-
-    String[] attrs() default {};
-
-    String[] args() default {};
 
     Class<?> cacheObjectClass() default Object.class;
-
 }

@@ -47,12 +47,12 @@ public class PhoneService {
 
     }
 
-    @AfterDeleteProcess(byPrimaryKey = false, attrs = {"brand", "model", "memory", "color"},enityClass = Phone.class)
+    @AfterDeleteProcess(byPrimaryKey = false, attrs = {"brand", "model", "memory", "color"}, cacheObjectClass = Phone.class)
     public void deletePhone(PhoneCond cond) {
         phoneMapper.deletePhoneByCond(cond);
     }
 
-    @AfterDeleteProcess(byPrimaryKey = false, attrs = {"brand", "model", "memory", "color"}, enityClass = Phone.class)
+    @AfterDeleteProcess(byPrimaryKey = false, attrs = {"brand", "model", "memory", "color"}, cacheObjectClass = Phone.class)
     public void deletePhone(String brand, String model, Integer memory, String color) {
 
         phoneMapper.deletePhoneByCond(new PhoneCond(brand, model, memory, color));

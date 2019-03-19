@@ -27,6 +27,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import({HambombCacheRedisConfig.class,HambombCacheAutoConfiguration.class})
+@Import({HambombCacheRedisConfig.class, HambombCacheAutoConfiguration.class})
 public @interface EnableHambombCache {
 }

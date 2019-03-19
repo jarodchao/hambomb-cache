@@ -25,6 +25,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.reflections.ReflectionUtils.withModifier;
@@ -59,15 +60,29 @@ public class CacheUtils {
         Set<Method> getters = ReflectionUtils.getAllMethods(entityClazz,
                 withModifier(Modifier.PUBLIC), withName(CacheUtils.getter(name)), withParametersCount(0));
 
-        return getters.stream().findFirst().get();
+        Optional<Method> method = getters.stream().findFirst();
+
+        if (method.isPresent()) {
+            return method.get();
+        }
+
+        return null;
     }
 
     public static <T extends Annotation> Annotation getAnnotation(Method method, Class<T> reflectAnnotation) {
 
         Predicate<Annotation> findAnnotation = input -> input != null && input.annotationType() == reflectAnnotation;
 
-        return ReflectionUtils.getAnnotations(method, findAnnotation).stream().findFirst().get();
 
+        Set<Annotation> annotations = ReflectionUtils.getAnnotations(method, findAnnotation);
+
+        Optional<Annotation> annotation = annotations.stream().findFirst();
+
+        if (annotation.isPresent()) {
+            return annotation.get();
+        }
+
+        return null;
     }
 
     public static String[] getNullPropertyNames (Object source) {

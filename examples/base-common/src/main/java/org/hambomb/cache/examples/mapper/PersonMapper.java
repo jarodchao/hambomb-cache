@@ -27,6 +27,9 @@ import org.hambomb.cache.examples.entity.Person;
 public interface PersonMapper {
 
 
+    @Insert("insert into t_person(name,gender,age,height,weight,cardId,address) " +
+            "values(#{name},#{gender},#{age}," +
+            "#{height},#{weight},#{cardId},#{address}) ")
     void insert(Person person);
 
     void delete(Person person);
@@ -53,4 +56,5 @@ public interface PersonMapper {
     @Delete("delete from t_person " +
             "where id = #{id,jdbcType=DECIMAL} ")
     void deleteById(Long id);
+
 }

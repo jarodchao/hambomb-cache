@@ -34,5 +34,5 @@ public @interface AfterDeleteProcess {
 
     String[] args() default {};
 
-    Class<?> enityClass() default Object.class;
+    Class<?> cacheObjectClass() default Object.class;
 }

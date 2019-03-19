@@ -40,7 +40,7 @@ public class IndexRepository {
 
     String loaderName;
 
-    public String entityName;
+    public String cacheObjectName;
 
     public String[] primaryIndex;
 
@@ -75,7 +75,7 @@ public class IndexRepository {
     }
 
     public String buildUniqueKey(String[] primaryIndexValues){
-        return keyGeneratorStrategy.toPrimaryKey(Lists.asList(entityName,"Primary", primaryIndexValues));
+        return keyGeneratorStrategy.toPrimaryKey(Lists.asList(cacheObjectName,"Primary", primaryIndexValues));
     }
 
     public Map<String, String> buildLookup(String[] findIndexValues) {
@@ -92,9 +92,9 @@ public class IndexRepository {
 
             for (int i = peek; i <= size; i++) {
 
-                Permutation.of(Arrays.asList(findIndexValues), size).forEach(indexes -> {
+                Permutation.of(Arrays.asList(findIndexValues), i).forEach(indexes -> {
 
-                    String key = toCacheKey(entityName, indexes);
+                    String key = toCacheKey(cacheObjectName, indexes);
 
                     lookup.put(key, key);
                     curLookup.put(key, key);
@@ -107,7 +107,7 @@ public class IndexRepository {
 
                 Combination.of(Arrays.asList(findIndexValues), i).forEach(indexes -> {
 
-                    String key = toCacheKey(entityName, indexes);
+                    String key = toCacheKey(cacheObjectName, indexes);
 
                     lookup.put(key, key);
                     curLookup.put(key, key);

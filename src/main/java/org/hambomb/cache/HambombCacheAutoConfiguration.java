@@ -23,7 +23,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -31,15 +33,17 @@ import org.springframework.data.redis.core.RedisTemplate;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-14
  */
+@ComponentScan(basePackages = {"org.hambomb.cache"})
 @EnableConfigurationProperties(HambombCacheProperties.class)
 public class HambombCacheAutoConfiguration {
 
     @Autowired
     private HambombCacheProperties hambombCacheProperties;
 
+
     @Bean
     @ConditionalOnBean(name = "hambombCacheRedisTemplate")
-    public HambombCacheConfiguration hambombCacheConfig(RedisTemplate<String, Object> redisTemplate) {
+    public HambombCacheConfiguration hambombCacheConfiguration(RedisTemplate<String, Object> redisTemplate) {
 
         HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
         hambombCacheConfiguration.addScanPackageName(hambombCacheProperties.getScanPackageName());
@@ -56,22 +60,41 @@ public class HambombCacheAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "hambombCacheRedisTemplate")
-    public HambombCacheConfiguration hambombCacheConfig(){
+    public HambombCacheConfiguration hambombCacheConfiguration() {
 
         HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
         hambombCacheConfiguration.addScanPackageName(hambombCacheProperties.getScanPackageName());
         hambombCacheConfiguration.addCacheServerStrategy(hambombCacheProperties.getCacheServerStrategy());
 
-        return  hambombCacheConfiguration;
+        return hambombCacheConfiguration;
     }
 
 
-
     @Bean
-    @ConditionalOnMissingBean(name = "hambombCacheConfiguration")
+    @ConditionalOnBean(name = "hambombCacheConfiguration")
     public HambombCache hambombCache(HambombCacheConfiguration hambombCacheConfiguration) {
 
         HambombCache hambombCache = new HambombCache(hambombCacheConfiguration);
         return hambombCache;
     }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "hambombCache")
+    public HambombCache hambombCache() {
+
+        HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
+        hambombCacheConfiguration.addScanPackageName(hambombCacheProperties.getScanPackageName());
+        hambombCacheConfiguration.addCacheServerStrategy(hambombCacheProperties.getCacheServerStrategy());
+
+        if (hambombCacheProperties.getCacheServerStrategy().equals(CacheServerStrategy.CLUSTER)) {
+            hambombCacheConfiguration.addZKUrl(hambombCacheProperties.getZkUrl());
+            hambombCacheConfiguration.addKeyGeneratorStrategy(new RedisKeyGeneratorStrategy());
+        }
+
+
+        HambombCache hambombCache = new HambombCache(hambombCacheConfiguration);
+        return hambombCache;
+    }
+
+
 }

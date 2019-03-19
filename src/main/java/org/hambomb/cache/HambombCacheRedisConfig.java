@@ -18,6 +18,7 @@ package org.hambomb.cache;
 import org.hambomb.cache.storage.value.KryoSerializationRedisSerializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -28,7 +29,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 @ConditionalOnProperty(prefix = "hambomb.cache", name = "cacheServerStrategy", havingValue = "cluster")
 public class HambombCacheRedisConfig {
 
-    @Bean
+    @Bean(name = "hambombCacheRedisTemplate")
     public RedisTemplate<String, Object> hambombCacheRedisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(factory);

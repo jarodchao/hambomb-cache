@@ -18,6 +18,7 @@ package org.hambomb.cache.examples.service;
 import org.hambomb.cache.examples.entity.Person;
 import org.hambomb.cache.examples.mapper.PersonMapper;
 import org.hambomb.cache.handler.annotation.AfterDeleteProcess;
+import org.hambomb.cache.handler.annotation.AfterInsertProcess;
 import org.hambomb.cache.handler.annotation.AfterUpdateProcess;
 import org.hambomb.cache.handler.annotation.PostGetProcess;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +49,13 @@ public class PersonService {
         personMapper.updateAddressById(modifyPerson.getId(),modifyPerson.getAddress());
     }
 
-    @AfterDeleteProcess(enityClass = Person.class)
+    @AfterDeleteProcess(cacheObjectClass = Person.class)
     public void deletePersonById(Long id) {
         personMapper.deleteById(id);
+    }
+
+    @AfterInsertProcess
+    public void insertPerson(Person person) {
+        personMapper.insert(person);
     }
 }

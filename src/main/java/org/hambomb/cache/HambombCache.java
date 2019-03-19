@@ -87,6 +87,10 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
 
         if (CacheServerStrategy.DEVELOP == hambombCacheConfiguration.cacheServerStrategy) {
             LOG.info("HambombCache will start develop mode.");
+        } else if (CacheServerStrategy.STANDALONE == hambombCacheConfiguration.cacheServerStrategy) {
+            LOG.info("HambombCache will start standalone mode.");
+        } else if (CacheServerStrategy.CLUSTER == hambombCacheConfiguration.cacheServerStrategy) {
+            LOG.info("HambombCache will start cluster mode.");
         }
 
     }
@@ -123,6 +127,8 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
         }
 
         hambombCacheProcessor.startup();
+
+        LOG.info("HambombCache was loaded.");
     }
 
     private void afterClusterCacheLoad() {

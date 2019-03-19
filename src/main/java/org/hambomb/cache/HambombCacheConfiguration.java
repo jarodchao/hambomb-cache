@@ -16,6 +16,7 @@
 package org.hambomb.cache;
 
 import org.hambomb.cache.storage.key.KeyGeneratorStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
 /**

@@ -19,11 +19,5 @@ hambomb:
     scanPackageName: org.hambomb.cache.examples.mapper
     dataLoadStrategy: full
 
-#hambomb:
-#  cache:
-#    scan-package-name: org.hambomb.cache.examples.mapper
-#    zk-url: localhost:2181
-#    cache-server-strategy: cluster
-#    data-load-strategy: full
 
 

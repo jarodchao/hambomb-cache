@@ -15,13 +15,12 @@
  */
 package org.hambomb.cache;
 
-import com.sun.xml.internal.ws.handler.HandlerException;
 import org.hambomb.cache.cluster.ClusterProcessor;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
 import org.hambomb.cache.cluster.node.CacheLoaderSlave;
+import org.hambomb.cache.db.entity.CacheObjectLoader;
 import org.hambomb.cache.db.entity.CacheObjectMapper;
 import org.hambomb.cache.db.entity.Cachekey;
-import org.hambomb.cache.db.entity.EntityLoader;
 import org.hambomb.cache.db.entity.MapperScanner;
 import org.hambomb.cache.handler.CacheHandler;
 import org.hambomb.cache.handler.LocalCacheHandler;
@@ -53,7 +52,7 @@ public class HambombCacheProcessor {
 
     HambombCacheConfiguration hambombCacheConfiguration;
 
-    private Map<String, EntityLoader> entityLoaderMap;
+    private Map<String, CacheObjectLoader> entityLoaderMap;
 
     private MapperScanner scanner;
 
@@ -77,7 +76,7 @@ public class HambombCacheProcessor {
 
     }
 
-    public EntityLoader getEntityLoader(String key) {
+    public CacheObjectLoader getEntityLoader(String key) {
 
         return entityLoaderMap.get(key);
     }
@@ -131,11 +130,11 @@ public class HambombCacheProcessor {
 
         LOG.info("HambombCache: {} need to be processed were scanned.", mappers.size());
 
-        List<EntityLoader> entityLoaders = buildLoaders(mappers);
+        List<CacheObjectLoader> cacheObjectLoaders = buildLoaders(mappers);
 
-        entityLoaderMap = new HashMap<>(entityLoaders.size());
+        entityLoaderMap = new HashMap<>(cacheObjectLoaders.size());
 
-        for (EntityLoader entityLoader : entityLoaders) {
+        for (CacheObjectLoader cacheObjectLoader : cacheObjectLoaders) {
 
             if (hambombCacheConfiguration.cacheServerStrategy.equals(CacheServerStrategy.CLUSTER)) {
 
@@ -145,14 +144,14 @@ public class HambombCacheProcessor {
 
                 CacheHandler<Object> redisTemplateCacheHandler = new RedisTemplateCacheHandler(hambombCacheConfiguration.redisTemplate, redisValueStorageStrategy);
 
-                entityLoader.cacheHandler = redisTemplateCacheHandler;
+                cacheObjectLoader.cacheHandler = redisTemplateCacheHandler;
             }else {
-                entityLoader.cacheHandler = new LocalCacheHandler();
+                cacheObjectLoader.cacheHandler = new LocalCacheHandler();
             }
 
-            entityLoader.loadData();
+            cacheObjectLoader.loadData();
 
-            entityLoaderMap.put(entityLoader.entityClassName, entityLoader);
+            entityLoaderMap.put(cacheObjectLoader.cacheObjectClassName, cacheObjectLoader);
         }
 
         if (hambombCacheConfiguration.cacheServerStrategy.equals(CacheServerStrategy.CLUSTER)) {
@@ -161,7 +160,7 @@ public class HambombCacheProcessor {
         }
     }
 
-    private List<EntityLoader> buildLoaders(Set<Class<? extends CacheObjectMapper>> mappers) {
+    private List<CacheObjectLoader> buildLoaders(Set<Class<? extends CacheObjectMapper>> mappers) {
 
         return mappers.parallelStream().map((Class<? extends CacheObjectMapper> aClass) -> {
 
@@ -189,9 +188,9 @@ public class HambombCacheProcessor {
                     ReflectionUtils.getMethods(aClass, ReflectionUtils.withName("selectAllCacheObject"))
                             .stream().findFirst().get();
 
-            EntityLoader entityLoader = new EntityLoader(mapper);
+            CacheObjectLoader cacheObjectLoader = new CacheObjectLoader(mapper);
 
-            Class entityClass = mapper.getSubEntityClass();
+            Class entityClass = mapper.getSubCacheObjectClass();
 
             /** 取@的值 */
             Cachekey cachekey = (Cachekey) CacheUtils.getAnnotation(selectAllCacheObject, Cachekey.class);
@@ -211,21 +210,14 @@ public class HambombCacheProcessor {
 
             indexRepository.validate();
 
-            entityLoader.addIndexFactory(indexRepository);
+            cacheObjectLoader.addIndexFactory(indexRepository);
 
-            entityLoader.initializeLoader();
+            cacheObjectLoader.initializeLoader();
 
-            for (String p : pk) {
+            cacheObjectLoader.pkGetter = cacheObjectLoader.buildGetters(pk, null);
+            cacheObjectLoader.fkGetter = cacheObjectLoader.buildGetters(fk, null);
 
-                entityLoader.addPkGetter(CacheUtils.getGetterMethod(p, entityClass));
-            }
-
-            for (String f : fk) {
-
-                entityLoader.addFkGetter(CacheUtils.getGetterMethod(f, entityClass));
-            }
-
-            return entityLoader;
+            return cacheObjectLoader;
 
         }).collect(Collectors.toList());
 

@@ -61,6 +61,17 @@ public class BaseController {
         return "isOk";
     }
 
+    @PostMapping(path = "/hambomb/persons")
+    public String postPersonById(@RequestBody Person person) {
+        try {
+            personService.insertPerson(person);
+        } catch (Exception e) {
+            return "Fail";
+        }
+
+        return "isOk";
+    }
+
     @DeleteMapping(path = "/hambomb/persons/{id}")
     public void deletePerson(@PathVariable Long id) {
 
