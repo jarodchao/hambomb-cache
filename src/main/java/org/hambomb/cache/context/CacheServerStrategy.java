@@ -13,27 +13,13 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.db.entity;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
+package org.hambomb.cache.context;
 
 /**
- * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-26
+ * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-14
  */
-public class AllCacheObjectHandler<T> implements InvocationHandler {
-
-    private CacheObjectMapper<T> cacheObjectMapper;
-
-
-    public AllCacheObjectHandler(CacheObjectMapper cacheObjectMapper) {
-        this.cacheObjectMapper = cacheObjectMapper;
-    }
-
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
-        return method.invoke(cacheObjectMapper, args);
-    }
+public enum CacheServerStrategy {
+    /** */
+    STANDALONE,CLUSTER,DEVELOP
 }

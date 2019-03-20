@@ -15,7 +15,7 @@
  */
 package org.hambomb.cache.handler.annotation;
 
-import org.hambomb.cache.db.entity.CacheObjectMapper;
+import org.hambomb.cache.loader.CacheObjectMapper;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

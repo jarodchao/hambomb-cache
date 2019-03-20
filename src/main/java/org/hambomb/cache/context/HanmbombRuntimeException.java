@@ -13,21 +13,15 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.handler.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.hambomb.cache.context;
 
 /**
- * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-19
+ * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-20
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface AfterInsertProcess {
+public class HanmbombRuntimeException extends RuntimeException {
 
-
-    Class<?> cacheObject() default Object.class;
+    public HanmbombRuntimeException(String message) {
+        super(message);
+    }
 }

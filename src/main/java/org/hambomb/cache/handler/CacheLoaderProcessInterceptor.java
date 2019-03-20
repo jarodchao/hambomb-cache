@@ -22,7 +22,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.HambombCacheProcessor;
-import org.hambomb.cache.db.entity.CacheObjectLoader;
+import org.hambomb.cache.context.HanmbombRuntimeException;
+import org.hambomb.cache.loader.CacheObjectLoader;
 import org.hambomb.cache.handler.annotation.AfterDeleteProcess;
 import org.hambomb.cache.handler.annotation.AfterInsertProcess;
 import org.hambomb.cache.handler.annotation.AfterUpdateProcess;
@@ -61,7 +62,10 @@ public class CacheLoaderProcessInterceptor {
 
         Object result = getCacheObject(joinPoint);
 
+        boolean hit = true;
+
         if (result != null) {
+            hit = false;
             log(result);
         }
 
@@ -76,7 +80,13 @@ public class CacheLoaderProcessInterceptor {
 
         CacheObjectLoader cacheObjectLoader = processor.getEntityLoader(metaData.method.getReturnType().getSimpleName());
 
-        cacheObjectLoader.cacheObject(result);
+        if (hit == false) {
+            try {
+                cacheObjectLoader.cacheObject(result);
+            } catch (HanmbombRuntimeException e) {
+                LOG.warn("If a runtime exception occurs, processing is skipped.");
+            }
+        }
 
         return result;
 
@@ -89,8 +99,11 @@ public class CacheLoaderProcessInterceptor {
 
         Object result = invokeProcess(joinPoint);
 
-
-        insertCacheObject(joinPoint);
+        try {
+            insertCacheObject(joinPoint);
+        } catch (HanmbombRuntimeException e) {
+            LOG.warn("If a runtime exception occurs, processing is skipped.");
+        }
 
         return result;
     }
@@ -100,7 +113,7 @@ public class CacheLoaderProcessInterceptor {
 
             Signature signature = joinPoint.getSignature();
 
-            LOG.debug("The Method for {} into CacheLoaderProcessInterceptor.",signature.getName());
+            LOG.debug("The Method for {} into CacheLoaderProcessInterceptor.", signature.getName());
         }
     }
 
@@ -108,7 +121,7 @@ public class CacheLoaderProcessInterceptor {
 
         if (LOG.isDebugEnabled()) {
 
-            LOG.debug("This operation hits the cache.Result is {}",result);
+            LOG.debug("This operation hits the cache.Result is {}", result);
         }
 
         return result;
@@ -121,7 +134,11 @@ public class CacheLoaderProcessInterceptor {
 
         Object object = invokeProcess(joinPoint);
 
-        updateCacheObject(joinPoint);
+        try {
+            updateCacheObject(joinPoint);
+        } catch (HanmbombRuntimeException e) {
+            LOG.warn("If a runtime exception occurs, processing is skipped.");
+        }
 
         return object;
 
@@ -134,7 +151,11 @@ public class CacheLoaderProcessInterceptor {
 
         Object object = invokeProcess(joinPoint);
 
-        deleteCacheObject(joinPoint);
+        try {
+            deleteCacheObject(joinPoint);
+        } catch (HanmbombRuntimeException e) {
+            LOG.warn("If a runtime exception occurs, processing is skipped.");
+        }
 
         return object;
 
@@ -173,15 +194,17 @@ public class CacheLoaderProcessInterceptor {
 
         AfterInsertProcess afterInsertProcess = (AfterInsertProcess) metaData.methodAnnotation;
 
-        String entityLoaderName = afterInsertProcess.cacheObjectClass() == Object.class ?
-                argValue[0].getClass().getSimpleName() : afterInsertProcess.cacheObjectClass().getSimpleName();
+        String loaderName = afterInsertProcess.cacheObject() == Object.class ?
+                argValue[0].getClass().getSimpleName() : afterInsertProcess.cacheObject().getSimpleName();
 
-        CacheObjectLoader cacheObjectLoader = processor.getEntityLoader(entityLoaderName);
+        CacheObjectLoader cacheObjectLoader = processor.getEntityLoader(loaderName);
 
         if (argValue[0].getClass() == cacheObjectLoader.cacheObjectClazz) {
 
             cacheObjectLoader.cacheObject(argValue[0]);
-        }else {
+
+        } else {
+
             cacheObjectLoader.cacheOtherObject(argValue[0]);
         }
 
@@ -209,10 +232,10 @@ public class CacheLoaderProcessInterceptor {
         String id;
 
         if (afterDeleteProcess.byPrimaryKey()) {
-            String[] pValues = new String[]{ String.valueOf(argValue[0])};
+            String[] pValues = new String[]{String.valueOf(argValue[0])};
 
             id = cacheObjectLoader.indexRepository.buildUniqueKey(pValues);
-        }else {
+        } else {
 
             String[] args = afterDeleteProcess.attrs();
 
@@ -227,7 +250,7 @@ public class CacheLoaderProcessInterceptor {
 
         cacheObjectLoader.cacheHandler.delete(id);
 
-        Map<String, String> lookup =  cacheObjectLoader.getFKeys(cacheObject,null);
+        Map<String, String> lookup = cacheObjectLoader.getFKeys(cacheObject, null);
 
         lookup.forEach((key, value) -> cacheObjectLoader.cacheHandler.delete(key));
 
@@ -259,7 +282,7 @@ public class CacheLoaderProcessInterceptor {
 
         if (afterUpdateProcess.byPrimaryKey()) {
 
-            id = cacheObjectLoader.getPkey(argValue[0],null);
+            id = cacheObjectLoader.getPkey(argValue[0], null);
 
         } else {
 
@@ -297,7 +320,7 @@ public class CacheLoaderProcessInterceptor {
 
         PostGetProcess postGetProcess = (PostGetProcess) metaData.methodAnnotation;
 
-        if ( postGetProcess.args() != null && postGetProcess.args().length > 0) {
+        if (postGetProcess.args() != null && postGetProcess.args().length > 0) {
             String[] args = postGetProcess.args();
 
             values = new String[args.length];
@@ -309,7 +332,7 @@ public class CacheLoaderProcessInterceptor {
                 values[i] = argValue[holder] != null ? argValue[holder].toString() : null;
 
             }
-        } else if (argValue.length == 1 && postGetProcess.attrs() != null && postGetProcess.attrs().length > 0){
+        } else if (argValue.length == 1 && postGetProcess.attrs() != null && postGetProcess.attrs().length > 0) {
 
             String[] args = postGetProcess.attrs();
 
@@ -342,7 +365,7 @@ public class CacheLoaderProcessInterceptor {
         InterceptorMetaData metaData = new InterceptorMetaData();
         metaData.method = method;
 
-        Annotation annotation =  CacheUtils.getAnnotation(method, methodAnnotation);
+        Annotation annotation = CacheUtils.getAnnotation(method, methodAnnotation);
 
         if (annotation == null) {
             LOG.error("The method for name[{}] was not found annotation[{}].", signature.getName(), methodAnnotation.getSimpleName());

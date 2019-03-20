@@ -14,6 +14,7 @@ package org.hambomb.cache.examples.web;/*
  * under the License.
  */
 
+import org.hambomb.cache.examples.entity.BPerson;
 import org.hambomb.cache.examples.entity.Person;
 import org.hambomb.cache.examples.entity.Phone;
 import org.hambomb.cache.examples.service.PhoneCond;
@@ -61,9 +62,11 @@ public class TestBaseController {
     }
 
     @Test
+    @Ignore
     public void test_PostPeron() {
 
         Person person = new Person();
+        person.setName("JJ");
         person.setAddress("ddd");
         person.setAge(11);
         person.setCardId("11111111111111");
@@ -72,6 +75,24 @@ public class TestBaseController {
         person.setWeight(100.0);
 
         this.webTestClient.post().uri("/hambomb/persons").syncBody(person)
+                .exchange().expectStatus().isOk()
+                .expectBody(String.class).value(s -> System.out.println(s));
+
+    }
+
+    @Test
+    public void test_PostBPerson() {
+
+        BPerson person = new BPerson();
+        person.setName("JJ");
+        person.setAddress("ddd");
+        person.setAge(11);
+        person.setCardId("11111111111111");
+        person.setGender("nan");
+        person.setHeight("111");
+        person.setWeight(100.0);
+
+        this.webTestClient.post().uri("/hambomb/bpersons").syncBody(person)
                 .exchange().expectStatus().isOk()
                 .expectBody(String.class).value(s -> System.out.println(s));
 

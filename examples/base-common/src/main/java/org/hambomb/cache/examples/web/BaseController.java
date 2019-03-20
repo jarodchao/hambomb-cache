@@ -15,6 +15,7 @@
  */
 package org.hambomb.cache.examples.web;
 
+import org.hambomb.cache.examples.entity.BPerson;
 import org.hambomb.cache.examples.entity.Person;
 import org.hambomb.cache.examples.entity.Phone;
 import org.hambomb.cache.examples.service.PersonService;
@@ -63,6 +64,17 @@ public class BaseController {
 
     @PostMapping(path = "/hambomb/persons")
     public String postPersonById(@RequestBody Person person) {
+        try {
+            personService.insertPerson(person);
+        } catch (Exception e) {
+            return "Fail";
+        }
+
+        return "isOk";
+    }
+
+    @PostMapping(path = "/hambomb/bpersons")
+    public String postPersonById(@RequestBody BPerson person) {
         try {
             personService.insertPerson(person);
         } catch (Exception e) {

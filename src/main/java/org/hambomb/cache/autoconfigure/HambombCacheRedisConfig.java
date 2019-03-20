@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache;
+package org.hambomb.cache.autoconfigure;
 
 import org.hambomb.cache.storage.value.KryoSerializationRedisSerializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

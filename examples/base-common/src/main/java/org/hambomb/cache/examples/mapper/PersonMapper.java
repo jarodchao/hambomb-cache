@@ -16,6 +16,7 @@
 package org.hambomb.cache.examples.mapper;
 
 import org.apache.ibatis.annotations.*;
+import org.hambomb.cache.examples.entity.BPerson;
 import org.hambomb.cache.examples.entity.Person;
 
 /**
@@ -30,7 +31,14 @@ public interface PersonMapper {
     @Insert("insert into t_person(name,gender,age,height,weight,cardId,address) " +
             "values(#{name},#{gender},#{age}," +
             "#{height},#{weight},#{cardId},#{address}) ")
+    @Options(useGeneratedKeys=true,keyProperty="id")
     void insert(Person person);
+
+    @Insert("insert into t_person(name,gender,age,height,weight,cardId,address) " +
+            "values(#{name},#{gender},#{age}," +
+            "#{height},#{weight},#{cardId},#{address}) ")
+    @Options(useGeneratedKeys=true,keyProperty="id")
+    void insertB(BPerson person);
 
     void delete(Person person);
 

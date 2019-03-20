@@ -15,8 +15,6 @@
  */
 package org.hambomb.cache.examples.entity;
 
-import org.hambomb.cache.db.entity.Cachekey;
-
 import java.io.Serializable;
 
 /**

@@ -18,14 +18,17 @@ package org.hambomb.cache;
 import org.hambomb.cache.cluster.ClusterProcessor;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
 import org.hambomb.cache.cluster.node.CacheLoaderSlave;
-import org.hambomb.cache.db.entity.CacheObjectLoader;
-import org.hambomb.cache.db.entity.CacheObjectMapper;
-import org.hambomb.cache.db.entity.Cachekey;
-import org.hambomb.cache.db.entity.MapperScanner;
+import org.hambomb.cache.context.CacheServerStrategy;
+import org.hambomb.cache.context.ConfigurationException;
+import org.hambomb.cache.context.HambombCacheConfiguration;
+import org.hambomb.cache.loader.CacheObjectLoader;
+import org.hambomb.cache.loader.CacheObjectMapper;
+import org.hambomb.cache.loader.Cachekey;
+import org.hambomb.cache.loader.MapperScanner;
 import org.hambomb.cache.handler.CacheHandler;
 import org.hambomb.cache.handler.LocalCacheHandler;
 import org.hambomb.cache.handler.RedisTemplateCacheHandler;
-import org.hambomb.cache.index.IndexRepository;
+import org.hambomb.cache.loader.IndexRepository;
 import org.hambomb.cache.storage.value.KryoSerializationRedisSerializer;
 import org.hambomb.cache.storage.value.RedisValueStorageStrategy;
 import org.reflections.ReflectionUtils;
@@ -190,7 +193,7 @@ public class HambombCacheProcessor {
 
             CacheObjectLoader cacheObjectLoader = new CacheObjectLoader(mapper);
 
-            Class entityClass = mapper.getSubCacheObjectClass();
+            cacheObjectLoader.cacheObjectClazz = mapper.getSubCacheObjectClass();
 
             /** 取@的值 */
             Cachekey cachekey = (Cachekey) CacheUtils.getAnnotation(selectAllCacheObject, Cachekey.class);
@@ -214,6 +217,8 @@ public class HambombCacheProcessor {
 
             cacheObjectLoader.initializeLoader();
 
+            cacheObjectLoader.pk = pk;
+            cacheObjectLoader.fk = fk;
             cacheObjectLoader.pkGetter = cacheObjectLoader.buildGetters(pk, null);
             cacheObjectLoader.fkGetter = cacheObjectLoader.buildGetters(fk, null);
 

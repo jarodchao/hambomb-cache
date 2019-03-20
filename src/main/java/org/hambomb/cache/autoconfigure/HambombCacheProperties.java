@@ -13,8 +13,10 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache;
+package org.hambomb.cache.autoconfigure;
 
+import org.hambomb.cache.context.CacheServerStrategy;
+import org.hambomb.cache.context.DataLoadStrategy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

@@ -15,15 +15,11 @@
  */
 package org.hambomb.cache.examples.entity;
 
-import java.io.Serializable;
-
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-08
+ * @date: 2019-03-20
  */
-public class Person implements Serializable {
-
-    private static final long serialVersionUID = 3267254298048023381L;
+public class BPerson {
 
     private Long id;
 
@@ -40,7 +36,6 @@ public class Person implements Serializable {
     private String cardId;
 
     private String address;
-
 
     public Long getId() {
         return id;
@@ -104,19 +99,5 @@ public class Person implements Serializable {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    @Override
-    public String toString() {
-        return "Person{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", gender='" + gender + '\'' +
-                ", age=" + age +
-                ", height='" + height + '\'' +
-                ", weight=" + weight +
-                ", cardId='" + cardId + '\'' +
-                ", address='" + address + '\'' +
-                '}';
     }
 }

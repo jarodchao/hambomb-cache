@@ -15,9 +15,9 @@
  */
 package org.hambomb.cache.examples.config;
 
-import org.hambomb.cache.CacheServerStrategy;
+import org.hambomb.cache.context.CacheServerStrategy;
 import org.hambomb.cache.HambombCache;
-import org.hambomb.cache.HambombCacheConfiguration;
+import org.hambomb.cache.context.HambombCacheConfiguration;
 import org.hambomb.cache.storage.key.RedisKeyGeneratorStrategy;
 import org.hambomb.cache.storage.value.KryoSerializationRedisSerializer;
 import org.springframework.beans.factory.annotation.Autowired;

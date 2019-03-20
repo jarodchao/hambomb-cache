@@ -15,6 +15,7 @@
  */
 package org.hambomb.cache.examples.service;
 
+import org.hambomb.cache.examples.entity.BPerson;
 import org.hambomb.cache.examples.entity.Person;
 import org.hambomb.cache.examples.mapper.PersonMapper;
 import org.hambomb.cache.handler.annotation.AfterDeleteProcess;
@@ -57,5 +58,10 @@ public class PersonService {
     @AfterInsertProcess
     public void insertPerson(Person person) {
         personMapper.insert(person);
+    }
+
+    @AfterInsertProcess(cacheObject = Person.class)
+    public void insertPerson(BPerson person) {
+        personMapper.insertB(person);
     }
 }

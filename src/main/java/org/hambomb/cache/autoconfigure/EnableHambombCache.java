@@ -13,29 +13,20 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.db.entity;
+package org.hambomb.cache.autoconfigure;
 
-import com.google.common.reflect.TypeToken;
+import org.springframework.context.annotation.Import;
 
-import java.util.List;
+import java.lang.annotation.*;
 
 /**
- * 加载CacheObject的Mapper接口
- * 对于需要加载到cache中的数据库表实体对象需要实现此接口
- * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-02-25
+ * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-14
  */
-public interface CacheObjectMapper<T> {
-
-    /**
-     * 查询所有需要Cache的对象
-     * @return
-     */
-    List<T> selectAllCacheObject();
-
-    default Class<T> getSubCacheObjectClass() {
-        TypeToken<T> typeToken = new TypeToken<T>(getClass()) { };
-
-        return (Class<T>) typeToken.getRawType();
-    }
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@Import({HambombCacheRedisConfig.class, HambombCacheAutoConfiguration.class})
+public @interface EnableHambombCache {
 }

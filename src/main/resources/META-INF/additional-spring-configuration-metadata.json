@@ -2,30 +2,30 @@
   "groups": [
     {
       "name": "hambomb.cache",
-      "type": "org.hambomb.cache.HambombCacheProperties",
-      "sourceType": "org.hambomb.cache.HambombCacheProperties"
+      "type": "org.hambomb.cache.autoconfigure.HambombCacheProperties",
+      "sourceType": "org.hambomb.cache.autoconfigure.HambombCacheProperties"
     }
   ],
   "properties": [
     {
       "name": "hambomb.cache.scanPackageName",
       "type": "java.lang.String",
-      "sourceType": "org.hambomb.cache.HambombCacheProperties"
+      "sourceType": "org.hambomb.cache.autoconfigure.HambombCacheProperties"
     },
     {
       "name": "hambomb.cache.zkUrl",
       "type": "java.lang.String",
-      "sourceType": "org.hambomb.cache.HambombCacheProperties"
+      "sourceType": "org.hambomb.cache.autoconfigure.HambombCacheProperties"
     },
     {
       "name": "hambomb.cache.cacheServerStrategy",
-      "type": "org.hambomb.cache.CacheServerStrategy",
-      "sourceType": "org.hambomb.cache.HambombCacheProperties"
+      "type": "org.hambomb.cache.context.CacheServerStrategy",
+      "sourceType": "org.hambomb.cache.autoconfigure.HambombCacheProperties"
     },
     {
       "name": "hambomb.cache.dataLoadStrategy",
-      "type": "org.hambomb.cache.DataLoadStrategy",
-      "sourceType": "org.hambomb.cache.HambombCacheProperties"
+      "type": "org.hambomb.cache.context.DataLoadStrategy",
+      "sourceType": "org.hambomb.cache.autoconfigure.HambombCacheProperties"
     }
   ]
 }

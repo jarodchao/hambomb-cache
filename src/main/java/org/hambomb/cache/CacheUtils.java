@@ -16,7 +16,6 @@
 package org.hambomb.cache;
 
 import com.google.common.base.Predicate;
-import org.hambomb.cache.db.entity.Cachekey;
 import org.reflections.ReflectionUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;

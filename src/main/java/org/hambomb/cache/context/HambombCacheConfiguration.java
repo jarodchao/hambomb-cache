@@ -13,10 +13,9 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache;
+package org.hambomb.cache.context;
 
 import org.hambomb.cache.storage.key.KeyGeneratorStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
 /**

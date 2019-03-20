@@ -13,11 +13,11 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.db.entity;
+package org.hambomb.cache.loader;
 
 import org.hambomb.cache.CacheUtils;
+import org.hambomb.cache.context.HanmbombRuntimeException;
 import org.hambomb.cache.handler.CacheHandler;
-import org.hambomb.cache.index.IndexRepository;
 import com.google.common.reflect.Reflection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +92,6 @@ public class CacheObjectLoader<T> {
     }
 
     public List<Method> buildGetters(String[] keys,Class clazz) {
-        pk = keys;
 
         Class handlerClazz = clazz == null ? this.cacheObjectClazz : clazz;
 
@@ -117,7 +116,6 @@ public class CacheObjectLoader<T> {
         if (LOG.isDebugEnabled()) {
             LOG.debug("CacheObjectLoader[{}] will building cache.", this.cacheObjectClassName);
         }
-
 
         String uniqueKey = getPkey(t, null);
         Map<String, String> lookup =  getFKeys(t,null);
@@ -174,14 +172,6 @@ public class CacheObjectLoader<T> {
         return data;
     }
 
-    public void addPkGetter(Method getter) {
-        this.pkGetter.add(getter);
-    }
-
-    public void addFkGetter(Method getter) {
-        this.fkGetter.add(getter);
-    }
-
     public String getPkey(T t, List<Method> methods) {
 
         int size = methods == null || methods.size() == 0 ? pkGetter.size() : methods.size();
@@ -223,6 +213,7 @@ public class CacheObjectLoader<T> {
 
             if (getter == null) {
                 LOG.error("The get method for {} was not found in the class[{}].", CacheUtils.getter(keys[i]), t.getClass().getSimpleName());
+                throw new HanmbombRuntimeException("The get method was not found in the class.");
             }
 
             fkValues[i] = getValueByMethod(t, getter);
@@ -237,7 +228,11 @@ public class CacheObjectLoader<T> {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            LOG.warn("There is no method {} on the object.", method.getName());
+            throw new HanmbombRuntimeException(e.getMessage());
+        } catch (NullPointerException e) {
+            LOG.warn("Executes method {} with no value on the object.", method.getName());
+            throw new HanmbombRuntimeException(e.getMessage());
         }
         return null;
     }

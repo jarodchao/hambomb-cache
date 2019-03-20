@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.db.entity;
+package org.hambomb.cache.loader;
 
 
 import org.reflections.Reflections;

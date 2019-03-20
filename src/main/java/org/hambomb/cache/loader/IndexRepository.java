@@ -13,10 +13,11 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.index;
+package org.hambomb.cache.loader;
 
 import org.hambomb.cache.CacheUtils;
-import org.hambomb.cache.ConfigurationException;
+import org.hambomb.cache.context.ConfigurationException;
+import org.hambomb.cache.context.HanmbombRuntimeException;
 import org.hambomb.cache.storage.key.KeyGeneratorStrategy;
 import com.google.common.collect.Lists;
 import org.hambomb.cache.storage.key.KeyPermutationCombinationStrategy;
@@ -75,6 +76,11 @@ public class IndexRepository {
     }
 
     public String buildUniqueKey(String[] primaryIndexValues){
+
+        if (primaryIndexValues == null || primaryIndexValues.length == 0) {
+            throw new HanmbombRuntimeException("The value of the primary key does not exist and cannot be processed.");
+        }
+
         return keyGeneratorStrategy.toPrimaryKey(Lists.asList(cacheObjectName,"Primary", primaryIndexValues));
     }
 
@@ -120,11 +126,11 @@ public class IndexRepository {
 
     }
 
-    public String toCacheKey(String... keys) {
-        return keyGeneratorStrategy.toKey(Arrays.asList(keys));
-    }
-
     public String toCacheKey(String key,String... keys) {
+
+        if (key == null || "".equals(key)) {
+            throw new HanmbombRuntimeException("The value of the cache key does not exist and cannot be processed");
+        }
 
         List<String> cacheKeys = Lists.newArrayList(key);
         cacheKeys.addAll(Arrays.asList(keys));

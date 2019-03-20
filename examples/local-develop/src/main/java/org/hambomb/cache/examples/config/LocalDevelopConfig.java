@@ -15,8 +15,8 @@
  */
 package org.hambomb.cache.examples.config;
 
-import org.hambomb.cache.CacheServerStrategy;
-import org.hambomb.cache.HambombCacheConfiguration;
+import org.hambomb.cache.context.CacheServerStrategy;
+import org.hambomb.cache.context.HambombCacheConfiguration;
 import org.hambomb.cache.HambombCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

@@ -13,13 +13,13 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache;
+package org.hambomb.cache.context;
 
 /**
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-14
  */
-public enum CacheServerStrategy {
-    /** */
-    STANDALONE,CLUSTER,DEVELOP
+public enum DataLoadStrategy {
+
+    FULL,INCREMENT
 }

@@ -13,15 +13,29 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache;
+package org.hambomb.cache.loader;
+
+import com.google.common.reflect.TypeToken;
+
+import java.util.List;
 
 /**
+ * 加载CacheObject的Mapper接口
+ * 对于需要加载到cache中的数据库表实体对象需要实现此接口
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-07
+ * @date: 2019-02-25
  */
-public class ConfigurationException extends RuntimeException {
+public interface CacheObjectMapper<T> {
 
-    public ConfigurationException(String message) {
-        super(message);
+    /**
+     * 查询所有需要Cache的对象
+     * @return
+     */
+    List<T> selectAllCacheObject();
+
+    default Class<T> getSubCacheObjectClass() {
+        TypeToken<T> typeToken = new TypeToken<T>(getClass()) { };
+
+        return (Class<T>) typeToken.getRawType();
     }
 }
