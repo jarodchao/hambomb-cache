@@ -7,6 +7,8 @@
         </encoder>
     </appender>
 
+    <logger name="org.hambomb.cache" level="debug" />
+
     <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>

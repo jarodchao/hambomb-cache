@@ -21,6 +21,7 @@ import org.hambomb.cache.cluster.node.CacheLoaderSlave;
 import org.hambomb.cache.context.CacheServerStrategy;
 import org.hambomb.cache.context.ConfigurationException;
 import org.hambomb.cache.context.HambombCacheConfiguration;
+import org.hambomb.cache.context.HanmbombRuntimeException;
 import org.hambomb.cache.loader.CacheObjectLoader;
 import org.hambomb.cache.loader.CacheObjectMapper;
 import org.hambomb.cache.loader.Cachekey;
@@ -200,6 +201,7 @@ public class HambombCacheProcessor {
 
             if (cachekey == null) {
                 LOG.error("The CacheKey is missing from the selectAllCacheObject method implementation");
+                throw new HanmbombRuntimeException("The CacheKey is missing from the selectAllCacheObject method implementation.");
             }
 
             String[] pk = cachekey.primaryKeys();

@@ -23,9 +23,8 @@ import org.springframework.beans.BeanWrapperImpl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.text.DateFormat;
+import java.util.*;
 
 import static org.reflections.ReflectionUtils.withModifier;
 import static org.reflections.ReflectionUtils.withName;
@@ -98,5 +97,28 @@ public class CacheUtils {
         }
         String[] result = new String[emptyNames.size()];
         return emptyNames.toArray(result);
+    }
+
+    public static String toStringForDate(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+
+        DateFormat dateFormat;
+
+        int h = c.get(Calendar.HOUR);
+        int m = c.get(Calendar.MINUTE);
+        int s = c.get(Calendar.SECOND);
+
+        if (h == m && m == s && s == 0) {
+            dateFormat = DateFormat.getDateInstance();
+            dateFormat = DateFormat.getInstance();
+        }else {
+            dateFormat = DateFormat.getDateInstance();
+        }
+
+//        return dateFormat.format(date);
+
+        return String.valueOf(date.getTime());
+
     }
 }

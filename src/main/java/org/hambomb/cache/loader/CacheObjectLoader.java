@@ -24,7 +24,9 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -181,6 +183,7 @@ public class CacheObjectLoader<T> {
         for (int i = 0; i < size; i++) {
 
             Method method =  methods == null || methods.size() == 0 ? pkGetter.get(i) : methods.get(i);
+
             pkValues[i] = getValueByMethod(t, method);
         }
 
@@ -224,7 +227,16 @@ public class CacheObjectLoader<T> {
 
     private String getValueByMethod(T t, Method method) {
         try {
-            return method.invoke(t, null).toString();
+
+            Type type = method.getGenericReturnType();
+
+            if (type == Date.class) {
+                return CacheUtils.toStringForDate((Date) method.invoke(t, null));
+            } else {
+
+                return method.invoke(t, null).toString();
+            }
+
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {

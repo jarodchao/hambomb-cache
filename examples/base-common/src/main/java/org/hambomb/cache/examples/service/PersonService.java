@@ -35,13 +35,16 @@ public class PersonService {
     @Autowired
     private PersonMapper personMapper;
 
-    public Person getPersonById(Long id) {
-        return personMapper.selectById(id);
-    }
 
     @PostGetProcess(args = {"#0"})
     public Person getPersonByCardId(String cardId) {
         return personMapper.selectByCardId(cardId);
+    }
+
+
+    @PostGetProcess
+    public Person getPersonById(Long id) {
+        return personMapper.selectById(id);
     }
 
     @AfterUpdateProcess

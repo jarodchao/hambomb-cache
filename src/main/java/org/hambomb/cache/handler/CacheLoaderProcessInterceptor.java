@@ -62,25 +62,19 @@ public class CacheLoaderProcessInterceptor {
 
         Object result = getCacheObject(joinPoint);
 
-        boolean hit = true;
+        if (result == null) {
 
-        if (result != null) {
-            hit = false;
-            log(result);
-        }
+            result = invokeProcess(joinPoint);
 
-        result = invokeProcess(joinPoint);
+            InterceptorMetaData metaData = getInterceptorAnnotation(joinPoint, PostGetProcess.class);
 
-        InterceptorMetaData metaData = getInterceptorAnnotation(joinPoint, PostGetProcess.class);
+            if (metaData == null) {
+                LOG.warn("Skip HambombCache related processing.");
+                return null;
+            }
 
-        if (metaData == null) {
-            LOG.warn("Skip HambombCache related processing.");
-            return null;
-        }
+            CacheObjectLoader cacheObjectLoader = processor.getEntityLoader(metaData.method.getReturnType().getSimpleName());
 
-        CacheObjectLoader cacheObjectLoader = processor.getEntityLoader(metaData.method.getReturnType().getSimpleName());
-
-        if (hit == false) {
             try {
                 cacheObjectLoader.cacheObject(result);
             } catch (HanmbombRuntimeException e) {

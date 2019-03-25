@@ -19,3 +19,9 @@ CREATE TABLE IF NOT EXISTS T_Phone (
     pattern VARCHAR(5),
     origin VARCHAR(10)
 );
+
+CREATE TABLE IF NOT EXISTS T_holiday (
+    Id INT NOT NULL primary key auto_increment,
+    holiday DATE,
+    origin VARCHAR(10)
+);

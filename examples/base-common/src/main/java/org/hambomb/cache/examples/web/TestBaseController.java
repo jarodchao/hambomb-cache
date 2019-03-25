@@ -50,6 +50,15 @@ public class TestBaseController {
     }
 
     @Test
+    public void test_getPersonById() throws Exception {
+
+        Long id = 1L;
+
+        this.webTestClient.get().uri("/hambomb/person/{id}", id)
+                .exchange().expectStatus().isOk().expectBody(String.class).value(s1 -> System.out.println(s1));
+    }
+
+    @Test
     @Ignore
     public void test_putPersonById() {
         Person person = new Person();
@@ -81,6 +90,7 @@ public class TestBaseController {
     }
 
     @Test
+    @Ignore
     public void test_PostBPerson() {
 
         BPerson person = new BPerson();
@@ -158,5 +168,7 @@ public class TestBaseController {
 
 
     }
+
+
 
 }
