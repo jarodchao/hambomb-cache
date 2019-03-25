@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -276,7 +277,15 @@ public class CacheLoaderProcessInterceptor {
 
         if (afterUpdateProcess.byPrimaryKey()) {
 
-            id = cacheObjectLoader.getPkey(argValue[0], null);
+            if (argValue[0].getClass() == cacheObjectLoader.cacheObjectClazz) {
+
+                id = cacheObjectLoader.getPkey(argValue[0], null);
+            }else {
+                List<Method> pkGetters = cacheObjectLoader.buildGetters(cacheObjectLoader.pk, argValue[0].getClass());
+
+                id = cacheObjectLoader.getPkey(argValue[0], pkGetters);
+            }
+
 
         } else {
 

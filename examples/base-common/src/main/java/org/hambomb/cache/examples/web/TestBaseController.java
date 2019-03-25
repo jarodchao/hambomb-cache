@@ -17,6 +17,7 @@ package org.hambomb.cache.examples.web;/*
 import org.hambomb.cache.examples.entity.BPerson;
 import org.hambomb.cache.examples.entity.Person;
 import org.hambomb.cache.examples.entity.Phone;
+import org.hambomb.cache.examples.service.ModifyPerson;
 import org.hambomb.cache.examples.service.PhoneCond;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -50,6 +51,7 @@ public class TestBaseController {
     }
 
     @Test
+    @Ignore
     public void test_getPersonById() throws Exception {
 
         Long id = 1L;
@@ -66,6 +68,17 @@ public class TestBaseController {
         person.setId(1L);
         person.setAddress("中国河北西伯坡");
         this.webTestClient.put().uri("/hambomb/persons").syncBody(person)
+                .exchange().expectStatus().isOk()
+                .expectBody(String.class).value(s -> System.out.println(s));
+    }
+
+    @Test
+    public void test_putPerson() {
+        ModifyPerson person = new ModifyPerson();
+
+        person.setId(1L);
+        person.setAddress("中国河北西伯坡");
+        this.webTestClient.put().uri("/hambomb/persons/all").syncBody(person)
                 .exchange().expectStatus().isOk()
                 .expectBody(String.class).value(s -> System.out.println(s));
     }

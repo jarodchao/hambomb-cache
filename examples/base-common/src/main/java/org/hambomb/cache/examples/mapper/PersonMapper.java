@@ -56,7 +56,7 @@ public interface PersonMapper {
 
 
     @Update("update t_person " +
-            "set address = #{address,jdbcType=VARCHAR}" +
+            "set address = #{address,jdbcType=VARCHAR} " +
             "where id =#{id,jdbcType=DECIMAL}")
     void updateAddressById(@Param(value = "id") Long id, @Param(value = "address") String address);
 

@@ -53,6 +53,13 @@ public class PersonService {
         personMapper.updateAddressById(modifyPerson.getId(),modifyPerson.getAddress());
     }
 
+    @AfterUpdateProcess(cacheObjectClass = Person.class)
+    public void modifyPerson(ModifyPerson modifyPerson) {
+
+        personMapper.updateAddressById(modifyPerson.getId(), modifyPerson.getAddress());
+
+    }
+
     @AfterDeleteProcess(cacheObjectClass = Person.class)
     public void deletePersonById(Long id) {
         personMapper.deleteById(id);

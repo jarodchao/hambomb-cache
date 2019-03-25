@@ -18,6 +18,7 @@ package org.hambomb.cache.examples.web;
 import org.hambomb.cache.examples.entity.BPerson;
 import org.hambomb.cache.examples.entity.Person;
 import org.hambomb.cache.examples.entity.Phone;
+import org.hambomb.cache.examples.service.ModifyPerson;
 import org.hambomb.cache.examples.service.PersonService;
 import org.hambomb.cache.examples.service.PhoneCond;
 import org.hambomb.cache.examples.service.PhoneService;
@@ -55,6 +56,17 @@ public class BaseController {
     public String putPersonById(@RequestBody Person person) {
         try {
             personService.modifyAddressById(person);
+        } catch (Exception e) {
+            return "Fail";
+        }
+
+        return "isOk";
+    }
+
+    @PutMapping(path = "/hambomb/persons/all")
+    public String putPerson(@RequestBody ModifyPerson person) {
+        try {
+            personService.modifyPerson(person);
         } catch (Exception e) {
             return "Fail";
         }
