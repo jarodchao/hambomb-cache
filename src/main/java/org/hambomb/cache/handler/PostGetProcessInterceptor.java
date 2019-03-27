@@ -40,7 +40,7 @@ public class PostGetProcessInterceptor extends AbstractCacheLoaderProcessInterce
 
         log(joinPoint);
 
-        Object result = process(joinPoint);
+        Object result = getCacheObject(joinPoint);
 
         if (result == null) {
 
@@ -64,6 +64,64 @@ public class PostGetProcessInterceptor extends AbstractCacheLoaderProcessInterce
 
         return result;
 
+    }
+
+    private Object getCacheObject(ProceedingJoinPoint joinPoint) {
+
+
+        InterceptorMetaData<PostGetProcess> metaData = getInterceptorAnnotation(joinPoint);
+
+        if (metaData == null) {
+            LOG.warn("Skip HambombCache related processing,cause of the Annotation could not be found.");
+            return null;
+        }
+
+        CacheObjectLoader cacheObjectLoader = metaData.cacheObjectLoader;
+
+        if (cacheObjectLoader == null) {
+            LOG.warn("Skip HambombCache related processing,cause of the loader could not be found.");
+            return null;
+        }
+
+        String[] values = null;
+        Object[] argValue = joinPoint.getArgs();
+
+        PostGetProcess postGetProcess = metaData.methodAnnotation;
+
+        String uniqueKey;
+
+        if (postGetProcess.byPrimaryKey()) {
+
+            uniqueKey = cacheObjectLoader.indexRepository.buildUniqueKey(new String[]{String.valueOf(argValue[0])});
+
+        }else {
+            if (postGetProcess.args() != null && postGetProcess.args().length > 0) {
+                String[] args = postGetProcess.args();
+
+                values = new String[args.length];
+
+                for (int i = 0; i < args.length; i++) {
+
+                    Integer holder = Integer.valueOf(args[i].replace("#", ""));
+
+                    values[i] = argValue[holder] != null ? argValue[holder].toString() : null;
+
+                }
+            } else if (argValue.length == 1 && postGetProcess.attrs() != null && postGetProcess.attrs().length > 0) {
+
+                String[] args = postGetProcess.attrs();
+
+                values = cacheObjectLoader.getEntityCacheKey(argValue[0], args);
+
+            }
+
+            String cacheKey = cacheObjectLoader.indexRepository.toCacheKey(cacheObjectLoader.cacheObjectClassName, values);
+
+            uniqueKey = (String) cacheObjectLoader.cacheHandler.get(cacheKey);
+        }
+
+
+        return uniqueKey == null ? null : cacheObjectLoader.cacheHandler.get(uniqueKey);
     }
 
     @Override
@@ -121,5 +179,11 @@ public class PostGetProcessInterceptor extends AbstractCacheLoaderProcessInterce
 
 
         return uniqueKey;
+    }
+
+
+    @Override
+    Object processCache(String cacheKey, Object[] cacheObject, InterceptorMetaData<PostGetProcess> metaData) {
+        return metaData.cacheObjectLoader.cacheHandler.get(cacheKey);
     }
 }

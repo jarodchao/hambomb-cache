@@ -40,11 +40,11 @@ public class RedisKeyGeneratorStrategy implements KeyGeneratorStrategy {
     @Override
     public String toKey(List<String> keys) {
 
-        return join(keys, separator == null ? DEFAULT_SEPARATOR : separator);
+        return join(keys, separator == null ? DEFAULT_SEPARATOR : separator).trim();
     }
 
     @Override
     public String toPrimaryKey(List<String> keys) {
-        return join(keys, pSeparator == null ? DEFAULT_SEPARATOR : pSeparator);
+        return join(keys, pSeparator == null ? DEFAULT_SEPARATOR : pSeparator).trim();
     }
 }

@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @Aspect
 @Component
-public class AfterDeleteProcessInterceptor extends AbstractCacheLoaderProcessInterceptor {
+public class AfterDeleteProcessInterceptor extends AbstractCacheLoaderProcessInterceptor<AfterDeleteProcess> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AfterDeleteProcessInterceptor.class);
 
@@ -107,12 +107,17 @@ public class AfterDeleteProcessInterceptor extends AbstractCacheLoaderProcessInt
     }
 
     @Override
-    String getLoaderName(InterceptorMetaData metaData) {
+    String getLoaderName(InterceptorMetaData<AfterDeleteProcess> metaData) {
         return null;
     }
 
     @Override
-    String getCacheKey(ProceedingJoinPoint joinPoint, InterceptorMetaData metaData) {
+    String getCacheKey(ProceedingJoinPoint joinPoint, InterceptorMetaData<AfterDeleteProcess> metaData) {
+        return null;
+    }
+
+    @Override
+    Object processCache(String cacheKey, Object[] cacheObject, InterceptorMetaData<AfterDeleteProcess> metaData) {
         return null;
     }
 }

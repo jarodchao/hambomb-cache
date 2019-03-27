@@ -36,7 +36,7 @@ import java.util.List;
  */
 @Aspect
 @Component
-public class AfterUpdateProcessInterceptor extends AbstractCacheLoaderProcessInterceptor {
+public class AfterUpdateProcessInterceptor extends AbstractCacheLoaderProcessInterceptor<AfterUpdateProcess> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AfterUpdateProcessInterceptor.class);
 
@@ -117,12 +117,18 @@ public class AfterUpdateProcessInterceptor extends AbstractCacheLoaderProcessInt
     }
 
     @Override
-    String getLoaderName(InterceptorMetaData metaData) {
+    String getLoaderName(InterceptorMetaData<AfterUpdateProcess> metaData) {
         return null;
     }
 
     @Override
-    String getCacheKey(ProceedingJoinPoint joinPoint, InterceptorMetaData metaData) {
+    String getCacheKey(ProceedingJoinPoint joinPoint, InterceptorMetaData<AfterUpdateProcess> metaData) {
+        return null;
+    }
+
+
+    @Override
+    Object processCache(String cacheKey, Object[] cacheObject, InterceptorMetaData<AfterUpdateProcess> metaData) {
         return null;
     }
 }

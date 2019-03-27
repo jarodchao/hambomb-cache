@@ -156,10 +156,12 @@ public abstract class AbstractCacheLoaderProcessInterceptor<T extends Annotation
 
         String cacheKey = getCacheKey(joinPoint, metaData);
 
-        return cacheObjectLoader.cacheHandler.get(cacheKey);
+        return processCache(cacheKey, joinPoint.getArgs(), metaData);
     }
 
 
     abstract String getCacheKey(ProceedingJoinPoint joinPoint, InterceptorMetaData<T> metaData);
+
+    abstract Object processCache(String cacheKey, Object[] cacheObject, InterceptorMetaData<T> metaData);
 
 }

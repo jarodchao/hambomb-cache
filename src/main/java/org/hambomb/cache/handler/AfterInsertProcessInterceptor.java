@@ -114,4 +114,9 @@ public class AfterInsertProcessInterceptor extends AbstractCacheLoaderProcessInt
 
         return loaderName;
     }
+
+    @Override
+    Object processCache(String cacheKey, Object[] cacheObject, InterceptorMetaData<AfterInsertProcess> metaData) {
+        return null;
+    }
 }
