@@ -15,8 +15,6 @@
  */
 package org.hambomb.cache.handler.annotation;
 
-import org.hambomb.cache.loader.CacheObjectMapper;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,5 +32,6 @@ public @interface PostGetProcess {
 
     String[] args() default {};
 
-    Class<CacheObjectMapper> loaderClass() default CacheObjectMapper.class;
+    boolean byPrimaryKey() default false;
+
 }

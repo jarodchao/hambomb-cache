@@ -16,13 +16,19 @@
 package org.hambomb.cache;
 
 import com.google.common.base.Predicate;
+import org.hambomb.cache.context.HanmbombRuntimeException;
+import org.hambomb.cache.loader.CacheObjectLoader;
 import org.reflections.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -120,5 +126,29 @@ public class CacheUtils {
 
         return String.valueOf(date.getTime());
 
+    }
+
+    public static String getValueByMethod(Object t, Method method) {
+        try {
+
+            Type type = method.getGenericReturnType();
+
+            if (type == Date.class) {
+                return CacheUtils.toStringForDate((Date) method.invoke(t, null));
+            } else {
+
+                return method.invoke(t, null).toString();
+            }
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            throw new HanmbombRuntimeException(String.format("There is no method %s on the object. %s"
+                    , method.getName(), e.getMessage()));
+        } catch (NullPointerException e) {
+            throw new HanmbombRuntimeException(String.format("Executes method %s with no value on the object. %s"
+                    , method.getName(), e.getMessage()));
+        }
+        return null;
     }
 }

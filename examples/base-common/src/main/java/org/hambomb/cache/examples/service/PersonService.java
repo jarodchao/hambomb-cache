@@ -42,7 +42,7 @@ public class PersonService {
     }
 
 
-    @PostGetProcess
+    @PostGetProcess(byPrimaryKey = true)
     public Person getPersonById(Long id) {
         return personMapper.selectById(id);
     }

@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "hambomb.cache")
 public class HambombCacheProperties {
 
-    private String scanPackageName;
+    private String[] scanPackageName;
 
     private String zkUrl;
 
@@ -50,11 +50,11 @@ public class HambombCacheProperties {
         this.dataLoadStrategy = dataLoadStrategy;
     }
 
-    public String getScanPackageName() {
+    public String[] getScanPackageName() {
         return scanPackageName;
     }
 
-    public void setScanPackageName(String scanPackageName) {
+    public void setScanPackageName(String[] scanPackageName) {
         this.scanPackageName = scanPackageName;
     }
 

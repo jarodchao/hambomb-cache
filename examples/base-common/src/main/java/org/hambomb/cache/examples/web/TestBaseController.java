@@ -41,7 +41,6 @@ public class TestBaseController {
     private WebTestClient webTestClient;
 
     @Test
-    @Ignore
     public void test_getPersonByCardId() throws Exception {
 
         String cardId = "10000000000000005";
@@ -51,7 +50,6 @@ public class TestBaseController {
     }
 
     @Test
-    @Ignore
     public void test_getPersonById() throws Exception {
 
         Long id = 1L;
@@ -61,7 +59,6 @@ public class TestBaseController {
     }
 
     @Test
-    @Ignore
     public void test_putPersonById() {
         Person person = new Person();
 
@@ -84,7 +81,6 @@ public class TestBaseController {
     }
 
     @Test
-    @Ignore
     public void test_PostPeron() {
 
         Person person = new Person();
@@ -103,7 +99,6 @@ public class TestBaseController {
     }
 
     @Test
-    @Ignore
     public void test_PostBPerson() {
 
         BPerson person = new BPerson();
@@ -122,14 +117,12 @@ public class TestBaseController {
     }
 
     @Test
-    @Ignore
     public void test_deletePerson(){
         this.webTestClient.delete().uri("/hambomb/persons/{id}", 2L)
                 .exchange().expectStatus().isOk();
     }
 
     @Test
-    @Ignore
     public void test_getPhoneByCond(){
 
         PhoneCond cond = new PhoneCond("华为", "Mate 20", 16, "黑色");
@@ -142,7 +135,6 @@ public class TestBaseController {
     }
 
     @Test
-    @Ignore
     public void test_putPhoneByObject() {
 
         Phone phone = new Phone("华为", "Mate 20", 32, "黑色","拉萨");
@@ -155,7 +147,6 @@ public class TestBaseController {
     }
 
     @Test
-    @Ignore
     public void test_deletePhoneByObject() {
 
         PhoneCond cond = new PhoneCond("华为", "Mate 20", 16, "黑色");
@@ -170,7 +161,6 @@ public class TestBaseController {
     }
 
     @Test
-    @Ignore
     public void test_deletePhoneByObject1() {
 
         PhoneCond cond = new PhoneCond("华为", "Mate 20", 16, "银色");

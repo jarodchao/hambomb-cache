@@ -73,7 +73,7 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        if (StringUtils.isEmpty(hambombCacheConfiguration.scanPackageName)) {
+        if (hambombCacheConfiguration.scanPackageName == null || hambombCacheConfiguration.scanPackageName.length == 0) {
             LOG.error("HambombCacheConfiguration's  scanPackageName is null.");
         }
 
@@ -110,12 +110,13 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
 
             CacheLoaderContext cacheLoaderContext = createCacheLoaderContext(masterFlag == null ? false : true);
 
+            hambombCacheProcessor.setCacheLoaderContext(cacheLoaderContext);
+
             if (masterFlag == null) {
                 LOG.info("Application Server not was a Master Node,HambombCache is stopping.");
 
                 cacheLoaderContext.slave = hambombCacheProcessor.createSlave();
 
-                return;
             } else {
                 cacheLoaderContext.master = masterFlag;
             }

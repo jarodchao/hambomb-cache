@@ -16,6 +16,7 @@
 package org.hambomb.cache.loader;
 
 import org.hambomb.cache.CacheUtils;
+import org.hambomb.cache.context.CacheLoaderContext;
 import org.hambomb.cache.context.HanmbombRuntimeException;
 import org.hambomb.cache.handler.CacheHandler;
 import com.google.common.reflect.Reflection;
@@ -84,13 +85,15 @@ public class CacheObjectLoader<T> {
 
     }
 
-    public void loadData() {
+    public void loadData(CacheLoaderContext cacheLoaderContext) {
 
-        loadEntities().stream().forEach(o -> {
-                cacheObject(o);
-        });
+        if (cacheLoaderContext == null || cacheLoaderContext.masterFlag) {
 
-        LOG.info("CacheObjectLoader[{}] has finished loading.", cacheObjectClassName);
+            loadEntities().stream().forEach(o -> cacheObject(o) );
+            LOG.info("CacheObjectLoader[{}] has finished loading.", cacheObjectClassName);
+        }
+
+
     }
 
     public List<Method> buildGetters(String[] keys,Class clazz) {
@@ -134,7 +137,7 @@ public class CacheObjectLoader<T> {
         });
     }
 
-    public void cacheOtherObject(T t) {
+    public void cacheOtherObject(Object t) {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("CacheObjectLoader[{}] will building cache.", this.cacheObjectClassName);
@@ -174,7 +177,7 @@ public class CacheObjectLoader<T> {
         return data;
     }
 
-    public String getPkey(T t, List<Method> methods) {
+    public String getPkey(Object t, List<Method> methods) {
 
         int size = methods == null || methods.size() == 0 ? pkGetter.size() : methods.size();
 
@@ -184,14 +187,14 @@ public class CacheObjectLoader<T> {
 
             Method method =  methods == null || methods.size() == 0 ? pkGetter.get(i) : methods.get(i);
 
-            pkValues[i] = getValueByMethod(t, method);
+            pkValues[i] = CacheUtils.getValueByMethod(t, method);
         }
 
         return indexRepository.buildUniqueKey(pkValues);
 
     }
 
-    public Map<String, String> getFKeys(T t, List<Method> methods) {
+    public Map<String, String> getFKeys(Object t, List<Method> methods) {
 
         int size = methods == null || methods.size() == 0 ? fkGetter.size() : methods.size();
 
@@ -199,7 +202,7 @@ public class CacheObjectLoader<T> {
 
         for (int i = 0; i < size; i++) {
             Method method = methods == null || methods.size() == 0 ? fkGetter.get(i) : methods.get(i);
-            fkValues[i] = getValueByMethod(t, method);
+            fkValues[i] = CacheUtils.getValueByMethod(t, method);
         }
 
         return indexRepository.buildLookup(fkValues);
@@ -219,33 +222,11 @@ public class CacheObjectLoader<T> {
                 throw new HanmbombRuntimeException("The get method was not found in the class.");
             }
 
-            fkValues[i] = getValueByMethod(t, getter);
+            fkValues[i] = CacheUtils.getValueByMethod(t, getter);
         }
 
         return fkValues;
     }
 
-    private String getValueByMethod(T t, Method method) {
-        try {
 
-            Type type = method.getGenericReturnType();
-
-            if (type == Date.class) {
-                return CacheUtils.toStringForDate((Date) method.invoke(t, null));
-            } else {
-
-                return method.invoke(t, null).toString();
-            }
-
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            LOG.warn("There is no method {} on the object.", method.getName());
-            throw new HanmbombRuntimeException(e.getMessage());
-        } catch (NullPointerException e) {
-            LOG.warn("Executes method {} with no value on the object.", method.getName());
-            throw new HanmbombRuntimeException(e.getMessage());
-        }
-        return null;
-    }
 }

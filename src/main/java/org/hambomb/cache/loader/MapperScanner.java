@@ -26,19 +26,19 @@ import java.util.Set;
  */
 public class MapperScanner {
 
-    String scanPackage;
+    String[] scanPackage;
 
     Class scanClazz = CacheObjectMapper.class;
 
-    public MapperScanner(String scanPackage) {
+    public MapperScanner(String... scanPackage) {
         this.scanPackage = scanPackage;
     }
 
-    public String getScanPackage() {
+    public String[] getScanPackage() {
         return scanPackage;
     }
 
-    public void setScanPackage(String scanPackage) {
+    public void setScanPackage(String... scanPackage) {
         this.scanPackage = scanPackage;
     }
 

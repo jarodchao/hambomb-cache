@@ -18,10 +18,7 @@ package org.hambomb.cache;
 import org.hambomb.cache.cluster.ClusterProcessor;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
 import org.hambomb.cache.cluster.node.CacheLoaderSlave;
-import org.hambomb.cache.context.CacheServerStrategy;
-import org.hambomb.cache.context.ConfigurationException;
-import org.hambomb.cache.context.HambombCacheConfiguration;
-import org.hambomb.cache.context.HanmbombRuntimeException;
+import org.hambomb.cache.context.*;
 import org.hambomb.cache.loader.CacheObjectLoader;
 import org.hambomb.cache.loader.CacheObjectMapper;
 import org.hambomb.cache.loader.Cachekey;
@@ -56,6 +53,8 @@ public class HambombCacheProcessor {
 
     HambombCacheConfiguration hambombCacheConfiguration;
 
+    CacheLoaderContext cacheLoaderContext;
+
     private Map<String, CacheObjectLoader> entityLoaderMap;
 
     private MapperScanner scanner;
@@ -66,11 +65,16 @@ public class HambombCacheProcessor {
 
     private ClusterProcessor clusterProcessor;
 
-    RedisTemplate<String, Object> redisTemplate;
-
     public HambombCacheProcessor(ApplicationContext applicationContext, HambombCacheConfiguration hambombCacheConfiguration, ClusterProcessor clusterProcessor) {
         this.applicationContext = applicationContext;
         this.hambombCacheConfiguration = hambombCacheConfiguration;
+        this.clusterProcessor = clusterProcessor;
+    }
+
+    public HambombCacheProcessor(ApplicationContext applicationContext, HambombCacheConfiguration hambombCacheConfiguration, CacheLoaderContext cacheLoaderContext, ClusterProcessor clusterProcessor) {
+        this.applicationContext = applicationContext;
+        this.hambombCacheConfiguration = hambombCacheConfiguration;
+        this.cacheLoaderContext = cacheLoaderContext;
         this.clusterProcessor = clusterProcessor;
     }
 
@@ -78,6 +82,10 @@ public class HambombCacheProcessor {
 
         startLoader();
 
+    }
+
+    public void setCacheLoaderContext(CacheLoaderContext cacheLoaderContext) {
+        this.cacheLoaderContext = cacheLoaderContext;
     }
 
     public CacheObjectLoader getEntityLoader(String key) {
@@ -125,12 +133,9 @@ public class HambombCacheProcessor {
 
     private void startLoader() {
 
-        if (hambombCacheConfiguration.scanPackageName != null && !"".equals(hambombCacheConfiguration.scanPackageName)) {
+        scanner = new MapperScanner(hambombCacheConfiguration.scanPackageName);
 
-            scanner = new MapperScanner(hambombCacheConfiguration.scanPackageName);
-
-            mappers = scanner.scanMapper();
-        }
+        mappers = scanner.scanMapper();
 
         LOG.info("HambombCache: {} need to be processed were scanned.", mappers.size());
 
@@ -153,7 +158,7 @@ public class HambombCacheProcessor {
                 cacheObjectLoader.cacheHandler = new LocalCacheHandler();
             }
 
-            cacheObjectLoader.loadData();
+            cacheObjectLoader.loadData(cacheLoaderContext);
 
             entityLoaderMap.put(cacheObjectLoader.cacheObjectClassName, cacheObjectLoader);
         }

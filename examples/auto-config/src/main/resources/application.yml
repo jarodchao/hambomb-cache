@@ -1,22 +1,22 @@
 spring:
   profiles:
     active: base
-#  redis:
-#    host: localhost
-#    port: 6379
-#    database: 0
-#    lettuce:
-#      pool:
-#        max-active: 8
-#        max-wait: 10000
-#        max-idle: 8
-#        min-idle: 0
-#      shutdown-timeout: 100
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: 10000
+        max-idle: 8
+        min-idle: 0
+      shutdown-timeout: 100
 hambomb:
   cache:
-    cacheServerStrategy: develop
-    #zkUrl: localhost:2181
-    scanPackageName: org.hambomb.cache.examples.mapper
+    cacheServerStrategy: cluster
+    zkUrl: localhost:2181
+    scanPackageName: org.hambomb.cache.examples.mapper,org.hambomb.cache.examples.mapper
     dataLoadStrategy: full
 
 

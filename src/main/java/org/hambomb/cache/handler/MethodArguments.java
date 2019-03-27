@@ -13,20 +13,13 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.autoconfigure;
-
-import org.springframework.context.annotation.Import;
-
-import java.lang.annotation.*;
+package org.hambomb.cache.handler;
 
 /**
  * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-14
+ * @date: 2019-03-27
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-@Import({HambombCacheAutoConfiguration.class})
-public @interface EnableHambombCache {
+public interface MethodArguments {
+
+    String[] values(Object[] argValues, String[] args);
 }

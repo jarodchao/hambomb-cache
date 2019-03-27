@@ -25,7 +25,7 @@ import org.springframework.data.redis.core.RedisTemplate;
  */
 public class HambombCacheConfiguration {
 
-    public String scanPackageName;
+    public String[] scanPackageName;
 
     public String zkUrl;
 
@@ -47,7 +47,7 @@ public class HambombCacheConfiguration {
         return this;
     }
 
-    public HambombCacheConfiguration addScanPackageName(String scanPackageName) {
+    public HambombCacheConfiguration addScanPackageName(String... scanPackageName) {
         this.scanPackageName = scanPackageName;
         return this;
     }

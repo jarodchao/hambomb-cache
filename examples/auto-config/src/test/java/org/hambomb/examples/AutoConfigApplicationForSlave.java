@@ -13,20 +13,20 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.autoconfigure;
+package org.hambomb.examples;
 
-import org.springframework.context.annotation.Import;
-
-import java.lang.annotation.*;
+import org.hambomb.cache.examples.web.TestBaseController;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
- * @author: <a herf="matilto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-14
+ * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
+ * @date: 2019-03-27
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-@Import({HambombCacheAutoConfiguration.class})
-public @interface EnableHambombCache {
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        TestBaseController.class
+})
+public class AutoConfigApplicationForSlave {
+
 }
