@@ -37,7 +37,7 @@ public class ProcessByArgObject implements MethodArguments {
             Method getter = CacheUtils.getGetterMethod(args[i], argValues[0].getClass());
 
             if (getter == null) {
-                throw new HanmbombRuntimeException(String.format("The get method for {} was not found in the class[{}]."
+                throw new HanmbombRuntimeException(String.format("The getRealKey method for {} was not found in the class[{}]."
                         , CacheUtils.getter(args[i]), argValues[0].getClass().getSimpleName()));
             }
 

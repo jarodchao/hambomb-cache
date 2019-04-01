@@ -100,10 +100,10 @@ public class AfterUpdateProcessInterceptor extends AbstractCacheLoaderProcessInt
 
             String cacheKey = cacheObjectLoader.indexRepository.toCacheKey(cacheObjectLoader.cacheObjectClassName, values);
 
-            id = (String) cacheObjectLoader.cacheHandler.get(cacheKey);
+            id = (String) cacheObjectLoader.cacheHandler.getRealKey(cacheKey);
         }
 
-        Object cacheObject = cacheObjectLoader.cacheHandler.get(id);
+        Object cacheObject = cacheObjectLoader.cacheHandler.getRealKey(id);
 
         BeanUtils.copyProperties(argValue[0], cacheObject, CacheUtils.getNullPropertyNames(argValue[0]));
 

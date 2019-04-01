@@ -18,11 +18,13 @@ package org.hambomb.cache.handler;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.context.HanmbombRuntimeException;
 import org.hambomb.cache.handler.annotation.AfterInsertProcess;
 import org.hambomb.cache.loader.CacheObjectLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -78,7 +80,19 @@ public class AfterInsertProcessInterceptor extends AbstractCacheLoaderProcessInt
 
         } else {
 
-            cacheObjectLoader.cacheOtherObject(argValue[0]);
+            Object cacheObject = null;
+
+            try {
+                cacheObject = cacheObjectLoader.cacheObjectClazz.newInstance();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+            BeanUtils.copyProperties(argValue[0], cacheObject);
+
+            cacheObjectLoader.cacheObject(cacheObject);
         }
 
     }

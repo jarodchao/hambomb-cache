@@ -34,7 +34,7 @@ public class LocalCacheHandler implements CacheHandler<Object> {
     }
 
     @Override
-    public Object get(String key) {
+    public Object getRealKey(String key) {
         return cache.getIfPresent(key);
     }
 
@@ -46,5 +46,14 @@ public class LocalCacheHandler implements CacheHandler<Object> {
     @Override
     public void delete(String key) {
         cache.invalidate(key);
+    }
+
+    @Override
+    public Object getIndexKey(String key) {
+
+
+        String realKey = (String) cache.getIfPresent(key);
+
+        return cache.getIfPresent(realKey);
     }
 }

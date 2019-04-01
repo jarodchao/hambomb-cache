@@ -30,4 +30,6 @@ public @interface AfterInsertProcess {
 
 
     Class<?> cacheObject() default Object.class;
+
+    String cacheValue() default "argument";
 }

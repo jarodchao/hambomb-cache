@@ -23,7 +23,9 @@ public interface CacheHandler<T> {
 
     void put(String key, T value);
 
-    T get(String key);
+    T getRealKey(String key);
+
+    T getIndexKey(String key);
 
     void update(String key, T value);
 

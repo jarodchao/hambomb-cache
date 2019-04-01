@@ -94,6 +94,8 @@ public class PostGetProcessInterceptor extends AbstractCacheLoaderProcessInterce
 
             uniqueKey = cacheObjectLoader.indexRepository.buildUniqueKey(new String[]{String.valueOf(argValue[0])});
 
+            return cacheObjectLoader.cacheHandler.getRealKey(uniqueKey);
+
         }else {
             if (postGetProcess.args() != null && postGetProcess.args().length > 0) {
                 String[] args = postGetProcess.args();
@@ -117,11 +119,9 @@ public class PostGetProcessInterceptor extends AbstractCacheLoaderProcessInterce
 
             String cacheKey = cacheObjectLoader.indexRepository.toCacheKey(cacheObjectLoader.cacheObjectClassName, values);
 
-            uniqueKey = (String) cacheObjectLoader.cacheHandler.get(cacheKey);
+            return cacheObjectLoader.cacheHandler.getIndexKey(cacheKey);
         }
 
-
-        return uniqueKey == null ? null : cacheObjectLoader.cacheHandler.get(uniqueKey);
     }
 
     @Override
@@ -174,7 +174,7 @@ public class PostGetProcessInterceptor extends AbstractCacheLoaderProcessInterce
 
             String cacheKey = cacheObjectLoader.indexRepository.toCacheKey(cacheObjectLoader.cacheObjectClassName, values);
 
-            uniqueKey = (String) cacheObjectLoader.cacheHandler.get(cacheKey);
+            uniqueKey = (String) cacheObjectLoader.cacheHandler.getRealKey(cacheKey);
         }
 
 
@@ -184,6 +184,6 @@ public class PostGetProcessInterceptor extends AbstractCacheLoaderProcessInterce
 
     @Override
     Object processCache(String cacheKey, Object[] cacheObject, InterceptorMetaData<PostGetProcess> metaData) {
-        return metaData.cacheObjectLoader.cacheHandler.get(cacheKey);
+        return metaData.cacheObjectLoader.cacheHandler.getRealKey(cacheKey);
     }
 }

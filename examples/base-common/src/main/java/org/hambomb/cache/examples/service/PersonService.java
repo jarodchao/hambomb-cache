@@ -74,4 +74,5 @@ public class PersonService {
     public void insertPerson(BPerson person) {
         personMapper.insertB(person);
     }
+
 }

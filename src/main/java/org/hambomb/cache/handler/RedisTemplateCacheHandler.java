@@ -16,7 +16,12 @@
 package org.hambomb.cache.handler;
 
 import org.hambomb.cache.storage.value.RedisValueStorageStrategy;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+
+import javax.annotation.Nullable;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -39,10 +44,7 @@ public class RedisTemplateCacheHandler<T> implements CacheHandler<T> {
     }
 
     @Override
-    public T get(String key) {
-//        byte[] data = redisTemplate.opsForValue().get(key);
-
-//        return (T) valueStorageStrategy.deserialize(data);
+    public T getRealKey(String key) {
 
         return (T) redisTemplate.opsForValue().get(key);
     }
@@ -55,5 +57,15 @@ public class RedisTemplateCacheHandler<T> implements CacheHandler<T> {
     @Override
     public void delete(String key) {
         redisTemplate.delete(key);
+    }
+
+
+    @Override
+    public T getIndexKey(String key) {
+
+        String realKey = (String) redisTemplate.opsForValue().get(key);
+
+        return (T) redisTemplate.opsForValue().get(realKey);
+
     }
 }
