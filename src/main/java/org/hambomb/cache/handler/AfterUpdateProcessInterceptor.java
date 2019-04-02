@@ -36,47 +36,24 @@ import java.util.List;
  */
 @Aspect
 @Component
-public class AfterUpdateProcessInterceptor extends AbstractCacheLoaderProcessInterceptor<AfterUpdateProcess> {
+public class AfterUpdateProcessInterceptor extends CacheLoaderProcessInterceptor<AfterUpdateProcess> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AfterUpdateProcessInterceptor.class);
 
     @Around("@annotation(org.hambomb.cache.handler.annotation.AfterUpdateProcess)")
     public Object afterUpdateServiceProcess(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        log(joinPoint);
-
-        Object object = invokeProcess(joinPoint);
-
-        try {
-            updateCacheObject(joinPoint);
-        } catch (HanmbombRuntimeException e) {
-            LOG.warn("If a runtime exception occurs, processing is skipped.");
-        }
-
-        return object;
+        return process(joinPoint);
 
     }
 
-    private void updateCacheObject(ProceedingJoinPoint joinPoint) {
+    private void updateCacheObject(ProceedingJoinPoint joinPoint,CacheObjectLoader cacheObjectLoader,
+                                   AfterUpdateProcess afterUpdateProcess) {
         Object[] argValue = joinPoint.getArgs();
 
         if (argValue.length > 1) {
             throw new RuntimeException("不支持！");
         }
-
-        InterceptorMetaData metaData = getInterceptorAnnotation(joinPoint);
-
-        if (metaData == null) {
-            LOG.warn("Skip HambombCache related processing.");
-            return;
-        }
-
-        AfterUpdateProcess afterUpdateProcess = (AfterUpdateProcess) metaData.methodAnnotation;
-
-        String entityLoaderName = afterUpdateProcess.cacheObjectClass() == Object.class ?
-                argValue[0].getClass().getSimpleName() : afterUpdateProcess.cacheObjectClass().getSimpleName();
-
-        CacheObjectLoader cacheObjectLoader = processor.getEntityLoader(entityLoaderName);
 
         String id;
 
@@ -117,18 +94,28 @@ public class AfterUpdateProcessInterceptor extends AbstractCacheLoaderProcessInt
     }
 
     @Override
-    String getLoaderName(InterceptorMetaData<AfterUpdateProcess> metaData) {
-        return null;
+    String getLoaderName(InterceptorMetaData<AfterUpdateProcess> metaData, Object[] argValue) {
+
+        AfterUpdateProcess afterUpdateProcess = metaData.methodAnnotation;
+
+        String entityLoaderName = afterUpdateProcess.cacheObjectClass() == Object.class ?
+                argValue[0].getClass().getSimpleName() : afterUpdateProcess.cacheObjectClass().getSimpleName();
+        return entityLoaderName;
+    }
+
+
+    @Override
+    void preProcess(InterceptorRuntimeData runtimeData) {
+
     }
 
     @Override
-    String getCacheKey(ProceedingJoinPoint joinPoint, InterceptorMetaData<AfterUpdateProcess> metaData) {
-        return null;
-    }
-
-
-    @Override
-    Object processCache(String cacheKey, Object[] cacheObject, InterceptorMetaData<AfterUpdateProcess> metaData) {
-        return null;
+    void postProcess(InterceptorRuntimeData runtimeData) {
+        try {
+            updateCacheObject(runtimeData.joinPoint, runtimeData.metaData.cacheObjectLoader,
+                    runtimeData.metaData.methodAnnotation);
+        } catch (HanmbombRuntimeException e) {
+            LOG.warn("If a runtime exception occurs, processing is skipped.");
+        }
     }
 }

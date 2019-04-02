@@ -21,7 +21,7 @@ import org.hambomb.cache.examples.mapper.PersonMapper;
 import org.hambomb.cache.handler.annotation.AfterDeleteProcess;
 import org.hambomb.cache.handler.annotation.AfterInsertProcess;
 import org.hambomb.cache.handler.annotation.AfterUpdateProcess;
-import org.hambomb.cache.handler.annotation.PostGetProcess;
+import org.hambomb.cache.handler.annotation.PreGetProcess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,13 +36,13 @@ public class PersonService {
     private PersonMapper personMapper;
 
 
-    @PostGetProcess(args = {"#0"})
+    @PreGetProcess(args = {"#0"})
     public Person getPersonByCardId(String cardId) {
         return personMapper.selectByCardId(cardId);
     }
 
 
-    @PostGetProcess(byPrimaryKey = true)
+    @PreGetProcess(byPrimaryKey = true)
     public Person getPersonById(Long id) {
         return personMapper.selectById(id);
     }

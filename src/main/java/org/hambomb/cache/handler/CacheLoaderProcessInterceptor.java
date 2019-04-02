@@ -20,7 +20,6 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.HambombCacheProcessor;
-import org.hambomb.cache.handler.annotation.PostGetProcess;
 import org.hambomb.cache.loader.CacheObjectLoader;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
@@ -30,26 +29,27 @@ import org.springframework.context.annotation.Lazy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-05
  */
-public abstract class AbstractCacheLoaderProcessInterceptor<T extends Annotation> {
+public abstract class CacheLoaderProcessInterceptor<T extends Annotation> {
 
     @Autowired
     @Lazy
     protected HambombCacheProcessor processor;
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractCacheLoaderProcessInterceptor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CacheLoaderProcessInterceptor.class);
 
     protected void log(ProceedingJoinPoint joinPoint) {
         if (LOG.isDebugEnabled()) {
 
             Signature signature = joinPoint.getSignature();
 
-            LOG.debug("The Method for {} into AbstractCacheLoaderProcessInterceptor.", signature.getName());
+            LOG.debug("The Method for {} into CacheLoaderProcessInterceptor.", signature.getName());
         }
     }
 
@@ -63,20 +63,21 @@ public abstract class AbstractCacheLoaderProcessInterceptor<T extends Annotation
         return result;
     }
 
-    protected Object invokeProcess(ProceedingJoinPoint joinPoint) throws Throwable {
+    protected void invokeProcess(InterceptorRuntimeData runtimeData) throws Throwable {
 
+        if (runtimeData.callMethod) {
+            Object object;
 
-        Object object;
+            try {
 
-        try {
+                object = runtimeData.joinPoint.proceed();
+            } catch (Exception e) {
+                LOG.error(e.getMessage());
+                throw e;
+            }
 
-            object = joinPoint.proceed();
-        } catch (Exception e) {
-            LOG.error(e.getMessage());
-            throw e;
+            runtimeData.cacheObject = Optional.ofNullable(object);
         }
-
-        return object;
 
     }
 
@@ -110,14 +111,14 @@ public abstract class AbstractCacheLoaderProcessInterceptor<T extends Annotation
 
         metaData.methodAnnotation = annotation;
 
-        metaData.cacheObjectLoader = processor.getEntityLoader(getLoaderName(metaData));
+        metaData.cacheObjectLoader = processor.getEntityLoader(getLoaderName(metaData, joinPoint.getArgs()));
 
         return metaData;
     }
 
     abstract Class<T> getMethodAnnotation();
 
-    abstract String getLoaderName(InterceptorMetaData<T> metaData);
+    abstract String getLoaderName(InterceptorMetaData<T> metaData, Object[] argValue);
 
     public class InterceptorMetaData<T> {
 
@@ -136,8 +137,31 @@ public abstract class AbstractCacheLoaderProcessInterceptor<T extends Annotation
         }
     }
 
+    public class InterceptorRuntimeData {
 
-    protected Object process(ProceedingJoinPoint joinPoint) {
+        ProceedingJoinPoint joinPoint;
+
+        boolean callMethod = true;
+
+        InterceptorMetaData<T> metaData;
+
+        Optional<Object> cacheObject;
+
+        @Override
+        public String toString() {
+            return "InterceptorRuntimeData{" +
+                    "joinPoint=" + joinPoint +
+                    ", callMethod=" + callMethod +
+                    ", metaData=" + metaData +
+                    ", cacheObject=" + cacheObject +
+                    '}';
+        }
+    }
+
+
+    protected Object process(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        log(joinPoint);
 
         InterceptorMetaData<T> metaData = getInterceptorAnnotation(joinPoint);
 
@@ -153,15 +177,21 @@ public abstract class AbstractCacheLoaderProcessInterceptor<T extends Annotation
             return null;
         }
 
+        InterceptorRuntimeData runtimeData = new InterceptorRuntimeData();
+        runtimeData.joinPoint = joinPoint;
+        runtimeData.metaData = metaData;
 
-        String cacheKey = getCacheKey(joinPoint, metaData);
+        preProcess(runtimeData);
 
-        return processCache(cacheKey, joinPoint.getArgs(), metaData);
+        invokeProcess(runtimeData);
+
+        postProcess(runtimeData);
+
+        return runtimeData.cacheObject.isPresent() ? runtimeData.cacheObject.get() : null;
     }
 
+    abstract void preProcess(InterceptorRuntimeData runtimeData);
 
-    abstract String getCacheKey(ProceedingJoinPoint joinPoint, InterceptorMetaData<T> metaData);
-
-    abstract Object processCache(String cacheKey, Object[] cacheObject, InterceptorMetaData<T> metaData);
+    abstract void postProcess(InterceptorRuntimeData runtimeData);
 
 }

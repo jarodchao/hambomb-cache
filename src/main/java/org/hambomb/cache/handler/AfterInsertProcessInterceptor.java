@@ -18,7 +18,6 @@ package org.hambomb.cache.handler;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.context.HanmbombRuntimeException;
 import org.hambomb.cache.handler.annotation.AfterInsertProcess;
 import org.hambomb.cache.loader.CacheObjectLoader;
@@ -33,46 +32,22 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-public class AfterInsertProcessInterceptor extends AbstractCacheLoaderProcessInterceptor<AfterInsertProcess> {
+public class AfterInsertProcessInterceptor extends CacheLoaderProcessInterceptor<AfterInsertProcess> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AfterDeleteProcessInterceptor.class);
 
     @Around("@annotation(org.hambomb.cache.handler.annotation.AfterInsertProcess)")
     public Object afterInsertServiceProcess(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        log(joinPoint);
-
-        Object result = invokeProcess(joinPoint);
-
-        try {
-            insertCacheObject(joinPoint);
-        } catch (HanmbombRuntimeException e) {
-            LOG.warn("If a runtime exception occurs, processing is skipped.");
-        }
-
-        return result;
+        return process(joinPoint);
     }
 
-    private void insertCacheObject(ProceedingJoinPoint joinPoint) {
+    private void insertCacheObject(ProceedingJoinPoint joinPoint,CacheObjectLoader cacheObjectLoader) {
         Object[] argValue = joinPoint.getArgs();
 
         if (argValue.length > 1) {
             throw new RuntimeException("不支持！");
         }
-
-        InterceptorMetaData metaData = getInterceptorAnnotation(joinPoint);
-
-        if (metaData == null) {
-            LOG.warn("Skip HambombCache related processing.");
-            return;
-        }
-
-        AfterInsertProcess afterInsertProcess = (AfterInsertProcess) metaData.methodAnnotation;
-
-        String loaderName = afterInsertProcess.cacheObject() == Object.class ?
-                argValue[0].getClass().getSimpleName() : afterInsertProcess.cacheObject().getSimpleName();
-
-        CacheObjectLoader cacheObjectLoader = processor.getEntityLoader(loaderName);
 
         if (argValue[0].getClass() == cacheObjectLoader.cacheObjectClazz) {
 
@@ -104,7 +79,7 @@ public class AfterInsertProcessInterceptor extends AbstractCacheLoaderProcessInt
 
 
     @Override
-    String getLoaderName(InterceptorMetaData<AfterInsertProcess> metaData) {
+    String getLoaderName(InterceptorMetaData<AfterInsertProcess> metaData, Object[] argValue) {
 
         AfterInsertProcess afterInsertProcess = metaData.methodAnnotation;
 
@@ -117,20 +92,16 @@ public class AfterInsertProcessInterceptor extends AbstractCacheLoaderProcessInt
     }
 
     @Override
-    String getCacheKey(ProceedingJoinPoint joinPoint, InterceptorMetaData<AfterInsertProcess> metaData) {
+    void preProcess(InterceptorRuntimeData runtimeData) {
 
-        Object[] argValue = joinPoint.getArgs();
-
-        AfterInsertProcess afterInsertProcess = metaData.methodAnnotation;
-
-        String loaderName = afterInsertProcess.cacheObject() == Object.class ?
-                argValue[0].getClass().getSimpleName() : afterInsertProcess.cacheObject().getSimpleName();
-
-        return loaderName;
     }
 
     @Override
-    Object processCache(String cacheKey, Object[] cacheObject, InterceptorMetaData<AfterInsertProcess> metaData) {
-        return null;
+    void postProcess(InterceptorRuntimeData runtimeData) {
+        try {
+            insertCacheObject(runtimeData.joinPoint, runtimeData.metaData.cacheObjectLoader);
+        } catch (HanmbombRuntimeException e) {
+            LOG.warn("If a runtime exception occurs, processing is skipped.");
+        }
     }
 }

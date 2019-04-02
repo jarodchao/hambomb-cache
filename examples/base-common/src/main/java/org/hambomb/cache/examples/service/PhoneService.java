@@ -19,7 +19,7 @@ import org.hambomb.cache.examples.entity.Phone;
 import org.hambomb.cache.examples.mapper.PhoneMapper;
 import org.hambomb.cache.handler.annotation.AfterDeleteProcess;
 import org.hambomb.cache.handler.annotation.AfterUpdateProcess;
-import org.hambomb.cache.handler.annotation.PostGetProcess;
+import org.hambomb.cache.handler.annotation.PreGetProcess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ public class PhoneService {
     private PhoneMapper phoneMapper;
 
 
-    @PostGetProcess(attrs = {"brand", "model", "memory", "color"} )
+    @PreGetProcess(attrs = {"brand", "model", "memory", "color"} )
     public Phone getPhoneByCond(PhoneCond cond) {
 
         return phoneMapper.selectPhoneByCond(cond);

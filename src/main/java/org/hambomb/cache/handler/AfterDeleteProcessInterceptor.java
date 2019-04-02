@@ -33,45 +33,25 @@ import java.util.Map;
  */
 @Aspect
 @Component
-public class AfterDeleteProcessInterceptor extends AbstractCacheLoaderProcessInterceptor<AfterDeleteProcess> {
+public class AfterDeleteProcessInterceptor extends CacheLoaderProcessInterceptor<AfterDeleteProcess> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AfterDeleteProcessInterceptor.class);
 
     @Around("@annotation(org.hambomb.cache.handler.annotation.AfterDeleteProcess)")
     public Object afterDeleteServiceProcess(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        log(joinPoint);
-
-        Object object = invokeProcess(joinPoint);
-
-        try {
-            deleteCacheObject(joinPoint);
-        } catch (HanmbombRuntimeException e) {
-            LOG.warn("If a runtime exception occurs, processing is skipped.");
-        }
-
-        return object;
+        return process(joinPoint);
 
     }
 
-    private void deleteCacheObject(ProceedingJoinPoint joinPoint) {
+    private void deleteCacheObject(ProceedingJoinPoint joinPoint,CacheObjectLoader cacheObjectLoader,
+                                   AfterDeleteProcess afterDeleteProcess) {
 
         Object[] argValue = joinPoint.getArgs();
 
         if (argValue.length > 1) {
             throw new RuntimeException("不支持！");
         }
-
-        InterceptorMetaData metaData = getInterceptorAnnotation(joinPoint);
-
-        if (metaData == null) {
-            LOG.warn("Skip HambombCache related processing.");
-            return;
-        }
-
-        AfterDeleteProcess afterDeleteProcess = (AfterDeleteProcess) metaData.methodAnnotation;
-
-        CacheObjectLoader cacheObjectLoader = processor.getEntityLoader(afterDeleteProcess.cacheObjectClass().getSimpleName());
 
         String id;
 
@@ -107,17 +87,23 @@ public class AfterDeleteProcessInterceptor extends AbstractCacheLoaderProcessInt
     }
 
     @Override
-    String getLoaderName(InterceptorMetaData<AfterDeleteProcess> metaData) {
-        return null;
+    String getLoaderName(InterceptorMetaData<AfterDeleteProcess> metaData, Object[] argValue) {
+
+        return metaData.methodAnnotation.cacheObjectClass().getSimpleName();
+    }
+
+
+    @Override
+    void preProcess(InterceptorRuntimeData runtimeData) {
     }
 
     @Override
-    String getCacheKey(ProceedingJoinPoint joinPoint, InterceptorMetaData<AfterDeleteProcess> metaData) {
-        return null;
-    }
-
-    @Override
-    Object processCache(String cacheKey, Object[] cacheObject, InterceptorMetaData<AfterDeleteProcess> metaData) {
-        return null;
+    void postProcess(InterceptorRuntimeData runtimeData) {
+        try {
+            deleteCacheObject(runtimeData.joinPoint, runtimeData.metaData.cacheObjectLoader,
+                    runtimeData.metaData.methodAnnotation);
+        } catch (HanmbombRuntimeException e) {
+            LOG.warn("If a runtime exception occurs, processing is skipped.");
+        }
     }
 }
