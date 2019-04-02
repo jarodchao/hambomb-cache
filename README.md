@@ -89,3 +89,104 @@ public void insertPerson(Person person) {
     personMapper.insert(person);
 }
 ```
+## 配置Hambomb-cache
+### Java Config
+* 本地JVM内存模式
+```$xslt
+@org.springframework.context.annotation.Configuration
+@ComponentScan(basePackages = {"org.hambomb.cache"})
+public class LocalDevelopConfig {
+
+    @Bean
+    public HambombCacheConfiguration hambombCacheConfig() {
+        HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
+        hambombCacheConfiguration.addScanPackageName("org.hambomb.cache.examples.mapper");
+        hambombCacheConfiguration.addCacheServerStrategy(CacheServerStrategy.DEVELOP);
+
+        return hambombCacheConfiguration;
+    }
+
+    @Bean
+    @Autowired
+    public HambombCache hambombCache(HambombCacheConfiguration hambombCacheConfiguration) {
+
+        HambombCache hambombCache = new HambombCache(hambombCacheConfiguration);
+        return hambombCache;
+    }
+}
+```
+* 分布式缓存-redis
+```$xslt
+@Configuration
+@ComponentScan(basePackages = {"org.hambomb.cache"})
+public class RedisClusterConfig {
+
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory() {
+
+        return new LettuceConnectionFactory(new RedisStandaloneConfiguration("localhost", 6379));
+    }
+
+
+    @Bean
+    @Autowired
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(factory);
+        template.setEnableDefaultSerializer(false);
+        template.setValueSerializer(new KryoSerializationRedisSerializer());
+        template.setKeySerializer(new KryoSerializationRedisSerializer<>());
+//        template.setDefaultSerializer(new KryoSerializationRedisSerializer());
+//        template.setHashValueSerializer(new KryoSerializationRedisSerializer());
+        template.afterPropertiesSet();
+        return template;
+    }
+
+    @Bean
+    @Autowired
+    public HambombCacheConfiguration hambombCacheConfig(RedisTemplate<String, Object> redisTemplate) {
+        HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
+        hambombCacheConfiguration.addScanPackageName("org.hambomb.cache.examples.mapper");
+        hambombCacheConfiguration.addZKUrl("localhost:2181");
+        hambombCacheConfiguration.addKeyGeneratorStrategy(new RedisKeyGeneratorStrategy());
+        hambombCacheConfiguration.addCacheServerStrategy(CacheServerStrategy.CLUSTER);
+        hambombCacheConfiguration.redisTemplate = redisTemplate;
+
+        return hambombCacheConfiguration;
+    }
+
+    @Bean
+    @Autowired
+    public HambombCache hambombCache(HambombCacheConfiguration hambombCacheConfiguration) {
+
+        HambombCache hambombCache = new HambombCache(hambombCacheConfiguration);
+        return hambombCache;
+    }
+}
+```
+### Spring boot的自动配置
+* 使用@EnableHambombCache标注Springboot启动类
+```$xslt
+@SpringBootApplication
+@EnableHambombCache
+@MapperScan(basePackages = {"org.hambomb.cache.examples.mapper"})
+public class AutoConfigApplication {
+
+
+	public static void main(String[] args) {
+		SpringApplication.run(AutoConfigApplication.class, args);
+	}
+
+}
+```
+* 在配置文件中描述具体配置
+```$xslt
+hambomb:
+  cache:
+    cacheServerStrategy: cluster
+    zkUrl: localhost:2181
+    scanPackageName: org.hambomb.cache.examples.mapper,org.hambomb.cache.examples.mapper
+    dataLoadStrategy: full
+```
+
+更多的例子见工程中的例子工程。
