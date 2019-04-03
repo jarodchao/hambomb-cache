@@ -27,7 +27,7 @@
         <dependency>
             <groupId>org.hambomb</groupId>
             <artifactId>hambomb-cache</artifactId>
-            <version>1.0.1.beta</version>
+            <version>1.0.2</version>
         </dependency>
 
         <dependency>
