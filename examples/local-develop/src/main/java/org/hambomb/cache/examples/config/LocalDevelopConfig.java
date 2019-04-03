@@ -18,15 +18,18 @@ package org.hambomb.cache.examples.config;
 import org.hambomb.cache.context.CacheServerStrategy;
 import org.hambomb.cache.context.HambombCacheConfiguration;
 import org.hambomb.cache.HambombCache;
+import org.hambomb.cache.handler.SingleInterceptorConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-03-09
  */
-@org.springframework.context.annotation.Configuration
+@Configuration
 @ComponentScan(basePackages = {"org.hambomb.cache"})
 public class LocalDevelopConfig {
 
@@ -34,7 +37,7 @@ public class LocalDevelopConfig {
     public HambombCacheConfiguration hambombCacheConfig() {
         HambombCacheConfiguration hambombCacheConfiguration = new HambombCacheConfiguration();
         hambombCacheConfiguration.addScanPackageName("org.hambomb.cache.examples.mapper");
-        hambombCacheConfiguration.addCacheServerStrategy(CacheServerStrategy.DEVELOP);
+        hambombCacheConfiguration.addCacheServerStrategy(CacheServerStrategy.STANDALONE);
 
         return hambombCacheConfiguration;
     }

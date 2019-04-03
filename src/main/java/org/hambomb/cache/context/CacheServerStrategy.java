@@ -21,5 +21,5 @@ package org.hambomb.cache.context;
  */
 public enum CacheServerStrategy {
     /** */
-    STANDALONE,CLUSTER,DEVELOP
+    STANDALONE,CLUSTER,MULTI
 }

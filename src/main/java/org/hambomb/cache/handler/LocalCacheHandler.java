@@ -17,6 +17,7 @@ package org.hambomb.cache.handler;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.springframework.util.StringUtils;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
@@ -34,7 +35,7 @@ public class LocalCacheHandler implements CacheHandler<Object> {
     }
 
     @Override
-    public Object getRealKey(String key) {
+    public Object getByRealKey(String key) {
         return cache.getIfPresent(key);
     }
 
@@ -49,11 +50,25 @@ public class LocalCacheHandler implements CacheHandler<Object> {
     }
 
     @Override
-    public Object getIndexKey(String key) {
+    public Object getByIndexKey(String key) {
 
 
-        String realKey = (String) cache.getIfPresent(key);
+        String realKey = getRealKeyByIndexKey(key);
+
+        if (StringUtils.isEmpty(realKey)) {
+            return null;
+        }
 
         return cache.getIfPresent(realKey);
+    }
+
+    @Override
+    public void load(String key, Object value) {
+        put(key, value);
+    }
+
+    @Override
+    public String getRealKeyByIndexKey(String key) {
+        return (String) cache.getIfPresent(key);
     }
 }

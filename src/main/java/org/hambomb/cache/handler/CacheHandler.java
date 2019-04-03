@@ -23,11 +23,15 @@ public interface CacheHandler<T> {
 
     void put(String key, T value);
 
-    T getRealKey(String key);
+    T getByRealKey(String key);
 
-    T getIndexKey(String key);
+    T getByIndexKey(String key);
 
     void update(String key, T value);
 
     void delete(String key);
+
+    void load(String key, T value);
+
+    String getRealKeyByIndexKey(String key);
 }

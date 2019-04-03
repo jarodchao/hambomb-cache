@@ -13,28 +13,19 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package org.hambomb.cache.examples.mapper;
+package org.hambomb.cache.autoconfigure;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.hambomb.cache.loader.CacheObjectMapper;
-import org.hambomb.cache.loader.Cachekey;
-import org.hambomb.cache.examples.entity.Phone;
-
-import java.util.List;
+import org.hambomb.cache.handler.SingleInterceptorConfig;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
- * @date: 2019-03-11
+ * @date: 2019-04-02
  */
-@Mapper
-public interface PhoneSelfMapper extends CacheObjectMapper<Phone> {
-
-
-    @Select("select id,Brand, model, memory, color, weight, pattern, origin " +
-            "from t_phone " +
-            "where model != 'IPhone 7' ")
-    @Cachekey(findKeys = {"brand", "model", "memory", "color"}, peek = 3)
-    @Override
-    List<Phone> selectAllCacheObject();
+@Configuration
+@Conditional(ConfigServerStrategyCondition.class)
+@Import({SingleInterceptorConfig.class})
+public class SingleLayerInterceptorConfig {
 }

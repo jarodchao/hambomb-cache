@@ -77,16 +77,15 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
             LOG.error("HambombCacheConfiguration's  scanPackageName is null.");
         }
 
-        if (CacheServerStrategy.CLUSTER == hambombCacheConfiguration.cacheServerStrategy) {
+        if (CacheServerStrategy.CLUSTER == hambombCacheConfiguration.cacheServerStrategy
+                || CacheServerStrategy.MULTI == hambombCacheConfiguration.cacheServerStrategy) {
             if (StringUtils.isEmpty(hambombCacheConfiguration.zkUrl)) {
                 LOG.error("HambombCacheConfiguration's  zkUrl is null.");
             }
 
         }
 
-        if (CacheServerStrategy.DEVELOP == hambombCacheConfiguration.cacheServerStrategy) {
-            LOG.info("HambombCache will start develop mode.");
-        } else if (CacheServerStrategy.STANDALONE == hambombCacheConfiguration.cacheServerStrategy) {
+        if (CacheServerStrategy.STANDALONE == hambombCacheConfiguration.cacheServerStrategy) {
             LOG.info("HambombCache will start standalone mode.");
         } else if (CacheServerStrategy.CLUSTER == hambombCacheConfiguration.cacheServerStrategy) {
             LOG.info("HambombCache will start cluster mode.");
@@ -102,7 +101,8 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
 
-        if (CacheServerStrategy.CLUSTER.equals(hambombCacheConfiguration.cacheServerStrategy)) {
+        if (CacheServerStrategy.CLUSTER.equals(hambombCacheConfiguration.cacheServerStrategy)
+                || CacheServerStrategy.MULTI.equals(hambombCacheConfiguration.cacheServerStrategy) ) {
 
             afterClusterCacheLoad();
 
@@ -120,9 +120,9 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
             } else {
                 cacheLoaderContext.master = masterFlag;
             }
-        } else if (CacheServerStrategy.DEVELOP.equals(hambombCacheConfiguration.cacheServerStrategy)) {
+        } else if (CacheServerStrategy.STANDALONE.equals(hambombCacheConfiguration.cacheServerStrategy)) {
 
-            afterDevelopCacheLoad();
+            afterStandaloneCacheLoad();
 
         }
 
@@ -149,7 +149,7 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
 
     }
 
-    private void afterDevelopCacheLoad() {
+    private void afterStandaloneCacheLoad() {
 
         hambombCacheConfiguration.keyGeneratorStrategy = new LocalKeyGenerator();
 
@@ -157,6 +157,21 @@ public class HambombCache implements ApplicationContextAware, InitializingBean, 
         hambombCacheProcessor = new HambombCacheProcessor(applicationContext, hambombCacheConfiguration, clusterProcessor);
 
         registerBeanObject(HambombCacheProcessor.class, hambombCacheProcessor);
+    }
+
+    private void afterMultiCacheLoad() {
+
+        zkClient = new ZkClient(hambombCacheConfiguration.zkUrl, 5000, 5000, new SerializableSerializer());
+
+        multicaster = new CacheLoaderEventMulticaster();
+        zkDataListener = new CacheMasterListener(multicaster);
+
+        clusterProcessor = new ClusterProcessor(zkClient, zkDataListener);
+
+
+        registerBeanObject(ClusterProcessor.class, clusterProcessor);
+
+
     }
 
     private CacheLoaderContext createCacheLoaderContext(Boolean masterFlag) {

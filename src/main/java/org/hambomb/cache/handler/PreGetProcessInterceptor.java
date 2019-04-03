@@ -57,7 +57,7 @@ public class PreGetProcessInterceptor extends CacheLoaderProcessInterceptor<PreG
 
             uniqueKey = cacheObjectLoader.indexRepository.buildUniqueKey(new String[]{String.valueOf(argValue[0])});
 
-            return cacheObjectLoader.cacheHandler.getRealKey(uniqueKey);
+            return cacheObjectLoader.cacheHandler.getByRealKey(uniqueKey);
 
         }else {
             if (preGetProcess.args() != null && preGetProcess.args().length > 0) {
@@ -82,7 +82,7 @@ public class PreGetProcessInterceptor extends CacheLoaderProcessInterceptor<PreG
 
             String cacheKey = cacheObjectLoader.indexRepository.toCacheKey(cacheObjectLoader.cacheObjectClassName, values);
 
-            return cacheObjectLoader.cacheHandler.getIndexKey(cacheKey);
+            return cacheObjectLoader.cacheHandler.getByIndexKey(cacheKey);
         }
 
     }

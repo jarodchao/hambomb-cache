@@ -17,6 +17,7 @@ package org.hambomb.cache.loader;
 
 import org.hambomb.cache.CacheUtils;
 import org.hambomb.cache.context.CacheLoaderContext;
+import org.hambomb.cache.context.CacheServerStrategy;
 import org.hambomb.cache.context.HanmbombRuntimeException;
 import org.hambomb.cache.handler.CacheHandler;
 import com.google.common.reflect.Reflection;
@@ -87,12 +88,21 @@ public class CacheObjectLoader<T> {
 
     public void loadData(CacheLoaderContext cacheLoaderContext) {
 
-        if (cacheLoaderContext == null || cacheLoaderContext.masterFlag) {
+        boolean loadFlag = false;
 
-            loadEntities().stream().forEach(o -> cacheObject(o) );
-            LOG.info("CacheObjectLoader[{}] has finished loading.", cacheObjectClassName);
+        if (!CacheServerStrategy.MULTI.equals(cacheLoaderContext.cacheServerStrategy)) {
+            if (cacheLoaderContext == null || cacheLoaderContext.masterFlag) {
+
+                loadFlag = true;
+            }
+        } else {
+            loadFlag = true;
         }
 
+        if (loadFlag) {
+            loadEntities().stream().forEach(o -> cacheObject(o));
+            LOG.info("CacheObjectLoader[{}] has finished loading.", cacheObjectClassName);
+        }
 
     }
 
@@ -125,7 +135,7 @@ public class CacheObjectLoader<T> {
         String uniqueKey = getPkey(t, null);
         Map<String, String> lookup =  getFKeys(t,null);
 
-        cacheHandler.put(uniqueKey, t);
+        cacheHandler.load(uniqueKey, t);
 
         lookup.forEach((key, value) -> {
 
@@ -133,7 +143,7 @@ public class CacheObjectLoader<T> {
                 LOG.debug("CacheObjectLoader[{}] was cache data: Key[{}] Value[{}]", this.cacheObjectClassName,
                         key, uniqueKey);
             }
-            cacheHandler.put(key, uniqueKey);
+            cacheHandler.load(key, uniqueKey);
         });
     }
 

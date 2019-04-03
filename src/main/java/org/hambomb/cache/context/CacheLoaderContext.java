@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class CacheLoaderContext {
 
 
-    public Boolean masterFlag = false;
+    public boolean masterFlag = false;
 
     public CacheLoaderMaster master;
 
@@ -44,6 +44,8 @@ public class CacheLoaderContext {
     public CacheLoaderEventMulticaster multicaster;
 
     public ZkClient zkClient;
+
+    public CacheServerStrategy cacheServerStrategy;
 
     private static final Logger LOG = LoggerFactory.getLogger(CacheLoaderContext.class);
 

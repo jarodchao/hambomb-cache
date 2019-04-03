@@ -13,6 +13,7 @@ insert into t_phone ( Brand, model, memory, color, weight, pattern, origin) valu
 insert into t_phone ( Brand, model, memory, color, weight, pattern, origin) values ( 'Apple', 'IPhone X', '128', '黑色', '200', '4G', '中山');
 insert into t_phone ( Brand, model, memory, color, weight, pattern, origin) values ( 'Apple', 'IPhone XS', '256', '红色', '200', '4G', '中山');
 insert into t_phone ( Brand, model, memory, color, weight, pattern, origin) values ( 'Apple', 'IPhone XS', '256', '黑色', '200', '4G', '中山');
+insert into t_phone ( Brand, model, memory, color, weight, pattern, origin) values ( 'Apple', 'IPhone 7', '128', '黑色', '200', '4G', '中山');
 
 
 INSERT INTO t_holiday (holiday, origin) VALUES ('2015-09-20', '国务院');

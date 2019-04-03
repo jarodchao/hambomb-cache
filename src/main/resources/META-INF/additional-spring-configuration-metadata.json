@@ -9,7 +9,7 @@
   "properties": [
     {
       "name": "hambomb.cache.scanPackageName",
-      "type": "java.lang.String",
+      "type": "java.lang.String[]",
       "sourceType": "org.hambomb.cache.autoconfigure.HambombCacheProperties"
     },
     {

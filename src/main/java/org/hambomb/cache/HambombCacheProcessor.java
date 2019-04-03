@@ -19,6 +19,7 @@ import org.hambomb.cache.cluster.ClusterProcessor;
 import org.hambomb.cache.cluster.node.CacheLoaderMaster;
 import org.hambomb.cache.cluster.node.CacheLoaderSlave;
 import org.hambomb.cache.context.*;
+import org.hambomb.cache.handler.MultilayerCacheHander;
 import org.hambomb.cache.loader.CacheObjectLoader;
 import org.hambomb.cache.loader.CacheObjectMapper;
 import org.hambomb.cache.loader.Cachekey;
@@ -34,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -97,7 +97,7 @@ public class HambombCacheProcessor {
 
         CacheLoaderMaster masterFlag = null;
 
-        if (CacheServerStrategy.CLUSTER.equals(hambombCacheConfiguration.cacheServerStrategy) ) {
+        if (!CacheServerStrategy.STANDALONE.equals(hambombCacheConfiguration.cacheServerStrategy) ) {
 
             clusterProcessor.initNodes();
 
@@ -154,7 +154,22 @@ public class HambombCacheProcessor {
                 CacheHandler<Object> redisTemplateCacheHandler = new RedisTemplateCacheHandler(hambombCacheConfiguration.redisTemplate, redisValueStorageStrategy);
 
                 cacheObjectLoader.cacheHandler = redisTemplateCacheHandler;
-            }else {
+            } else if (hambombCacheConfiguration.cacheServerStrategy.equals(CacheServerStrategy.MULTI)) {
+
+                KryoSerializationRedisSerializer<Object> kryoSerializationRedisSerializer = new KryoSerializationRedisSerializer();
+
+                RedisValueStorageStrategy<Object> redisValueStorageStrategy = new RedisValueStorageStrategy(kryoSerializationRedisSerializer);
+
+                CacheHandler<Object> redisTemplateCacheHandler = new RedisTemplateCacheHandler(hambombCacheConfiguration.redisTemplate, redisValueStorageStrategy);
+
+
+                CacheHandler<Object> localCacheHandler = new LocalCacheHandler();
+
+                cacheObjectLoader.cacheHandler = new MultilayerCacheHander(localCacheHandler,
+                        redisTemplateCacheHandler,
+                        cacheLoaderContext);
+
+            } else {
                 cacheObjectLoader.cacheHandler = new LocalCacheHandler();
             }
 

@@ -20,6 +20,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Nullable;
 
@@ -44,7 +45,7 @@ public class RedisTemplateCacheHandler<T> implements CacheHandler<T> {
     }
 
     @Override
-    public T getRealKey(String key) {
+    public T getByRealKey(String key) {
 
         return (T) redisTemplate.opsForValue().get(key);
     }
@@ -61,11 +62,25 @@ public class RedisTemplateCacheHandler<T> implements CacheHandler<T> {
 
 
     @Override
-    public T getIndexKey(String key) {
+    public T getByIndexKey(String key) {
 
-        String realKey = (String) redisTemplate.opsForValue().get(key);
+        String realKey = getRealKeyByIndexKey(key);
+
+        if (StringUtils.isEmpty(realKey)) {
+            return null;
+        }
 
         return (T) redisTemplate.opsForValue().get(realKey);
 
+    }
+
+    @Override
+    public void load(String key, T value) {
+        put(key, value);
+    }
+
+    @Override
+    public String getRealKeyByIndexKey(String key) {
+        return (String) redisTemplate.opsForValue().get(key);
     }
 }
