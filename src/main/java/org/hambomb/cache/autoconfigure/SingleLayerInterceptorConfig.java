@@ -24,7 +24,6 @@ import org.springframework.context.annotation.Import;
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>
  * @date: 2019-04-02
  */
-@Configuration
 @Conditional(ConfigServerStrategyCondition.class)
 @Import({SingleInterceptorConfig.class})
 public class SingleLayerInterceptorConfig {

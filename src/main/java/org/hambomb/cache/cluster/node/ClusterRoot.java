@@ -27,7 +27,7 @@ public class ClusterRoot implements Serializable {
 
     private static final long serialVersionUID = -5417109546000664789L;
 
-    private static final String path = "/HamCache";
+    private static final String path = "/Hambomb/Cache";
 
     private CacheLoaderMaster master;
 

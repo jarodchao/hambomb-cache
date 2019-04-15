@@ -117,7 +117,7 @@ public class PreGetProcessInterceptor extends CacheLoaderProcessInterceptor<PreG
         CacheObjectLoader cacheObjectLoader = runtimeData.metaData.cacheObjectLoader;
 
         try {
-            if (runtimeData.callMethod) {
+            if (runtimeData.callMethod && runtimeData.cacheObject.isPresent() ) {
 
                 cacheObjectLoader.cacheObject(runtimeData.cacheObject);
             }

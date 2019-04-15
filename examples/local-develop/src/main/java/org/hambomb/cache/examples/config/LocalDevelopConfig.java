@@ -15,15 +15,13 @@
  */
 package org.hambomb.cache.examples.config;
 
+import org.hambomb.cache.HambombCache;
 import org.hambomb.cache.context.CacheServerStrategy;
 import org.hambomb.cache.context.HambombCacheConfiguration;
-import org.hambomb.cache.HambombCache;
-import org.hambomb.cache.handler.SingleInterceptorConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * @author: <a herf="mailto:jarodchao@126.com>jarod </a>

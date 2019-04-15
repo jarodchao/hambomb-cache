@@ -137,7 +137,7 @@ public class TestAutoConfig {
     @Test
     public void test_getPhoneByCond1(){
 
-        PhoneCond cond = new PhoneCond("Apple", "IPhone 7", 128, "黑色");
+        PhoneCond cond = new PhoneCond("Apple", "IPhone 7", 127, "黑色");
         this.webTestClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/hambomb/phones")
                         .queryParam("brand", cond.getBrand())

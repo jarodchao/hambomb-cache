@@ -90,8 +90,9 @@ public class CacheObjectLoader<T> {
 
         boolean loadFlag = false;
 
-        if (!CacheServerStrategy.MULTI.equals(cacheLoaderContext.cacheServerStrategy)) {
-            if (cacheLoaderContext == null || cacheLoaderContext.masterFlag) {
+        if (cacheLoaderContext != null &&
+                !CacheServerStrategy.MULTI.equals(cacheLoaderContext.cacheServerStrategy)) {
+            if (cacheLoaderContext.masterFlag) {
 
                 loadFlag = true;
             }
